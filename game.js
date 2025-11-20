@@ -59,8 +59,8 @@ class Game {
     }
 
     update(deltaTime) {
-        this.input.update();
         this.handleInput();
+        this.input.update();
         this.currentPlanet.update(deltaTime, this.player);
         this.updateCamera();
     }
@@ -91,7 +91,7 @@ class Game {
 
             if (this.input.mouseY > canvasTop && this.input.mouseY < canvasBottom) {
                 const worldX = (this.input.mouseX / this.renderer.zoom) + this.cameraX;
-                const worldY = (this.input.mouseY - canvasTop) / this.renderer.zoom + this.cameraY;
+                const worldY = (this.input.mouseY / this.renderer.zoom) + this.cameraY;
 
                 const gridX = Math.round(((worldX / 32) + (worldY / 16)) / 2);
                 const gridY = Math.round(((worldY / 16) - (worldX / 32)) / 2);

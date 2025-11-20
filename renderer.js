@@ -35,6 +35,8 @@ class Renderer {
 
     drawWorld(planet, cameraX, cameraY, player) {
         this.ctx.save();
+        const topBarHeight = 75;
+        this.ctx.translate(0, topBarHeight);
         this.ctx.scale(this.zoom, this.zoom);
 
         for (let y = 0; y < planet.height; y++) {

@@ -4,7 +4,7 @@ class Player {
         this.food = 100;
         this.population = 50;
         this.planetsControlled = 1;
-        this.age = 'stone'; // stone, bronze, iron, medieval, renaissance
+        this.age = 'stone';
         this.selectedBuilding = null;
         this.buildings = [];
         this.techs = {
