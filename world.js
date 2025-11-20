@@ -5,15 +5,15 @@ class World {
     }
 
     createVolcanicWorld() {
-        return new Planet('Volcanic', 16, 12, 'volcanic');
+        return new Planet('Volcanic', 50, 40, 'volcanic');
     }
 
     createEcosystemWorld() {
-        return new Planet('Ecosystem', 20, 16, 'ecosystem');
+        return new Planet('Ecosystem', 60, 50, 'ecosystem');
     }
 
     createGalaxyWorld() {
-        return new Planet('Galaxy', 32, 24, 'galaxy');
+        return new Planet('Galaxy', 100, 80, 'galaxy');
     }
 }
 

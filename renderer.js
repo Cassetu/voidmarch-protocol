@@ -5,6 +5,7 @@ class Renderer {
         this.height = height;
         this.tileWidth = 64;
         this.tileHeight = 32;
+        this.zoom = 1;
         this.colorMap = {
             grass: '#3d4f5c',
             rock: '#4a5a6a',
@@ -34,6 +35,7 @@ class Renderer {
 
     drawWorld(planet, cameraX, cameraY, player) {
         this.ctx.save();
+        this.ctx.scale(this.zoom, this.zoom);
 
         for (let y = 0; y < planet.height; y++) {
             for (let x = 0; x < planet.width; x++) {
