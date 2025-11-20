@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voidmarch Protocol</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui-overlay">
+        <div id="top-bar">
+            <h1>Voidmarch Protocol</h1>
+            <div id="stats">
+                    <span>
+                        Resources
+                        <strong id="resource-count">150</strong>
+                    </span>
+                <span>
+                        Food
+                        <strong id="food-count">100</strong>
+                    </span>
+                <span>
+                        Population
+                        <strong id="population-count">50</strong>
+                    </span>
+                <span>
+                        Age: <strong id="age-display">Stone</strong>
+                    </span>
+            </div>
+        </div>
+        <div id="bottom-panel">
+            <div id="console">
+                <p>> System initialized...</p>
+                <p>> Ready for construction</p>
+            </div>
+            <div id="side-panel">
+                <div class="panel-section">
+                    <button id="research-btn">Research Tech</button>
+                </div>
+                <div class="panel-section">
+                    <h3>Select Building</h3>
+                    <div id="buildings-list"></div>
+                </div>
+                <div class="panel-section">
+                    <h3>Info</h3>
+                    <div id="building-info">
+                        <p style="font-size: 9px; color: #7a8a9a;">Click a building to select,<br>then click on the map.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="player.js"></script>
+<script src="world.js"></script>
+<script src="renderer.js"></script>
+<script src="input.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

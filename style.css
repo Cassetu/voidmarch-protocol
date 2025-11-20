@@ -1,0 +1,223 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #1a1f2e;
+    color: #c0c8d8;
+    overflow: hidden;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+#gameCanvas {
+    flex: 1;
+    display: block;
+    background: linear-gradient(135deg, #1a1f2e 0%, #252d3d 100%);
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+#top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(26, 31, 46, 0.95);
+    padding: 15px 20px;
+    border-bottom: 1px solid #3a4454;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: auto;
+}
+
+#top-bar h1 {
+    font-size: 20px;
+    color: #8fa3c8;
+    font-weight: 600;
+}
+
+#stats {
+    display: flex;
+    gap: 40px;
+    font-size: 13px;
+}
+
+#stats span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#stats strong {
+    color: #a8b8d8;
+    display: block;
+    font-size: 16px;
+    margin-top: 2px;
+}
+
+#bottom-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(26, 31, 46, 0.98);
+    border-top: 1px solid #3a4454;
+    height: 160px;
+    pointer-events: auto;
+    display: flex;
+    gap: 0;
+}
+
+#console {
+    flex: 1;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    height: 160px;
+    overflow-y: auto;
+    color: #8fa3c8;
+    border-right: 1px solid #3a4454;
+    padding: 12px;
+    background: rgba(10, 12, 20, 0.5);
+}
+
+#console p {
+    margin: 2px 0;
+    line-height: 1.4;
+}
+
+#console::-webkit-scrollbar {
+    width: 6px;
+}
+
+#console::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#console::-webkit-scrollbar-thumb {
+    background: #5a6478;
+    border-radius: 3px;
+}
+
+#side-panel {
+    width: 240px;
+    height: 160px;
+    overflow-y: auto;
+    background: rgba(10, 12, 20, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+#side-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+#side-panel::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#side-panel::-webkit-scrollbar-thumb {
+    background: #5a6478;
+    border-radius: 3px;
+}
+
+.panel-section {
+    padding: 10px;
+    border-bottom: 1px solid #3a4454;
+    font-size: 12px;
+}
+
+.panel-section h3 {
+    font-size: 11px;
+    color: #8fa3c8;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.resource-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    margin: 3px 0;
+    color: #a8b8d8;
+}
+
+#buildings-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.building-button {
+    flex: 0 0 calc(50% - 2px);
+    padding: 6px;
+    background: #2a3344;
+    border: 1px solid #3a4454;
+    color: #a8b8d8;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    pointer-events: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.building-button:hover:not(:disabled) {
+    background: #3a4454;
+    border-color: #5a6478;
+}
+
+.building-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.building-button.active {
+    background: #5a7a8a;
+    border-color: #8fa3c8;
+    box-shadow: inset 0 0 4px rgba(143, 163, 200, 0.3);
+}
+
+#research-btn {
+    width: 100%;
+    padding: 6px;
+    background: #2a3a4a;
+    border: 1px solid #3a5a6a;
+    color: #8fa3c8;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    margin-bottom: 6px;
+}
+
+#research-btn:hover:not(:disabled) {
+    background: #3a4a5a;
+    border-color: #5a7a8a;
+}
+
+#research-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
