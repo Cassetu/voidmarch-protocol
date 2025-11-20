@@ -37,7 +37,24 @@ class Renderer {
         this.ctx.save();
         const topBarHeight = 75;
         this.ctx.translate(0, topBarHeight);
+
         this.ctx.scale(this.zoom, this.zoom);
+
+        const centerGridX = planet.width / 2;
+        const centerGridY = planet.height / 2;
+
+        const centerScreenX = (centerGridX - centerGridY) * (this.tileWidth / 2);
+        const centerScreenY = (centerGridX + centerGridY) * (this.tileHeight / 2);
+
+        const targetX = (this.width / 2) / this.zoom + cameraX;
+        const targetY = ((this.height - topBarHeight) / 2) / this.zoom + cameraY;
+        const verticalNudge = -500;
+        const horizontalNudge = 500;
+
+        this.ctx.translate(
+            targetX - centerScreenX + horizontalNudge,
+            targetY - centerScreenY + verticalNudge
+        );
 
         for (let y = 0; y < planet.height; y++) {
             for (let x = 0; x < planet.width; x++) {
@@ -53,8 +70,8 @@ class Renderer {
     }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
-        const screenX = (gridX - gridY) * (this.tileWidth / 2) - cameraX;
-        const screenY = (gridX + gridY) * (this.tileHeight / 2) - cameraY;
+        const screenX = (gridX - gridY) * (this.tileWidth / 2);
+        const screenY = (gridX + gridY) * (this.tileHeight / 2);
 
         const points = [
             [screenX, screenY - this.tileHeight / 2],
@@ -75,8 +92,8 @@ class Renderer {
     }
 
     drawBuilding(building, cameraX, cameraY) {
-        const screenX = (building.x - building.y) * (this.tileWidth / 2) - cameraX;
-        const screenY = (building.x + building.y) * (this.tileHeight / 2) - cameraY;
+        const screenX = (building.x - building.y) * (this.tileWidth / 2);
+        const screenY = (building.x + building.y) * (this.tileHeight / 2);
 
         this.ctx.fillStyle = this.buildingColors[building.type];
         this.ctx.fillRect(screenX - 12, screenY - 8, 24, 16);

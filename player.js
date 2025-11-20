@@ -1,6 +1,6 @@
 class Player {
     constructor() {
-        this.resources = 150;
+        this.resources = 15000;
         this.food = 100;
         this.population = 50;
         this.planetsControlled = 1;
