@@ -23,6 +23,10 @@ class Game {
         this.currentPlanet = this.world.createVolcanicWorld();
         this.running = true;
 
+        this.galaxy = new Galaxy(this);
+        this.conquestSystem = null;
+        this.gameMode = 'building';
+
         this.cameraX = 0;
         this.cameraY = 0;
 
@@ -81,8 +85,9 @@ class Game {
             this.log(`RESEARCH COMPLETE: ${this.player.techTree.techs[researchResult.completed].name}`);
 
             if (researchResult.victory) {
-                this.log(`VICTORY! You achieved: ${this.player.techTree.techs[researchResult.completed].name}`);
-                this.running = false;
+                const victoryTech = this.player.techTree.techs[researchResult.completed];
+                this.log(`VICTORY! ${victoryTech.name} - Galaxy unlocked!`);
+                this.showGalaxyMap();
                 return;
             }
         }
@@ -96,6 +101,92 @@ class Game {
 
 
         this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
+    }
+
+    showGalaxyMap() {
+        const modal = document.createElement('div');
+        modal.id = 'galaxy-modal';
+        modal.innerHTML = `
+            <div class="galaxy-modal-content">
+                <h2>Galaxy Map - Choose Your Next World</h2>
+                <div id="planet-list"></div>
+                <button id="close-galaxy-modal">Close</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        const planetList = document.getElementById('planet-list');
+
+        this.galaxy.planets.forEach(planet => {
+            const canAccess = this.galaxy.canAccessPlanet(planet.id);
+
+            const planetDiv = document.createElement('div');
+            planetDiv.className = 'planet-item' + (planet.conquered ? ' planet-conquered' : '') + (!canAccess ? ' planet-locked' : '');
+            planetDiv.innerHTML = `
+                <div class="planet-name">${planet.name}</div>
+                <div class="planet-type">${planet.type.toUpperCase()}</div>
+                <div class="planet-status">${planet.conquered ? 'CONQUERED' : `Sentinels: ${planet.sentinelStrength}`}</div>
+                <div class="planet-rewards">+${planet.resources} Resources, +${planet.scienceBonus} Science/turn</div>
+            `;
+
+            if (canAccess) {
+                planetDiv.onclick = () => {
+                    const result = this.galaxy.travelToPlanet(planet.id);
+                    if (result.success) {
+                        this.currentPlanet = result.planet;
+
+                        if (result.mode === 'conquest') {
+                            this.startConquestMode(result);
+                        } else {
+                            this.gameMode = 'building';
+                            this.conquestSystem = null;
+                        }
+
+                        this.centerCamera();
+                        this.log(`Traveled to ${planet.name}`);
+                        document.body.removeChild(modal);
+                    }
+                };
+            }
+
+            planetList.appendChild(planetDiv);
+        });
+
+        document.getElementById('close-galaxy-modal').onclick = () => {
+            document.body.removeChild(modal);
+        };
+    }
+
+    startConquestMode(conquestData) {
+        this.gameMode = 'conquest';
+        this.conquestSystem = new ConquestSystem(
+            this,
+            this.currentPlanet,
+            conquestData.defenseGrid,
+            conquestData.sentinelStrength,
+            conquestData.hackingRequired
+        );
+        this.log('CONQUEST MODE: Deploy armies and hack defense grid!');
+    }
+
+    endConquestTurn() {
+        if (!this.conquestSystem) return;
+
+        const result = this.conquestSystem.endConquestTurn();
+
+        if (result.victory) {
+            const planetId = this.galaxy.currentPlanetIndex;
+            this.galaxy.conqueredPlanet(planetId);
+            this.log('PLANET CONQUERED! Returning to peaceful mode.');
+            this.gameMode = 'building';
+            this.conquestSystem = null;
+            this.showGalaxyMap();
+        } else if (result.defeat) {
+            this.log('DEFEAT! Insufficient forces. Retreating...');
+            this.galaxy.travelToPlanet(0);
+            this.gameMode = 'building';
+            this.conquestSystem = null;
+        }
     }
 
     centerCamera() {
@@ -227,7 +318,16 @@ class Game {
             this.player
         );
 
-        // draw building preview under cursor if a building is selected
+        if (this.conquestSystem) {
+            this.conquestSystem.armies.forEach(army => {
+                this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00');
+            });
+
+            this.conquestSystem.sentinels.forEach(sentinel => {
+                this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000');
+            });
+        }
+
         if (this.player.selectedBuilding) {
             this._drawBuildingPreview();
         }
@@ -372,6 +472,17 @@ class Game {
         document.getElementById('production-count').textContent = Math.floor(this.player.production);
         document.getElementById('turn-count').textContent = this.player.turn;
         document.getElementById('core-stability').textContent = Math.floor(this.eventSystem.coreStability) + '%';
+
+        if (this.gameMode === 'conquest' && this.conquestSystem) {
+            document.getElementById('conquest-info').style.display = 'block';
+            document.getElementById('conquest-progress').textContent =
+                `Hacking: ${Math.floor(this.conquestSystem.hackingProgress)}/${this.conquestSystem.hackingRequired}`;
+            document.getElementById('conquest-enemies').textContent =
+                `Sentinels: ${this.conquestSystem.sentinels.length}`;
+        } else {
+            document.getElementById('conquest-info').style.display = 'none';
+        }
+
         this.updateBuildingUI();
     }
 

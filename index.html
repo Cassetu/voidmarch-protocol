@@ -42,6 +42,10 @@
                     <span>
                     Core: <strong id="core-stability">100%</strong>
                 </span>
+                <span id="conquest-info" style="display: none;">
+                    <strong id="conquest-progress">Hacking: 0/100</strong>
+                    <strong id="conquest-enemies">Sentinels: 0</strong>
+                </span>
             </div>
         </div>
         <div id="bottom-panel">
@@ -52,6 +56,12 @@
             <div id="side-panel">
                 <div class="panel-section">
                     <button id="research-btn">Research Tech</button>
+                    <button id="galaxy-map-btn" style="display: none;">Galaxy Map</button>
+                    <button id="deploy-assault-btn" style="display: none;">Deploy Assault (50)</button>
+                    <button id="deploy-ranger-btn" style="display: none;">Deploy Ranger (40)</button>
+                    <button id="deploy-tank-btn" style="display: none;">Deploy Tank (80)</button>
+                    <button id="deploy-hacker-btn" style="display: none;">Deploy Hacker (60)</button>
+                    <button id="hack-node-btn" style="display: none;">Hack Node</button>
                 </div>
                 <button id="end-turn-btn">End Turn</button>
                 <div class="panel-section">
@@ -75,6 +85,8 @@
 <script src="input.js"></script>
 <script src="events.js"></script>
 <script src="techTree.js"></script>
+<script src="galaxy.js"></script>
+<script src="conquest.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

@@ -350,3 +350,131 @@ body {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+#galaxy-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    pointer-events: auto;
+}
+
+.galaxy-modal-content {
+    background: #0a0f1e;
+    border: 3px solid #3a5a8a;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 900px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(58, 90, 138, 0.5);
+}
+
+.galaxy-modal-content h2 {
+    color: #8fa3c8;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 24px;
+}
+
+#planet-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.planet-item {
+    background: linear-gradient(135deg, #1a2a4a 0%, #2a3a5a 100%);
+    border: 2px solid #4a6a8a;
+    border-radius: 6px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.planet-item:hover {
+    border-color: #6a9aca;
+    background: linear-gradient(135deg, #2a3a5a 0%, #3a4a6a 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(106, 154, 202, 0.3);
+}
+
+.planet-item.planet-conquered {
+    border-color: #5a9a5a;
+    background: linear-gradient(135deg, #1a3a2a 0%, #2a4a3a 100%);
+}
+
+.planet-item.planet-locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: #3a4a5a;
+}
+
+.planet-item.planet-locked:hover {
+    transform: none;
+    background: linear-gradient(135deg, #1a2a4a 0%, #2a3a5a 100%);
+    box-shadow: none;
+}
+
+.planet-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #b8d8f8;
+    margin-bottom: 8px;
+}
+
+.planet-type {
+    font-size: 10px;
+    color: #7a9ac8;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    background: rgba(90, 122, 138, 0.3);
+    border-radius: 3px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.planet-status {
+    font-size: 12px;
+    color: #a8b8d8;
+    margin-bottom: 8px;
+}
+
+.planet-rewards {
+    font-size: 11px;
+    color: #8fa3c8;
+    font-style: italic;
+}
+
+#close-galaxy-modal {
+    width: 100%;
+    padding: 12px;
+    background: #3a4a5a;
+    border: 2px solid #5a6a7a;
+    color: #c0d0e8;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s;
+}
+
+#close-galaxy-modal:hover {
+    background: #4a5a6a;
+    border-color: #7a8a9a;
+}
+
+#galaxy-map-btn,
+#deploy-assault-btn,
+#deploy-ranger-btn,
+#deploy-tank-btn,
+#deploy-hacker-btn,

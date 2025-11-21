@@ -17,7 +17,19 @@ class Renderer {
             nebula: '#4a3a6a',
             void: '#1a2a3a',
             stars: '#5a6a7a',
-            floating: '#6a7a9a'
+            floating: '#6a7a9a',
+            ice: '#a0d0ff',
+            frozen: '#80b0e0',
+            tundra: '#c0e0ff',
+            sand: '#e0c080',
+            dunes: '#d0b070',
+            oasis: '#60a060',
+            island: '#70b070',
+            reef: '#40a0a0',
+            deepwater: '#2060a0',
+            jungle: '#208040',
+            swamp: '#406050',
+            canopy: '#308030'
         };
         this.buildingColors = {
             settlement: '#6a7a8a',
@@ -32,6 +44,32 @@ class Renderer {
             university: '#5a6a7a',
             observatory: '#6a6a7a'
         };
+    }
+
+    drawUnit(unit, cameraX, cameraY, color) {
+        const screenX = (unit.x - unit.y) * (this.tileWidth / 2);
+        const screenY = (unit.x + unit.y) * (this.tileHeight / 2);
+
+        this.ctx.save();
+
+        this.ctx.fillStyle = color;
+        this.ctx.beginPath();
+        this.ctx.arc(screenX, screenY - 10, 8, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = '10px monospace';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(Math.floor(unit.health), screenX, screenY - 8);
+
+        const healthBarWidth = 16;
+        const healthPercent = unit.health / (unit.maxHealth || unit.health);
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        this.ctx.fillRect(screenX - healthBarWidth / 2, screenY - 20, healthBarWidth, 3);
+        this.ctx.fillStyle = healthPercent > 0.5 ? '#00ff00' : healthPercent > 0.25 ? '#ffaa00' : '#ff0000';
+        this.ctx.fillRect(screenX - healthBarWidth / 2, screenY - 20, healthBarWidth * healthPercent, 3);
+
+        this.ctx.restore();
     }
 
     drawWorld(planet, cameraX, cameraY, player) {
