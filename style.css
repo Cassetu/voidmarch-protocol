@@ -478,3 +478,119 @@ body {
 #deploy-ranger-btn,
 #deploy-tank-btn,
 #deploy-hacker-btn,
+#hack-node-btn {
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 4px;
+    background: #2a3a5a;
+    border: 1px solid #4a6a8a;
+    color: #8d8;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+
+#galaxy-map-btn:hover,
+#deploy-assault-btn:hover,
+#deploy-ranger-btn:hover,
+#deploy-tank-btn:hover,
+#deploy-hacker-btn:hover,
+#hack-node-btn:hover {
+    background: #3a4a6a;
+    border-color: #6a8aaa;
+}
+
+#galaxy-map-btn {
+    background: #3a2a5a;
+    border-color: #5a4a8a;
+}
+
+#galaxy-map-btn:hover {
+    background: #4a3a6a;
+    border-color: #7a6aaa;
+}
+
+#hacking-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    pointer-events: auto;
+}
+
+.hacking-modal-content {
+    background: linear-gradient(135deg, #0a1a2a 0%, #1a2a3a 100%);
+    border: 3px solid #00ffff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    text-align: center;
+}
+
+.hacking-modal-content h2 {
+    color: #00ffff;
+    margin-bottom: 10px;
+    font-size: 20px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+}
+
+#hack-timer {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff8800;
+    margin-bottom: 10px;
+}
+
+#hacking-canvas {
+    border: 2px solid #3a5a7a;
+    cursor: pointer;
+    background: #0a0f1e;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+#complete-hack-btn,
+#cancel-hack-btn {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#complete-hack-btn {
+    background: #00aa00;
+    border: 2px solid #00ff00;
+    color: #ffffff;
+}
+
+#complete-hack-btn:hover:not(:disabled) {
+    background: #00cc00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+#complete-hack-btn:disabled {
+    background: #333333;
+    border-color: #555555;
+    color: #777777;
+    cursor: not-allowed;
+}
+
+#cancel-hack-btn {
+    background: #aa0000;
+    border: 2px solid #ff0000;
+    color: #ffffff;
+}
+
+#cancel-hack-btn:hover {
+    background: #cc0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}

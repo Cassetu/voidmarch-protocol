@@ -46,28 +46,83 @@ class Renderer {
         };
     }
 
-    drawUnit(unit, cameraX, cameraY, color) {
+    drawHealthBar(x, y, health, maxHealth, width) {
+        const barHeight = 4;
+        const percent = health / maxHealth;
+
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        this.ctx.fillRect(x - width / 2, y - 25, width, barHeight);
+
+        let color = '#00ff00';
+        if (percent < 0.3) color = '#ff0000';
+        else if (percent < 0.6) color = '#ffaa00';
+
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(x - width / 2, y - 25, width * percent, barHeight);
+    }
+
+    drawUnit(unit, cameraX, cameraY, color, isSelected) {
         const screenX = (unit.x - unit.y) * (this.tileWidth / 2);
         const screenY = (unit.x + unit.y) * (this.tileHeight / 2);
 
         this.ctx.save();
 
+        if (isSelected) {
+            this.ctx.strokeStyle = '#ffff00';
+            this.ctx.lineWidth = 3;
+            this.ctx.beginPath();
+            this.ctx.arc(screenX, screenY - 10, 12, 0, Math.PI * 2);
+            this.ctx.stroke();
+        }
+
         this.ctx.fillStyle = color;
         this.ctx.beginPath();
-        this.ctx.arc(screenX, screenY - 10, 8, 0, Math.PI * 2);
+        this.ctx.arc(screenX, screenY - 10, 10, 0, Math.PI * 2);
         this.ctx.fill();
 
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = '10px monospace';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText(Math.floor(unit.health), screenX, screenY - 8);
+        this.ctx.strokeStyle = '#000000';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
 
-        const healthBarWidth = 16;
-        const healthPercent = unit.health / (unit.maxHealth || unit.health);
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        this.ctx.fillRect(screenX - healthBarWidth / 2, screenY - 20, healthBarWidth, 3);
-        this.ctx.fillStyle = healthPercent > 0.5 ? '#00ff00' : healthPercent > 0.25 ? '#ffaa00' : '#ff0000';
-        this.ctx.fillRect(screenX - healthBarWidth / 2, screenY - 20, healthBarWidth * healthPercent, 3);
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 8px monospace';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(unit.type[0].toUpperCase(), screenX, screenY - 8);
+
+        this.drawHealthBar(screenX, screenY - 10, unit.health, unit.maxHealth, 20);
+
+        if (unit.moved) {
+            this.ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
+            this.ctx.beginPath();
+            this.ctx.arc(screenX, screenY - 10, 10, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+
+        this.ctx.restore();
+    }
+
+    drawDefenseNode(node, cameraX, cameraY) {
+        const screenX = (node.x - node.y) * (this.tileWidth / 2);
+        const screenY = (node.x + node.y) * (this.tileHeight / 2);
+
+        this.ctx.save();
+
+        const size = 20;
+        this.ctx.fillStyle = node.hacked ? '#555555' : '#ff0000';
+        this.ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
+
+        this.ctx.strokeStyle = node.hacked ? '#333333' : '#aa0000';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(screenX - size / 2, screenY - size / 2, size, size);
+
+        if (!node.hacked) {
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.font = 'bold 10px monospace';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('N', screenX, screenY + 4);
+
+            this.drawHealthBar(screenX, screenY, node.health, node.maxHealth, 30);
+        }
 
         this.ctx.restore();
     }
@@ -735,6 +790,49 @@ class Renderer {
                 this.ctx.lineTo(screenX + 4, screenY - 23);
                 this.ctx.closePath();
                 this.ctx.fill();
+                break;
+
+            case 'spaceship':
+                this.ctx.fillStyle = '#5a6a7a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 30);
+                this.ctx.lineTo(screenX + 15, screenY - 10);
+                this.ctx.lineTo(screenX + 10, screenY + 10);
+                this.ctx.lineTo(screenX - 10, screenY + 10);
+                this.ctx.lineTo(screenX - 15, screenY - 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a8a9a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 30);
+                this.ctx.lineTo(screenX - 15, screenY - 10);
+                this.ctx.lineTo(screenX - 10, screenY);
+                this.ctx.lineTo(screenX, screenY - 20);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX - 5, screenY - 5, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.arc(screenX + 5, screenY - 5, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#ff6600';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 8, screenY + 10);
+                this.ctx.lineTo(screenX - 6, screenY + 15);
+                this.ctx.stroke();
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 8, screenY + 10);
+                this.ctx.lineTo(screenX + 6, screenY + 15);
+                this.ctx.stroke();
+                break;
+
+            case 'defense_node':
                 break;
 
             default:

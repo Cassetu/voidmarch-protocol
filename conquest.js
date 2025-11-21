@@ -1,182 +1,496 @@
 class ConquestSystem {
-    constructor(game, planet, defenseGrid, sentinelStrength, hackingRequired) {
+    constructor(game, planet, difficulty) {
         this.game = game;
         this.planet = planet;
-        this.defenseGrid = defenseGrid;
-        this.sentinelStrength = sentinelStrength;
-        this.hackingRequired = hackingRequired;
-        this.hackingProgress = 0;
+        this.difficulty = difficulty;
+        this.defenseNodes = [];
         this.armies = [];
         this.sentinels = [];
-        this.mode = 'hacking';
-        this.selectedArmy = null;
+        this.turn = 0;
+        this.playerPhase = true;
+        this.selectedUnit = null;
+        this.spaceship = null;
+        this.cryoPopulation = 0;
+        this.hackingMiniGame = null;
+
+        this.spawnSpaceship();
+        this.spawnDefenseNodes();
         this.spawnSentinels();
     }
 
-    spawnSentinels() {
-        const sentinelCount = Math.floor(this.sentinelStrength / 10);
+    spawnSpaceship() {
+        const spawnX = Math.floor(this.planet.width / 4);
+        const spawnY = Math.floor(this.planet.height / 4);
 
-        for (let i = 0; i < sentinelCount; i++) {
-            const x = Math.floor(Math.random() * this.planet.width);
-            const y = Math.floor(Math.random() * this.planet.height);
+        this.cryoPopulation = Math.floor(this.game.player.population * 0.5);
+        const carriedResources = Math.floor(this.game.player.resources * 0.5);
 
-            this.sentinels.push({
-                id: i,
-                x: x,
-                y: y,
-                health: 50 + this.sentinelStrength,
-                damage: 5 + Math.floor(this.sentinelStrength / 5),
-                range: 3,
-                active: true,
-                type: 'sentinel'
-            });
-        }
-    }
-
-    deployArmy(x, y, armyType) {
-        const armyTypes = {
-            assault: { health: 100, damage: 15, range: 1, cost: 50 },
-            ranger: { health: 60, damage: 10, range: 4, cost: 40 },
-            tank: { health: 200, damage: 8, range: 1, cost: 80 },
-            hacker: { health: 40, damage: 5, range: 2, hackBonus: 10, cost: 60 }
+        this.spaceship = {
+            x: spawnX,
+            y: spawnY,
+            type: 'spaceship',
+            health: 500,
+            maxHealth: 500,
+            cryoPopulation: this.cryoPopulation,
+            canUnfreeze: true
         };
 
-        const stats = armyTypes[armyType];
-        if (!this.game.player.spendResources(stats.cost)) return false;
+        this.planet.tiles[spawnY][spawnX].building = this.spaceship;
+        this.planet.structures.push(this.spaceship);
 
-        this.armies.push({
-            id: this.armies.length,
-            x: x,
-            y: y,
-            health: stats.health,
-            maxHealth: stats.health,
-            damage: stats.damage,
-            range: stats.range,
-            hackBonus: stats.hackBonus || 0,
-            type: armyType,
-            moved: false
+        this.game.player.resources = carriedResources;
+        this.game.player.population = 0;
+
+        this.game.log(`Crashed on planet! ${this.cryoPopulation} in cryo, ${carriedResources} resources salvaged`);
+    }
+
+    spawnDefenseNodes() {
+        const nodePositions = [
+            { x: Math.floor(this.planet.width * 0.75), y: Math.floor(this.planet.height * 0.25) },
+            { x: Math.floor(this.planet.width * 0.75), y: Math.floor(this.planet.height * 0.75) }
+        ];
+
+        const armyTypes = ['assault', 'ranger', 'tank', 'hacker'];
+
+        nodePositions.forEach((pos, index) => {
+            const armyType = armyTypes[index % armyTypes.length];
+
+            const node = {
+                x: pos.x,
+                y: pos.y,
+                type: 'defense_node',
+                id: index,
+                health: 300,
+                maxHealth: 300,
+                armyType: armyType,
+                hacked: false,
+                hackingProgress: 0,
+                hackingRequired: 100,
+                circuitPattern: this.generateCircuitPattern()
+            };
+
+            this.defenseNodes.push(node);
+            this.planet.tiles[pos.y][pos.x].building = node;
+            this.planet.structures.push(node);
         });
-
-        return true;
     }
 
-    moveArmy(armyId, targetX, targetY) {
-        const army = this.armies.find(a => a.id === armyId);
-        if (!army || army.moved) return false;
+    generateCircuitPattern() {
+        const size = 6;
+        const pattern = [];
 
-        const distance = Math.abs(army.x - targetX) + Math.abs(army.y - targetY);
-        if (distance > 3) return false;
-
-        army.x = targetX;
-        army.y = targetY;
-        army.moved = true;
-
-        return true;
-    }
-
-    attackWithArmy(armyId, targetId, isTargetSentinel) {
-        const army = this.armies.find(a => a.id === armyId);
-        if (!army) return false;
-
-        const target = isTargetSentinel
-            ? this.sentinels.find(s => s.id === targetId)
-            : this.armies.find(a => a.id === targetId);
-
-        if (!target) return false;
-
-        const distance = Math.abs(army.x - target.x) + Math.abs(army.y - target.y);
-        if (distance > army.range) return false;
-
-        target.health -= army.damage;
-
-        if (target.health <= 0) {
-            if (isTargetSentinel) {
-                target.active = false;
-                this.sentinels = this.sentinels.filter(s => s.id !== targetId);
-            } else {
-                this.armies = this.armies.filter(a => a.id !== targetId);
+        for (let y = 0; y < size; y++) {
+            pattern[y] = [];
+            for (let x = 0; x < size; x++) {
+                pattern[y][x] = {
+                    type: Math.random() > 0.3 ? 'wire' : 'empty',
+                    powered: false,
+                    correct: false
+                };
             }
         }
 
-        return true;
+        const startX = 0;
+        const startY = Math.floor(size / 2);
+        const endX = size - 1;
+        const endY = Math.floor(size / 2);
+
+        pattern[startY][startX].type = 'source';
+        pattern[endY][endX].type = 'target';
+
+        let currentX = startX;
+        let currentY = startY;
+
+        while (currentX < endX || currentY !== endY) {
+            if (currentX < endX && Math.random() > 0.3) {
+                currentX++;
+            } else if (currentY < endY) {
+                currentY++;
+            } else if (currentY > endY) {
+                currentY--;
+            }
+
+            if (currentX < endX || currentY !== endY) {
+                pattern[currentY][currentX].type = 'wire';
+                pattern[currentY][currentX].correct = true;
+            }
+        }
+
+        return pattern;
     }
 
-    hackDefenseNode(nodeId) {
-        const node = this.defenseGrid.nodes[nodeId];
-        if (!node || !node.active) return false;
+    spawnSentinels() {
+        this.defenseNodes.forEach(node => {
+            const sentinelCount = 2 + this.difficulty;
 
-        let hackPower = 10;
+            for (let i = 0; i < sentinelCount; i++) {
+                const angle = (i / sentinelCount) * Math.PI * 2;
+                const distance = 3 + Math.floor(Math.random() * 3);
 
-        this.armies.forEach(army => {
-            if (army.hackBonus) {
-                const distance = Math.sqrt(
-                    Math.pow(army.x - this.planet.width / 2, 2) +
-                    Math.pow(army.y - this.planet.height / 2, 2)
-                );
-                if (distance < 10) {
-                    hackPower += army.hackBonus;
+                const x = Math.round(node.x + Math.cos(angle) * distance);
+                const y = Math.round(node.y + Math.sin(angle) * distance);
+
+                if (x >= 0 && x < this.planet.width && y >= 0 && y < this.planet.height) {
+                    this.sentinels.push({
+                        id: this.sentinels.length,
+                        x: x,
+                        y: y,
+                        health: 80 + (this.difficulty * 20),
+                        maxHealth: 80 + (this.difficulty * 20),
+                        damage: 15 + (this.difficulty * 5),
+                        range: 2,
+                        moveRange: 3,
+                        type: node.armyType,
+                        moved: false,
+                        attacked: false,
+                        belongsToNode: node.id
+                    });
                 }
             }
         });
+    }
 
-        node.health -= hackPower;
+    unfreezePopulation(amount) {
+        if (!this.spaceship || this.spaceship.cryoPopulation < amount) return false;
 
-        if (node.health <= 0) {
-            node.active = false;
-            this.defenseGrid.integrity -= 100 / this.defenseGrid.nodes.length;
-        }
-
-        this.hackingProgress += hackPower;
+        this.spaceship.cryoPopulation -= amount;
+        this.game.player.population += amount;
+        this.game.log(`Unfroze ${amount} population. ${this.spaceship.cryoPopulation} remain in cryo.`);
 
         return true;
     }
 
-    sentinelsTurn() {
-        this.sentinels.forEach(sentinel => {
-            if (!sentinel.active) return;
+    hireUnit(armyType, x, y) {
+        const costs = {
+            assault: 80,
+            ranger: 70,
+            tank: 120,
+            hacker: 100
+        };
 
-            let closestArmy = null;
+        const stats = {
+            assault: { health: 100, damage: 25, range: 1, moveRange: 3 },
+            ranger: { health: 60, damage: 20, range: 4, moveRange: 2 },
+            tank: { health: 200, damage: 15, range: 1, moveRange: 2 },
+            hacker: { health: 50, damage: 10, range: 2, moveRange: 3 }
+        };
+
+        if (!this.game.player.spendResources(costs[armyType])) return false;
+
+        const nearBuilding = this.planet.structures.some(building => {
+            const distance = Math.abs(building.x - x) + Math.abs(building.y - y);
+            return distance <= 1 && (building.type === 'spaceship' || building.type === 'settlement');
+        });
+
+        if (!nearBuilding) {
+            this.game.log('Units must be hired adjacent to your buildings!');
+            return false;
+        }
+
+        const occupied = this.armies.some(a => a.x === x && a.y === y) ||
+                        this.sentinels.some(s => s.x === x && s.y === y);
+
+        if (occupied) {
+            this.game.log('Tile occupied!');
+            return false;
+        }
+
+        const unit = {
+            id: this.armies.length,
+            x: x,
+            y: y,
+            type: armyType,
+            health: stats[armyType].health,
+            maxHealth: stats[armyType].health,
+            damage: stats[armyType].damage,
+            range: stats[armyType].range,
+            moveRange: stats[armyType].moveRange,
+            moved: false,
+            attacked: false
+        };
+
+        this.armies.push(unit);
+        this.game.log(`Hired ${armyType} at (${x}, ${y})`);
+        return true;
+    }
+
+    selectUnit(x, y) {
+        const unit = this.armies.find(a => a.x === x && a.y === y);
+        if (unit) {
+            this.selectedUnit = unit;
+            return { type: 'unit', data: unit };
+        }
+
+        const building = this.planet.structures.find(s => s.x === x && s.y === y);
+        if (building) {
+            return { type: 'building', data: building };
+        }
+
+        return null;
+    }
+
+    moveUnit(unitId, targetX, targetY) {
+        const unit = this.armies.find(a => a.id === unitId);
+        if (!unit || unit.moved) return false;
+
+        const distance = Math.abs(unit.x - targetX) + Math.abs(unit.y - targetY);
+        if (distance > unit.moveRange) return false;
+
+        const occupied = this.armies.some(a => a.x === targetX && a.y === targetY && a.id !== unitId) ||
+                        this.sentinels.some(s => s.x === targetX && s.y === targetY);
+
+        if (occupied) return false;
+
+        unit.x = targetX;
+        unit.y = targetY;
+        unit.moved = true;
+
+        this.game.log(`Moved ${unit.type} to (${targetX}, ${targetY})`);
+        return true;
+    }
+
+    attackWithUnit(unitId, targetX, targetY) {
+        const unit = this.armies.find(a => a.id === unitId);
+        if (!unit || unit.attacked) return false;
+
+        const distance = Math.abs(unit.x - targetX) + Math.abs(unit.y - targetY);
+        if (distance > unit.range) return false;
+
+        const sentinel = this.sentinels.find(s => s.x === targetX && s.y === targetY);
+        if (sentinel) {
+            sentinel.health -= unit.damage;
+            unit.attacked = true;
+
+            this.game.log(`${unit.type} attacked sentinel for ${unit.damage} damage!`);
+
+            if (sentinel.health <= 0) {
+                this.sentinels = this.sentinels.filter(s => s.id !== sentinel.id);
+                this.game.log(`Sentinel destroyed!`);
+            }
+
+            return true;
+        }
+
+        const building = this.planet.structures.find(s => s.x === targetX && s.y === targetY);
+        if (building && building.type === 'defense_node' && !building.hacked) {
+            return false;
+        }
+
+        return false;
+    }
+
+    startHacking(nodeId) {
+        const node = this.defenseNodes.find(n => n.id === nodeId);
+        if (!node || node.hacked) return false;
+
+        const hacker = this.armies.find(a => {
+            const distance = Math.abs(a.x - node.x) + Math.abs(a.y - node.y);
+            return a.type === 'hacker' && distance <= 2;
+        });
+
+        if (!hacker) {
+            this.game.log('Need a hacker unit within 2 tiles of the node!');
+            return false;
+        }
+
+        this.hackingMiniGame = {
+            nodeId: nodeId,
+            pattern: JSON.parse(JSON.stringify(node.circuitPattern)),
+            timeLimit: 30,
+            timeRemaining: 30,
+            poweredCells: [],
+            complete: false
+        };
+
+        return true;
+    }
+
+    toggleCircuitCell(x, y) {
+        if (!this.hackingMiniGame) return false;
+
+        const cell = this.hackingMiniGame.pattern[y][x];
+        if (cell.type === 'source' || cell.type === 'target' || cell.type === 'empty') return false;
+
+        cell.powered = !cell.powered;
+        this.checkCircuitComplete();
+        return true;
+    }
+
+    checkCircuitComplete() {
+        const pattern = this.hackingMiniGame.pattern;
+        const size = pattern.length;
+
+        let sourceX = -1, sourceY = -1;
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                if (pattern[y][x].type === 'source') {
+                    sourceX = x;
+                    sourceY = y;
+                }
+                pattern[y][x].reachable = false;
+            }
+        }
+
+        const queue = [[sourceX, sourceY]];
+        pattern[sourceY][sourceX].reachable = true;
+
+        while (queue.length > 0) {
+            const [cx, cy] = queue.shift();
+
+            const neighbors = [
+                [cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]
+            ];
+
+            neighbors.forEach(([nx, ny]) => {
+                if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                    const neighbor = pattern[ny][nx];
+                    if (!neighbor.reachable && (neighbor.type === 'wire' || neighbor.type === 'target') &&
+                        (neighbor.powered || neighbor.correct)) {
+                        neighbor.reachable = true;
+                        queue.push([nx, ny]);
+                    }
+                }
+            });
+        }
+
+        let targetX = -1, targetY = -1;
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                if (pattern[y][x].type === 'target') {
+                    targetX = x;
+                    targetY = y;
+                }
+            }
+        }
+
+        if (pattern[targetY][targetX].reachable) {
+            this.hackingMiniGame.complete = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    completeHacking() {
+        if (!this.hackingMiniGame || !this.hackingMiniGame.complete) return false;
+
+        const node = this.defenseNodes.find(n => n.id === this.hackingMiniGame.nodeId);
+        if (node) {
+            node.hacked = true;
+            node.health = 0;
+            this.game.log(`Defense node ${node.id} hacked successfully!`);
+        }
+
+        this.hackingMiniGame = null;
+        return true;
+    }
+
+    cancelHacking() {
+        this.hackingMiniGame = null;
+    }
+
+    updateHackingTimer(deltaTime) {
+        if (this.hackingMiniGame && this.hackingMiniGame.timeRemaining > 0) {
+            this.hackingMiniGame.timeRemaining -= deltaTime;
+
+            if (this.hackingMiniGame.timeRemaining <= 0) {
+                this.game.log('Hacking failed - time expired!');
+                this.hackingMiniGame = null;
+            }
+        }
+    }
+
+    enemyPhase() {
+        this.sentinels.forEach(sentinel => {
+            sentinel.moved = false;
+            sentinel.attacked = false;
+        });
+
+        this.sentinels.forEach(sentinel => {
+            let closestTarget = null;
             let closestDistance = Infinity;
 
             this.armies.forEach(army => {
                 const distance = Math.abs(sentinel.x - army.x) + Math.abs(sentinel.y - army.y);
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestArmy = army;
+                    closestTarget = { type: 'unit', data: army, distance: distance };
                 }
             });
 
-            if (closestArmy && closestDistance <= sentinel.range) {
-                closestArmy.health -= sentinel.damage;
-                if (closestArmy.health <= 0) {
-                    this.armies = this.armies.filter(a => a.id !== closestArmy.id);
+            this.planet.structures.forEach(building => {
+                if (building.type === 'spaceship' || building.type === 'settlement') {
+                    const distance = Math.abs(sentinel.x - building.x) + Math.abs(sentinel.y - building.y);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestTarget = { type: 'building', data: building, distance: distance };
+                    }
                 }
-            } else if (closestArmy && closestDistance <= 5) {
-                if (sentinel.x < closestArmy.x) sentinel.x++;
-                else if (sentinel.x > closestArmy.x) sentinel.x--;
-                else if (sentinel.y < closestArmy.y) sentinel.y++;
-                else if (sentinel.y > closestArmy.y) sentinel.y--;
+            });
+
+            if (closestTarget && closestTarget.distance <= sentinel.range) {
+                closestTarget.data.health -= sentinel.damage;
+
+                if (closestTarget.type === 'unit' && closestTarget.data.health <= 0) {
+                    this.armies = this.armies.filter(a => a.id !== closestTarget.data.id);
+                    this.game.log(`Your ${closestTarget.data.type} was destroyed!`);
+                } else if (closestTarget.type === 'building') {
+                    this.game.log(`${closestTarget.data.type} took ${sentinel.damage} damage!`);
+
+                    if (closestTarget.data.health <= 0) {
+                        this.game.log(`${closestTarget.data.type} destroyed! DEFEAT!`);
+                        return { defeat: true };
+                    }
+                }
+            } else if (closestTarget && closestTarget.distance <= sentinel.moveRange + sentinel.range) {
+                const dx = Math.sign(closestTarget.data.x - sentinel.x);
+                const dy = Math.sign(closestTarget.data.y - sentinel.y);
+
+                for (let i = 0; i < sentinel.moveRange; i++) {
+                    const newX = sentinel.x + (Math.abs(dx) > 0 ? dx : 0);
+                    const newY = sentinel.y + (Math.abs(dy) > 0 ? dy : 0);
+
+                    const occupied = this.armies.some(a => a.x === newX && a.y === newY) ||
+                                   this.sentinels.some(s => s.x === newX && s.y === newY && s.id !== sentinel.id);
+
+                    if (!occupied && newX >= 0 && newX < this.planet.width && newY >= 0 && newY < this.planet.height) {
+                        sentinel.x = newX;
+                        sentinel.y = newY;
+                    }
+                }
             }
         });
+
+        return { continue: true };
     }
 
-    endConquestTurn() {
-        this.sentinelsTurn();
+    endPlayerTurn() {
+        this.armies.forEach(army => {
+            army.moved = false;
+            army.attacked = false;
+        });
 
-        this.armies.forEach(army => army.moved = false);
+        this.playerPhase = false;
+        const result = this.enemyPhase();
 
-        if (this.hackingProgress >= this.hackingRequired && this.sentinels.length === 0) {
-            return { victory: true };
+        if (result.defeat) {
+            return result;
         }
 
-        if (this.armies.length === 0 && this.game.player.resources < 40) {
-            return { defeat: true };
+        this.playerPhase = true;
+        this.turn++;
+
+        const allNodesHacked = this.defenseNodes.every(n => n.hacked);
+        const allSentinelsDestroyed = this.sentinels.length === 0;
+
+        if (allNodesHacked && allSentinelsDestroyed) {
+            return { victory: true };
         }
 
         return { continue: true };
     }
 
     isConquestComplete() {
-        return this.hackingProgress >= this.hackingRequired && this.sentinels.length === 0;
+        return this.defenseNodes.every(n => n.hacked) && this.sentinels.length === 0;
     }
 }

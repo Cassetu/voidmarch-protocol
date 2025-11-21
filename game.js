@@ -8,6 +8,11 @@ class Game {
         this.width = this.canvas.width = window.innerWidth;
         this.height = this.canvas.height = window.innerHeight;
 
+        this.hiringMode = null;
+
+        this.deployMode = null;
+        this.selectedUnit = null;
+
         this.player = new Player();
         this.world = new World(this.player);
         this.renderer = new Renderer(this.ctx, this.width, this.height);
@@ -47,9 +52,65 @@ class Game {
             e.stopPropagation();
             this.endTurn();
         });
+
+        const deployAssaultBtn = document.getElementById('deploy-assault-btn');
+        if (deployAssaultBtn) {
+            deployAssaultBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.hiringMode = 'assault';
+                this.log('Click adjacent to your buildings to hire Assault unit');
+            });
+        }
+
+        const deployRangerBtn = document.getElementById('deploy-ranger-btn');
+        if (deployRangerBtn) {
+            deployRangerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.hiringMode = 'ranger';
+                this.log('Click adjacent to your buildings to hire Ranger unit');
+            });
+        }
+
+        const deployTankBtn = document.getElementById('deploy-tank-btn');
+        if (deployTankBtn) {
+            deployTankBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.hiringMode = 'tank';
+                this.log('Click adjacent to your buildings to hire Tank unit');
+            });
+        }
+
+        const deployHackerBtn = document.getElementById('deploy-hacker-btn');
+        if (deployHackerBtn) {
+            deployHackerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.hiringMode = 'hacker';
+                this.log('Click adjacent to your buildings to hire Hacker unit');
+            });
+        }
+
+        const hackNodeBtn = document.getElementById('hack-node-btn');
+        if (hackNodeBtn) {
+            hackNodeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (this.conquestSystem && this.conquestSystem.selectedUnit) {
+                    const node = this.conquestSystem.defenseNodes.find(n => !n.hacked);
+                    if (node && this.conquestSystem.startHacking(node.id)) {
+                        this.showHackingMiniGame();
+                    }
+                } else {
+                    this.log('Select a unit first, or get a hacker near a node!');
+                }
+            });
+        }
     }
 
     endTurn() {
+        if (this.gameMode === 'conquest') {
+            this.endConquestTurn();
+            return;
+        }
+
         this.player.nextTurn();
 
         let totalFood = 0;
@@ -72,6 +133,8 @@ class Game {
         });
 
         totalScience += Math.floor(this.player.population / 10);
+
+        totalScience += this.player.scienceBonus;
         totalProduction += this.player.productionBonus;
         totalFood += this.player.foodBonus;
 
@@ -87,6 +150,9 @@ class Game {
             if (researchResult.victory) {
                 const victoryTech = this.player.techTree.techs[researchResult.completed];
                 this.log(`VICTORY! ${victoryTech.name} - Galaxy unlocked!`);
+
+                document.getElementById('galaxy-map-btn').style.display = 'block';
+
                 this.showGalaxyMap();
                 return;
             }
@@ -98,7 +164,6 @@ class Game {
             this.log('PLANET CORE COLLAPSED - GAME OVER');
             this.running = false;
         }
-
 
         this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
     }
@@ -162,17 +227,16 @@ class Game {
         this.conquestSystem = new ConquestSystem(
             this,
             this.currentPlanet,
-            conquestData.defenseGrid,
-            conquestData.sentinelStrength,
-            conquestData.hackingRequired
+            this.galaxy.planets[this.galaxy.currentPlanetIndex].difficulty
         );
-        this.log('CONQUEST MODE: Deploy armies and hack defense grid!');
+        this.log('CONQUEST MODE: Hire units, hack nodes, destroy sentinels!');
+        this.hiringMode = null;
     }
 
     endConquestTurn() {
         if (!this.conquestSystem) return;
 
-        const result = this.conquestSystem.endConquestTurn();
+        const result = this.conquestSystem.endPlayerTurn();
 
         if (result.victory) {
             const planetId = this.galaxy.currentPlanetIndex;
@@ -182,10 +246,13 @@ class Game {
             this.conquestSystem = null;
             this.showGalaxyMap();
         } else if (result.defeat) {
-            this.log('DEFEAT! Insufficient forces. Retreating...');
+            this.log('DEFEAT! Your spaceship was destroyed. Retreating...');
             this.galaxy.travelToPlanet(0);
+            this.currentPlanet = this.galaxy.planets[0];
             this.gameMode = 'building';
             this.conquestSystem = null;
+        } else {
+            this.log(`Enemy turn complete. Turn ${this.conquestSystem.turn + 1} begins.`);
         }
     }
 
@@ -252,22 +319,18 @@ class Game {
 
         if (this.input.keys['ArrowUp'] || this.input.keys['w']) {
             this.cameraY += moveSpeed;
-            console.log('Camera moved up');
         }
         if (this.input.keys['ArrowDown'] || this.input.keys['s']) {
             this.cameraY -= moveSpeed;
-            console.log('Camera moved down');
         }
         if (this.input.keys['ArrowLeft'] || this.input.keys['a']) {
             this.cameraX += moveSpeed;
-            console.log('Camera moved left');
         }
         if (this.input.keys['ArrowRight'] || this.input.keys['d']) {
             this.cameraX -= moveSpeed;
-            console.log('Camera moved right');
         }
 
-        if (this.input.mouseJustPressed && this.player.selectedBuilding) {
+        if (this.input.mouseJustPressed) {
             if (this.input.mouseY > canvasTop && this.input.mouseY < canvasBottom) {
                 const mouseX = this.input.mouseX;
                 const mouseY = this.input.mouseY - canvasTop;
@@ -289,22 +352,192 @@ class Game {
                 const gridX = Math.round((worldX / unitX + worldY / unitY) / 2 - 3);
                 const gridY = Math.round((worldY / unitY - worldX / unitX) / 2 - 3);
 
-                console.log(`Click world pos: (${worldX.toFixed(0)}, ${worldY.toFixed(0)}) Grid: (${gridX}, ${gridY})`);
+                if (this.gameMode === 'conquest' && this.conquestSystem) {
+                    if (this.conquestSystem.hackingMiniGame) {
+                        return;
+                    }
 
-                if (this.currentPlanet.placeBuilding(gridX, gridY, this.player.selectedBuilding, this.player)) {
-                    const msg = `Built ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
-                    this.log(msg);
-                    console.log(msg);
-                    this.player.selectedBuilding = null;
-                    const buildingsList = document.getElementById('buildings-list');
-                    if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
-                } else {
-                    const msg = `Cannot build ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
-                    this.log(msg);
-                    console.log(msg);
+                    if (this.hiringMode) {
+                        if (this.conquestSystem.hireUnit(this.hiringMode, gridX, gridY)) {
+                            this.hiringMode = null;
+                        }
+                    } else {
+                        const selection = this.conquestSystem.selectUnit(gridX, gridY);
+
+                        if (selection && selection.type === 'unit') {
+                            this.selectedUnit = selection.data;
+                            this.log(`Selected ${selection.data.type} (HP: ${Math.floor(selection.data.health)}/${selection.data.maxHealth})`);
+                        } else if (selection && selection.type === 'building') {
+                            this.showBuildingInfo(selection.data);
+                        } else if (this.selectedUnit) {
+                            const moved = this.conquestSystem.moveUnit(this.selectedUnit.id, gridX, gridY);
+
+                            if (!moved) {
+                                const attacked = this.conquestSystem.attackWithUnit(this.selectedUnit.id, gridX, gridY);
+                                if (!attacked) {
+                                    this.selectedUnit = null;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    showBuildingInfo(building) {
+        const infoPanel = document.getElementById('building-info');
+        if (!infoPanel) return;
+
+        if (building.type === 'spaceship') {
+            infoPanel.innerHTML = `
+                <p style="font-size: 10px; color: #a8b8d8;"><strong>Crashed Spaceship</strong></p>
+                <p style="font-size: 9px; color: #8fa3c8;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
+                <p style="font-size: 9px; color: #8fa3c8;">Cryo: ${building.cryoPopulation}</p>
+                <button id="unfreeze-btn" style="width: 100%; padding: 4px; font-size: 9px; margin-top: 4px;">
+                    Unfreeze 50 Pop
+                </button>
+            `;
+
+            const unfreezeBtn = document.getElementById('unfreeze-btn');
+            if (unfreezeBtn) {
+                unfreezeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (this.conquestSystem.unfreezePopulation(50)) {
+                        this.showBuildingInfo(building);
+                    }
+                };
+                unfreezeBtn.disabled = building.cryoPopulation < 50;
+            }
+        } else if (building.type === 'defense_node') {
+            infoPanel.innerHTML = `
+                <p style="font-size: 10px; color: #ff8888;"><strong>Defense Node ${building.id}</strong></p>
+                <p style="font-size: 9px; color: #ff6666;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
+                <p style="font-size: 9px; color: #ff6666;">Status: ${building.hacked ? 'HACKED' : 'ACTIVE'}</p>
+                <p style="font-size: 9px; color: #ff6666;">Spawns: ${building.armyType}</p>
+            `;
+        } else {
+            infoPanel.innerHTML = `
+                <p style="font-size: 10px; color: #a8b8d8;"><strong>${building.type}</strong></p>
+                <p style="font-size: 9px; color: #8fa3c8;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
+            `;
+        }
+    }
+
+    showHackingMiniGame() {
+        if (!this.conquestSystem.hackingMiniGame) return;
+
+        const modal = document.createElement('div');
+        modal.id = 'hacking-modal';
+        modal.innerHTML = `
+            <div class="hacking-modal-content">
+                <h2>HACKING DEFENSE NODE</h2>
+                <p id="hack-timer">Time: 30s</p>
+                <p style="font-size: 11px; color: #8fa3c8; margin-bottom: 10px;">
+                    Connect the green SOURCE to red TARGET by toggling wire segments
+                </p>
+                <canvas id="hacking-canvas" width="360" height="360"></canvas>
+                <div style="margin-top: 10px;">
+                    <button id="complete-hack-btn" disabled>Complete Hack</button>
+                    <button id="cancel-hack-btn">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        const canvas = document.getElementById('hacking-canvas');
+        const ctx = canvas.getContext('2d');
+        const cellSize = 60;
+
+        const renderHackingGrid = () => {
+            const pattern = this.conquestSystem.hackingMiniGame.pattern;
+            ctx.fillStyle = '#0a0f1e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let y = 0; y < pattern.length; y++) {
+                for (let x = 0; x < pattern[y].length; x++) {
+                    const cell = pattern[y][x];
+                    const px = x * cellSize;
+                    const py = y * cellSize;
+
+                    ctx.strokeStyle = '#3a4a5a';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(px, py, cellSize, cellSize);
+
+                    if (cell.type === 'source') {
+                        ctx.fillStyle = '#00ff00';
+                        ctx.javascriptfillRect(px + 5, py + 5, cellSize - 10, cellSize - 10);
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 12px monospace';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('SRC', px + cellSize / 2, py + cellSize / 2 + 5);
+                    } else if (cell.type === 'target') {
+                        ctx.fillStyle = '#ff0000';
+                        ctx.fillRect(px + 5, py + 5, cellSize - 10, cellSize - 10);
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 12px monospace';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('TGT', px + cellSize / 2, py + cellSize / 2 + 5);
+                    } else if (cell.type === 'wire') {
+                        if (cell.reachable) {
+                            ctx.fillStyle = '#00ffff';
+                            ctx.fillRect(px + 5, py + 5, cellSize - 10, cellSize - 10);
+                        } else if (cell.powered) {
+                            ctx.fillStyle = '#4a6a8a';
+                            ctx.fillRect(px + 5, py + 5, cellSize - 10, cellSize - 10);
+                        } else {
+                            ctx.fillStyle = '#2a3a4a';
+                            ctx.fillRect(px + 5, py + 5, cellSize - 10, cellSize - 10);
+                        }
+
+                        ctx.strokeStyle = cell.powered ? '#ffffff' : '#5a6a7a';
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(px + 15, py + 15, cellSize - 30, cellSize - 30);
+                    }
+                }
+            }
+
+            document.getElementById('complete-hack-btn').disabled = !this.conquestSystem.hackingMiniGame.complete;
+        };
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / cellSize);
+            const y = Math.floor((e.clientY - rect.top) / cellSize);
+
+            if (this.conquestSystem.toggleCircuitCell(x, y)) {
+                renderHackingGrid();
+            }
+        });
+
+        document.getElementById('complete-hack-btn').onclick = () => {
+            if (this.conquestSystem.completeHacking()) {
+                document.body.removeChild(modal);
+            }
+        };
+
+        document.getElementById('cancel-hack-btn').onclick = () => {
+            this.conquestSystem.cancelHacking();
+            document.body.removeChild(modal);
+        };
+
+        const hackingInterval = setInterval(() => {
+            if (!this.conquestSystem.hackingMiniGame) {
+                clearInterval(hackingInterval);
+                if (document.getElementById('hacking-modal')) {
+                    document.body.removeChild(document.getElementById('hacking-modal'));
+                }
+                return;
+            }
+
+            this.conquestSystem.updateHackingTimer(0.1);
+            const timeEl = document.getElementById('hack-timer');
+            if (timeEl) {
+                timeEl.textContent = `Time: ${Math.ceil(this.conquestSystem.hackingMiniGame.timeRemaining)}s`;
+            }
+        }, 100);
+
+        renderHackingGrid();
     }
 
     render() {
@@ -319,16 +552,21 @@ class Game {
         );
 
         if (this.conquestSystem) {
+            this.conquestSystem.defenseNodes.forEach(node => {
+                this.renderer.drawDefenseNode(node, this.cameraX, this.cameraY);
+            });
+
             this.conquestSystem.armies.forEach(army => {
-                this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00');
+                const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
+                this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
             });
 
             this.conquestSystem.sentinels.forEach(sentinel => {
-                this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000');
+                this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
             });
         }
 
-        if (this.player.selectedBuilding) {
+        if (this.player.selectedBuilding && this.gameMode === 'building') {
             this._drawBuildingPreview();
         }
 
@@ -473,14 +711,33 @@ class Game {
         document.getElementById('turn-count').textContent = this.player.turn;
         document.getElementById('core-stability').textContent = Math.floor(this.eventSystem.coreStability) + '%';
 
-        if (this.gameMode === 'conquest' && this.conquestSystem) {
+        const isConquest = this.gameMode === 'conquest' && this.conquestSystem;
+
+        document.getElementById('deploy-assault-btn').style.display = isConquest ? 'block' : 'none';
+        document.getElementById('deploy-ranger-btn').style.display = isConquest ? 'block' : 'none';
+        document.getElementById('deploy-tank-btn').style.display = isConquest ? 'block' : 'none';
+        document.getElementById('deploy-hacker-btn').style.display = isConquest ? 'block' : 'none';
+        document.getElementById('hack-node-btn').style.display = isConquest ? 'block' : 'none';
+
+        if (isConquest) {
+            document.getElementById('deploy-assault-btn').textContent = 'Hire Assault (80)';
+            document.getElementById('deploy-ranger-btn').textContent = 'Hire Ranger (70)';
+            document.getElementById('deploy-tank-btn').textContent = 'Hire Tank (120)';
+            document.getElementById('deploy-hacker-btn').textContent = 'Hire Hacker (100)';
+        }
+
+        document.getElementById('buildings-list').style.display = isConquest ? 'none' : 'block';
+
+        if (isConquest) {
             document.getElementById('conquest-info').style.display = 'block';
-            document.getElementById('conquest-progress').textContent =
-                `Hacking: ${Math.floor(this.conquestSystem.hackingProgress)}/${this.conquestSystem.hackingRequired}`;
-            document.getElementById('conquest-enemies').textContent =
-                `Sentinels: ${this.conquestSystem.sentinels.length}`;
+            const nodesLeft = this.conquestSystem.defenseNodes.filter(n => !n.hacked).length;
+            document.getElementById('conquest-progress').textContent = `Nodes: ${nodesLeft}/2`;
+            document.getElementById('conquest-enemies').textContent = `Sentinels: ${this.conquestSystem.sentinels.length}`;
+
+            document.getElementById('end-turn-btn').textContent = 'End Combat Turn';
         } else {
             document.getElementById('conquest-info').style.display = 'none';
+            document.getElementById('end-turn-btn').textContent = 'End Turn';
         }
 
         this.updateBuildingUI();
