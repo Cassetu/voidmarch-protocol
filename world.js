@@ -93,6 +93,7 @@ class Planet {
         if (!cost || !player.spendResources(cost.resources)) return false;
 
         const building = new Building(gridX, gridY, buildingType);
+        console.log(`Building created at grid (${gridX}, ${gridY}), building.x=${building.x}, building.y=${building.y}`);
         this.tiles[gridY][gridX].building = building;
         this.structures.push(building);
         player.addBuilding(building);

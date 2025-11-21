@@ -14,6 +14,7 @@ class Game {
         this.input = new Input();
 
         this.gameState = 'volcanic';
+        this.renderer.zoom = 0.8;
         this.currentPlanet = this.world.createVolcanicWorld();
         this.running = true;
 
@@ -56,24 +57,24 @@ class Game {
 
 
     handleZoom(e) {
-
-        const zoomSpeed = 0.1;
-
-        const viewCenterWorldX = this.cameraX + (this.width / 2) / this.renderer.zoom;
-        const viewCenterWorldY = this.cameraY + ((this.height - 160 - 75) / 2) / this.renderer.zoom;
-
-        if (e.deltaY > 0) {
-            this.renderer.zoom = Math.max(0.5, this.renderer.zoom - zoomSpeed);
-        } else {
-            this.renderer.zoom = Math.min(3, this.renderer.zoom + zoomSpeed);
-        }
-
-        this.cameraX = viewCenterWorldX - (this.width / 2) / this.renderer.zoom;
-        this.cameraY = viewCenterWorldY - ((this.height - 160 - 75) / 2) / this.renderer.zoom;
-
-        console.log(`Zoom level: ${this.renderer.zoom.toFixed(2)}`);
-
-        this.updateCamera();
+//
+//        const zoomSpeed = 0.1;
+//
+//        const viewCenterWorldX = this.cameraX + (this.width / 2) / this.renderer.zoom;
+//        const viewCenterWorldY = this.cameraY + ((this.height - 160 - 75) / 2) / this.renderer.zoom;
+//
+//        if (e.deltaY > 0) {
+//            this.renderer.zoom = Math.max(0.5, this.renderer.zoom - zoomSpeed);
+//        } else {
+//            this.renderer.zoom = Math.min(3, this.renderer.zoom + zoomSpeed);
+//        }
+//
+//        this.cameraX = viewCenterWorldX - (this.width / 2) / this.renderer.zoom;
+//        this.cameraY = viewCenterWorldY - ((this.height - 160 - 75) / 2) / this.renderer.zoom;
+//
+//        console.log(`Zoom level: ${this.renderer.zoom.toFixed(2)}`);
+//
+//        this.updateCamera();
     }
 
 
@@ -127,8 +128,8 @@ class Game {
                 const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
                 const targetY = ((this.height - 160 - 75) / 2) / this.renderer.zoom + this.cameraY;
 
-                const translateX = targetX - centerWorldX + 500;
-                const translateY = targetY - centerWorldY - 500;
+                const translateX = targetX - centerWorldX;
+                const translateY = targetY - centerWorldY;
 
                 const worldX = (mouseX / this.renderer.zoom) - translateX;
                 const worldY = (mouseY / this.renderer.zoom) - translateY;
@@ -197,8 +198,8 @@ class Game {
         const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
         const targetY = ((this.height - 160 - 75) / 2) / this.renderer.zoom + this.cameraY;
 
-        const translateX = targetX - centerWorldX + 500;
-        const translateY = targetY - centerWorldY - 500;
+        const translateX = targetX - centerWorldX;
+        const translateY = targetY - centerWorldY;
 
         const worldX = (mouseX / this.renderer.zoom) - translateX;
         const worldY = (mouseY / this.renderer.zoom) - translateY;

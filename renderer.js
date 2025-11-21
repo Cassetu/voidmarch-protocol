@@ -48,8 +48,8 @@ class Renderer {
 
         const targetX = (this.width / 2) / this.zoom + cameraX;
         const targetY = ((this.height - topBarHeight) / 2) / this.zoom + cameraY;
-        const verticalNudge = -500;
-        const horizontalNudge = 500;
+        const verticalNudge = 0;
+        const horizontalNudge = 0;
 
         this.ctx.translate(
             targetX - centerScreenX + horizontalNudge,
@@ -95,17 +95,601 @@ class Renderer {
         const screenX = (building.x - building.y) * (this.tileWidth / 2);
         const screenY = (building.x + building.y) * (this.tileHeight / 2);
 
-        this.ctx.fillStyle = this.buildingColors[building.type];
-        this.ctx.fillRect(screenX - 12, screenY - 8, 24, 16);
+        this.ctx.save();
 
-        this.ctx.strokeStyle = '#a0b0c8';
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(screenX - 12, screenY - 8, 24, 16);
+        switch(building.type) {
+            case 'settlement':
+                this.ctx.fillStyle = '#5a4a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 12, screenY - 14);
+                this.ctx.lineTo(screenX + 12, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
 
-        this.ctx.fillStyle = '#a0b0c8';
-        this.ctx.font = 'bold 10px monospace';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(building.buildingInfo[building.type].icon, screenX, screenY);
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 12, screenY - 14);
+                this.ctx.lineTo(screenX - 12, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8b7355';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 12, screenY - 14);
+                this.ctx.lineTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX + 12, screenY - 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#654321';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX - 10, screenY - 3);
+                this.ctx.lineTo(screenX - 10, screenY - 18);
+                this.ctx.lineTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX + 10, screenY - 18);
+                this.ctx.lineTo(screenX + 10, screenY - 3);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a2a1a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 4, screenY);
+                this.ctx.lineTo(screenX - 7, screenY - 1.5);
+                this.ctx.lineTo(screenX - 7, screenY + 4);
+                this.ctx.lineTo(screenX - 4, screenY + 5.5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a6a8a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 4, screenY - 8);
+                this.ctx.lineTo(screenX + 7, screenY - 9.5);
+                this.ctx.lineTo(screenX + 7, screenY - 5.5);
+                this.ctx.lineTo(screenX + 4, screenY - 4);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            case 'farm':
+                this.ctx.fillStyle = '#6a4a2a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 14, screenY - 10);
+                this.ctx.lineTo(screenX + 14, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a6a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 14, screenY - 10);
+                this.ctx.lineTo(screenX - 14, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#9a7a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 14, screenY - 10);
+                this.ctx.lineTo(screenX, screenY - 4);
+                this.ctx.lineTo(screenX + 14, screenY - 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a3a1a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 6, screenY + 2);
+                this.ctx.lineTo(screenX - 9, screenY + 0.5);
+                this.ctx.lineTo(screenX - 9, screenY + 4.5);
+                this.ctx.lineTo(screenX - 6, screenY + 6);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a7c59';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 8, screenY + 8);
+                this.ctx.lineTo(screenX - 6, screenY + 7);
+                this.ctx.lineTo(screenX - 4, screenY + 8);
+                this.ctx.lineTo(screenX - 6, screenY + 9);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 4, screenY + 8);
+                this.ctx.lineTo(screenX + 6, screenY + 7);
+                this.ctx.lineTo(screenX + 8, screenY + 8);
+                this.ctx.lineTo(screenX + 6, screenY + 9);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            case 'warehouse':
+                this.ctx.fillStyle = '#4a4a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 16, screenY - 10);
+                this.ctx.lineTo(screenX + 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 16, screenY - 10);
+                this.ctx.lineTo(screenX - 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 16, screenY - 10);
+                this.ctx.lineTo(screenX, screenY - 2);
+                this.ctx.lineTo(screenX + 16, screenY - 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#3a3a2a';
+                this.ctx.lineWidth = 1;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 8, screenY - 2);
+                this.ctx.lineTo(screenX + 11, screenY - 3.5);
+                this.ctx.lineTo(screenX + 11, screenY + 0.5);
+                this.ctx.lineTo(screenX + 8, screenY + 2);
+                this.ctx.closePath();
+                this.ctx.stroke();
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 8, screenY - 2);
+                this.ctx.lineTo(screenX - 11, screenY - 3.5);
+                this.ctx.lineTo(screenX - 11, screenY + 0.5);
+                this.ctx.lineTo(screenX - 8, screenY + 2);
+                this.ctx.closePath();
+                this.ctx.stroke();
+                break;
+
+            case 'barracks':
+                this.ctx.fillStyle = '#5a3a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX + 14, screenY - 15);
+                this.ctx.lineTo(screenX + 14, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 9);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a4a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX - 14, screenY - 15);
+                this.ctx.lineTo(screenX - 14, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 9);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a5a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX - 14, screenY - 15);
+                this.ctx.lineTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX + 14, screenY - 15);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a2a2a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 10, screenY - 28);
+                this.ctx.lineTo(screenX - 7, screenY - 29.5);
+                this.ctx.lineTo(screenX - 7, screenY - 20);
+                this.ctx.lineTo(screenX - 10, screenY - 18.5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a1a1a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 4, screenY - 2);
+                this.ctx.lineTo(screenX - 6, screenY - 3);
+                this.ctx.lineTo(screenX - 6, screenY + 3);
+                this.ctx.lineTo(screenX - 4, screenY + 4);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a6a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 6, screenY - 8);
+                this.ctx.lineTo(screenX + 9, screenY - 9.5);
+                this.ctx.lineTo(screenX + 9, screenY - 5.5);
+                this.ctx.lineTo(screenX + 6, screenY - 4);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            case 'temple':
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 16, screenY - 12);
+                this.ctx.lineTo(screenX + 16, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a7a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 16, screenY - 12);
+                this.ctx.lineTo(screenX - 16, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#9a8a7a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 16, screenY - 12);
+                this.ctx.lineTo(screenX, screenY - 4);
+                this.ctx.lineTo(screenX + 16, screenY - 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 4);
+                this.ctx.lineTo(screenX - 14, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.lineTo(screenX + 14, screenY + 2);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#e0d0b0';
+                for(let i = -10; i <= 10; i += 5) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX + i, screenY);
+                    this.ctx.lineTo(screenX + i - 1, screenY - 0.5);
+                    this.ctx.lineTo(screenX + i - 1, screenY + 9);
+                    this.ctx.lineTo(screenX + i, screenY + 9.5);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                }
+                break;
+
+            case 'forge':
+                this.ctx.fillStyle = '#3a2a2a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 14, screenY - 11);
+                this.ctx.lineTo(screenX + 14, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a3a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 14, screenY - 11);
+                this.ctx.lineTo(screenX - 14, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a4a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 14, screenY - 11);
+                this.ctx.lineTo(screenX, screenY - 4);
+                this.ctx.lineTo(screenX + 14, screenY - 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a1a1a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 6, screenY - 24);
+                this.ctx.lineTo(screenX - 3, screenY - 25.5);
+                this.ctx.lineTo(screenX - 3, screenY - 18);
+                this.ctx.lineTo(screenX - 6, screenY - 16.5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ff6a00';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 4, screenY + 2);
+                this.ctx.lineTo(screenX - 6, screenY + 1);
+                this.ctx.lineTo(screenX - 6, screenY + 7);
+                this.ctx.lineTo(screenX - 4, screenY + 8);
+                this.ctx.lineTo(screenX + 4, screenY + 4);
+                this.ctx.lineTo(screenX + 4, screenY + 2);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a7a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 8, screenY);
+                this.ctx.lineTo(screenX + 10, screenY - 1);
+                this.ctx.lineTo(screenX + 10, screenY + 1);
+                this.ctx.lineTo(screenX + 8, screenY + 2);
+                this.ctx.lineTo(screenX + 6, screenY + 1);
+                this.ctx.lineTo(screenX + 6, screenY - 1);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            case 'market':
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 16, screenY - 9);
+                this.ctx.lineTo(screenX + 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 16, screenY - 9);
+                this.ctx.lineTo(screenX - 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#d0a080';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 18, screenY - 12);
+                this.ctx.lineTo(screenX, screenY - 4);
+                this.ctx.lineTo(screenX + 18, screenY - 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#b08060';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 12, screenY - 10);
+                this.ctx.lineTo(screenX - 14, screenY - 11);
+                this.ctx.lineTo(screenX - 12, screenY - 8);
+                this.ctx.lineTo(screenX - 10, screenY - 9);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#9a6a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 12, screenY + 8);
+                this.ctx.lineTo(screenX - 10, screenY + 7);
+                this.ctx.lineTo(screenX - 10, screenY + 10);
+                this.ctx.lineTo(screenX - 12, screenY + 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 4, screenY + 8);
+                this.ctx.lineTo(screenX + 6, screenY + 7);
+                this.ctx.lineTo(screenX + 6, screenY + 10);
+                this.ctx.lineTo(screenX + 4, screenY + 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            case 'castle':
+                this.ctx.fillStyle = '#4a4a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 26);
+                this.ctx.lineTo(screenX + 18, screenY - 17);
+                this.ctx.lineTo(screenX + 18, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a5a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 26);
+                this.ctx.lineTo(screenX - 18, screenY - 17);
+                this.ctx.lineTo(screenX - 18, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a6a7a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 26);
+                this.ctx.lineTo(screenX - 18, screenY - 17);
+                this.ctx.lineTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX + 18, screenY - 17);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a3a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 20, screenY - 32);
+                this.ctx.lineTo(screenX - 17, screenY - 33.5);
+                this.ctx.lineTo(screenX - 17, screenY - 26);
+                this.ctx.lineTo(screenX - 20, screenY - 24.5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 3, screenY - 32);
+                this.ctx.lineTo(screenX, screenY - 33.5);
+                this.ctx.lineTo(screenX, screenY - 26);
+                this.ctx.lineTo(screenX - 3, screenY - 24.5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 14, screenY - 32);
+                this.ctx.lineTo(screenX + 17, screenY - 33.5);
+                this.ctx.lineTo(screenX + 17, screenY - 26);
+                this.ctx.lineTo(screenX + 14, screenY - 24.5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 5, screenY - 2);
+                this.ctx.lineTo(screenX - 8, screenY - 3.5);
+                this.ctx.lineTo(screenX - 8, screenY + 4);
+                this.ctx.lineTo(screenX - 5, screenY + 5.5);
+                this.ctx.lineTo(screenX + 5, screenY + 1);
+                this.ctx.lineTo(screenX + 5, screenY - 4);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            case 'library':
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX + 15, screenY - 15);
+                this.ctx.lineTo(screenX + 15, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 9);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX - 15, screenY - 15);
+                this.ctx.lineTo(screenX - 15, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 9);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a7a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX - 15, screenY - 15);
+                this.ctx.lineTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX + 15, screenY - 15);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a6a8a';
+                for(let i = -10; i <= 10; i += 5) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX + i, screenY - 2);
+                    this.ctx.lineTo(screenX + i - 1, screenY - 2.5);
+                    this.ctx.lineTo(screenX + i - 1, screenY + 5);
+                    this.ctx.lineTo(screenX + i, screenY + 5.5);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                }
+                break;
+
+            case 'university':
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX + 16, screenY - 16);
+                this.ctx.lineTo(screenX + 16, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a7a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX - 16, screenY - 16);
+                this.ctx.lineTo(screenX - 16, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#9a8a7a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX - 16, screenY - 16);
+                this.ctx.lineTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX + 16, screenY - 16);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a4a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 32);
+                this.ctx.lineTo(screenX - 8, screenY - 28);
+                this.ctx.lineTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX + 8, screenY - 28);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 32);
+                this.ctx.lineTo(screenX - 8, screenY - 28);
+                this.ctx.lineTo(screenX - 6, screenY - 26.5);
+                this.ctx.lineTo(screenX, screenY - 29);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a7a9a';
+                for(let i = -12; i <= 12; i += 6) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX + i, screenY - 4);
+                    this.ctx.lineTo(screenX + i - 1, screenY - 4.5);
+                    this.ctx.lineTo(screenX + i - 1, screenY + 5);
+                    this.ctx.lineTo(screenX + i, screenY + 5.5);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                }
+                break;
+
+            case 'observatory':
+                this.ctx.fillStyle = '#4a5a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 12, screenY - 10);
+                this.ctx.lineTo(screenX + 12, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a6a7a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 12, screenY - 10);
+                this.ctx.lineTo(screenX - 12, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 10, screenY - 20);
+                this.ctx.bezierCurveTo(screenX - 10, screenY - 26, screenX + 10, screenY - 26, screenX + 10, screenY - 20);
+                this.ctx.lineTo(screenX, screenY - 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a7a8a';
+                this.ctx.beginPath();
+                this.ctx.ellipse(screenX, screenY - 20, 10, 3, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a3a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 6, screenY - 22);
+                this.ctx.lineTo(screenX + 9, screenY - 23.5);
+                this.ctx.lineTo(screenX + 9, screenY - 21.5);
+                this.ctx.lineTo(screenX + 6, screenY - 20);
+                this.ctx.lineTo(screenX + 4, screenY - 21);
+                this.ctx.lineTo(screenX + 4, screenY - 23);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            default:
+                this.ctx.fillStyle = '#6a7a8a';
+                this.ctx.fillRect(screenX - 12, screenY - 8, 24, 16);
+        }
+
+        this.ctx.restore();
     }
 }
