@@ -15,6 +15,9 @@ class Game {
         this.eventSystem = new EventSystem(this.currentPlanet, this.player);
         this.turnBased = true;
 
+        this.player.techTree = new TechTree(this.player);
+        this.eventSystem = new EventSystem(this.currentPlanet, this.player);
+
         this.gameState = 'volcanic';
         this.renderer.zoom = 0.8;
         this.currentPlanet = this.world.createVolcanicWorld();
@@ -55,14 +58,34 @@ class Game {
             totalProduction += tile.yields.production;
             totalScience += tile.yields.science;
 
+            if (building.type === 'observatory') {
+                totalScience += 3;
+            }
+
             if (tile.hasGeothermal && building.type === 'forge') {
                 totalProduction += 5;
             }
         });
 
+        totalScience += Math.floor(this.player.population / 10);
+        totalProduction += this.player.productionBonus;
+        totalFood += this.player.foodBonus;
+
         this.player.addFood(totalFood);
         this.player.addProduction(totalProduction);
         this.player.addScience(totalScience);
+
+        const researchResult = this.player.techTree.progressResearch(totalScience);
+
+        if (researchResult && researchResult.completed) {
+            this.log(`RESEARCH COMPLETE: ${this.player.techTree.techs[researchResult.completed].name}`);
+
+            if (researchResult.victory) {
+                this.log(`VICTORY! You achieved: ${this.player.techTree.techs[researchResult.completed].name}`);
+                this.running = false;
+                return;
+            }
+        }
 
         const eventResult = this.eventSystem.onTurnEnd();
 
@@ -70,6 +93,7 @@ class Game {
             this.log('PLANET CORE COLLAPSED - GAME OVER');
             this.running = false;
         }
+
 
         this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
     }
@@ -401,26 +425,78 @@ class Game {
         const researchBtn = document.getElementById('research-btn');
         if (!researchBtn) return;
 
-        const nextAges = ['bronze', 'iron', 'medieval', 'renaissance'];
-        const nextAge = nextAges.find(age => this.player.techs[age].level === 0);
+        const availableTechs = this.player.techTree.getAvailableTechs();
 
-        if (nextAge) {
-            const cost = this.player.techs[nextAge].cost;
-            researchBtn.textContent = `${this.player.techs[nextAge].name} (${cost})`;
-            researchBtn.disabled = !this.player.canResearch(nextAge);
-            researchBtn.onclick = (e) => {
-                e.stopPropagation();
-                if (this.player.researchTech(nextAge)) {
-                    const msg = `Researched ${this.player.techs[nextAge].name}!`;
-                    this.log(msg);
-                    console.log(msg);
-                    this.updateBuildingUI();
-                }
-            };
+        if (availableTechs.length > 0) {
+            const researchInfo = this.player.techTree.getResearchInfo();
+
+            if (researchInfo) {
+                researchBtn.textContent = `${researchInfo.name} (${researchInfo.progress}%)`;
+                researchBtn.disabled = true;
+            } else {
+                researchBtn.textContent = 'Choose Research';
+                researchBtn.disabled = false;
+                researchBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.showTechTreeUI();
+                };
+            }
         } else {
-            researchBtn.textContent = 'All Ages Unlocked';
-            researchBtn.disabled = true;
+            const researchInfo = this.player.techTree.getResearchInfo();
+            if (researchInfo) {
+                researchBtn.textContent = `${researchInfo.name} (${researchInfo.progress}%)`;
+                researchBtn.disabled = true;
+            } else {
+                researchBtn.textContent = 'No Available Research';
+                researchBtn.disabled = true;
+            }
         }
+    }
+
+    showTechTreeUI() {
+        const modal = document.createElement('div');
+        modal.id = 'tech-modal';
+        modal.innerHTML = `
+            <div class="tech-modal-content">
+                <h2>Research Technology</h2>
+                <div id="tech-list"></div>
+                <button id="close-tech-modal">Close</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        const techList = document.getElementById('tech-list');
+        const availableTechs = this.player.techTree.getAvailableTechs();
+
+        availableTechs.forEach(techId => {
+            const tech = this.player.techTree.techs[techId];
+            const canAfford = this.player.science >= tech.cost;
+
+            const techDiv = document.createElement('div');
+            techDiv.className = 'tech-item' + (canAfford ? '' : ' tech-disabled');
+            techDiv.innerHTML = `
+                <div class="tech-name">${tech.name}</div>
+                <div class="tech-cost">Cost: ${tech.cost} Science</div>
+                <div class="tech-desc">${tech.description}</div>
+                <div class="tech-type">${tech.type.toUpperCase()}</div>
+            `;
+
+            if (canAfford) {
+                techDiv.onclick = () => {
+                    if (this.player.techTree.startResearch(techId)) {
+                        this.log(`Started researching: ${tech.name}`);
+                        document.body.removeChild(modal);
+                        this.updateBuildingUI();
+                    }
+                };
+            }
+
+            techList.appendChild(techDiv);
+        });
+
+        document.getElementById('close-tech-modal').onclick = () => {
+            document.body.removeChild(modal);
+        };
     }
 
     _updateBuildingButtonsActive(buildingsList) {

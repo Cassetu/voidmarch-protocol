@@ -36,19 +36,23 @@ class Planet {
             case 'darksoil':
                 yields.food = 2;
                 yields.production = 1;
+                yields.science = 1;
                 break;
             case 'rock':
                 yields.production = 2;
+                yields.science = 1;
                 break;
             case 'ash':
                 yields.production = 1;
                 yields.food = 1;
+                yields.science = 2;
                 break;
             case 'lava':
                 yields.production = 3;
+                yields.science = 1;
                 break;
             case 'floating':
-                yields.science = 2;
+                yields.science = 3;
                 yields.production = 1;
                 break;
         }
@@ -109,14 +113,14 @@ class Planet {
             settlement: { resources: 50, food: 10 },
             farm: { resources: 30, food: 0 },
             warehouse: { resources: 40, food: 5 },
+            observatory: { resources: 60, food: 10 },
             barracks: { resources: 60, food: 10 },
             temple: { resources: 80, food: 15 },
             forge: { resources: 100, food: 20 },
             market: { resources: 90, food: 10 },
             castle: { resources: 150, food: 30 },
             library: { resources: 120, food: 20 },
-            university: { resources: 180, food: 40 },
-            observatory: { resources: 200, food: 50 }
+            university: { resources: 180, food: 40 }
         };
 
         const cost = buildingCosts[buildingType];
@@ -152,6 +156,14 @@ class Planet {
                 }
             });
         });
+
+        if (this.type === 'settlement') {
+            player.addPopulation(deltaTime * 0.3);
+        } else if (this.type === 'library' || this.type === 'university') {
+            player.addResources(deltaTime * 2);
+        } else if (this.type === 'observatory') {
+            player.addScience(deltaTime * 3);
+        }
 
         this.structures.forEach(building => {
             building.update(deltaTime, player);

@@ -13,7 +13,11 @@ class EventSystem {
 
     onTurnEnd() {
         this.turn++;
-        this.coreStability -= 0.5;
+        this.coreStability -= (0.5 * (this.player.coreStabilityMultiplier || 1));
+
+        if (this.player.coreStable) {
+            this.coreStability = Math.min(100, this.coreStability + 1);
+        }
 
         if (this.turn >= this.nextEruptionTurn) {
             this.triggerVolcanicEvent();
@@ -45,6 +49,14 @@ class EventSystem {
     }
 
     causeEruption() {
+        if (this.player.eruptionWarning > 0) {
+            console.log(`Eruption predicted ${this.player.eruptionWarning} turns ahead!`);
+        }
+
+        const resistChance = this.player.eruptionResistance || 0;
+        if (Math.random() * 100 < resistChance) {
+            return { x: -1, y: -1, destroyedBuildings: 0, resisted: true };
+        }
         const x = Math.floor(Math.random() * this.planet.width);
         const y = Math.floor(Math.random() * this.planet.height);
 

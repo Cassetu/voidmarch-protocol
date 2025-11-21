@@ -11,6 +11,22 @@ class Player {
         this.production = 0;
         this.turn = 0;
         this.hasEscaped = false;
+        this.techTree = null;
+        this.productionBonus = 0;
+        this.foodBonus = 0;
+        this.scienceBonus = 0;
+        this.populationCap = 100;
+        this.buildingHPBonus = 0;
+        this.eruptionResistance = 0;
+        this.coreStabilityMultiplier = 1;
+        this.eruptionWarning = 0;
+        this.rocketCapacity = 0;
+        this.shipCapacity = 0;
+        this.evacuationSpeed = 0;
+        this.canBuildFloating = false;
+        this.canBuildAnywhere = false;
+        this.canEscape = false;
+        this.coreStable = false;
         this.techs = {
             stone: { level: 1, cost: 0, name: 'Stone Age' },
             bronze: { level: 0, cost: 200, name: 'Bronze Working' },
@@ -62,11 +78,11 @@ class Player {
 
     getAvailableBuildings() {
         const buildingsPerAge = {
-            stone: ['settlement', 'farm', 'warehouse'],
-            bronze: ['settlement', 'farm', 'warehouse', 'barracks', 'temple'],
-            iron: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market'],
-            medieval: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library'],
-            renaissance: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'observatory']
+            stone: ['settlement', 'farm', 'warehouse', 'observatory'],
+            bronze: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple'],
+            iron: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market'],
+            medieval: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library'],
+            renaissance: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university']
         };
         return buildingsPerAge[this.age] || [];
     }

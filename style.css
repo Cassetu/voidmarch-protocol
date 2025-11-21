@@ -38,6 +38,117 @@ body {
     transition: all 0.2s;
 }
 
+#tech-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    pointer-events: auto;
+}
+
+.tech-modal-content {
+    background: #1a1f2e;
+    border: 2px solid #5a6478;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.tech-modal-content h2 {
+    color: #8fa3c8;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#tech-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.tech-item {
+    background: #2a3344;
+    border: 2px solid #3a4454;
+    border-radius: 4px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tech-item:hover {
+    border-color: #5a7a8a;
+    background: #3a4454;
+    transform: translateY(-2px);
+}
+
+.tech-item.tech-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tech-item.tech-disabled:hover {
+    transform: none;
+    background: #2a3344;
+    border-color: #3a4454;
+}
+
+.tech-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #a8b8d8;
+    margin-bottom: 6px;
+}
+
+.tech-cost {
+    font-size: 11px;
+    color: #7a9ac8;
+    margin-bottom: 8px;
+}
+
+.tech-desc {
+    font-size: 10px;
+    color: #8fa3c8;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.tech-type {
+    font-size: 9px;
+    color: #6a8aa8;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    background: rgba(90, 122, 138, 0.2);
+    border-radius: 2px;
+    display: inline-block;
+}
+
+#close-tech-modal {
+    width: 100%;
+    padding: 10px;
+    background: #3a4a5a;
+    border: 1px solid #5a6a7a;
+    color: #a8b8d8;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+#close-tech-modal:hover {
+    background: #4a5a6a;
+}
+
 #end-turn-btn:hover {
     background: #4a5a3a;
     border-color: #7a9a5a;
