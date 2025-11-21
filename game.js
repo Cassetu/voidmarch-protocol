@@ -162,7 +162,6 @@ class Game {
         this.updateUI();
     }
 
-    // helper: convert grid -> world
     gridToWorld(gridX, gridY) {
         const unitX = this.renderer.tileWidth / 2;
         const unitY = this.renderer.tileHeight / 2;
@@ -171,17 +170,14 @@ class Game {
         return { worldX, worldY };
     }
 
-    // helper: draw semi-opaque isometric preview at cursor tile
     _drawBuildingPreview() {
         const canvasTop = 75;
         const unitX = this.renderer.tileWidth / 2;
         const unitY = this.renderer.tileHeight / 2;
 
-        // get mouse world coords (subtract canvasTop for Y)
         const worldX = (this.input.mouseX / this.renderer.zoom) + this.cameraX;
         const worldY = ((this.input.mouseY - canvasTop) / this.renderer.zoom) + this.cameraY;
 
-        // hovered grid tile
         const gridX = Math.round(((worldX / unitX) + (worldY / unitY)) / 2);
         const gridY = Math.round(((worldY / unitY) - (worldX / unitX)) / 2);
 
@@ -190,12 +186,14 @@ class Game {
         const sx = (tileWorld.worldX - this.cameraX) * this.renderer.zoom;
         const sy = (tileWorld.worldY - this.cameraY) * this.renderer.zoom + canvasTop;
 
+        console.log(`Preview screen: (${sx.toFixed(0)}, ${sy.toFixed(0)}) grid: (${gridX}, ${gridY})`);
+
         const sxOffset = unitX * this.renderer.zoom;
         const syOffset = unitY * this.renderer.zoom;
 
         this.ctx.save();
-        this.ctx.globalAlpha = 0.85;
-        this.ctx.fillStyle = 'rgba(0, 150, 255, 0.85)';
+        this.ctx.globalAlpha = 0.3;
+        this.ctx.fillStyle = 'rgba(0, 150, 255, 0.6)';
         this.ctx.beginPath();
         this.ctx.moveTo(sx, sy - syOffset);
         this.ctx.lineTo(sx - sxOffset, sy);
@@ -205,14 +203,9 @@ class Game {
         this.ctx.fill();
 
         this.ctx.globalAlpha = 1;
-        this.ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+        this.ctx.strokeStyle = 'rgba(100, 200, 255, 1)';
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
-
-        this.ctx.fillStyle = 'white';
-        this.ctx.font = `${12 * this.renderer.zoom}px sans-serif`;
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText(this.player.selectedBuilding, sx, sy - syOffset - 6);
 
         this.ctx.restore();
     }
