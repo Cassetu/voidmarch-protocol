@@ -56,7 +56,7 @@ class Game {
 
 
     handleZoom(e) {
-        e.preventDefault();
+
         const zoomSpeed = 0.1;
 
         const viewCenterWorldX = this.cameraX + (this.width / 2) / this.renderer.zoom;
@@ -70,6 +70,8 @@ class Game {
 
         this.cameraX = viewCenterWorldX - (this.width / 2) / this.renderer.zoom;
         this.cameraY = viewCenterWorldY - ((this.height - 160 - 75) / 2) / this.renderer.zoom;
+
+        console.log(`Zoom level: ${this.renderer.zoom.toFixed(2)}`);
 
         this.updateCamera();
     }
@@ -113,14 +115,26 @@ class Game {
         }
 
         if (this.input.mouseJustPressed && this.player.selectedBuilding) {
-            // only place if inside the game canvas area
             if (this.input.mouseY > canvasTop && this.input.mouseY < canvasBottom) {
-                // subtract canvasTop before converting to world coords (fixes vertical offset)
-                const worldX = ((this.input.mouseX) / this.renderer.zoom) + this.cameraX;
-                const worldY = ((this.input.mouseY - canvasTop) / this.renderer.zoom) + this.cameraY;
+                const mouseX = this.input.mouseX;
+                const mouseY = this.input.mouseY - canvasTop;
 
-                const gridX = Math.round(((worldX / unitX) + (worldY / unitY)) / 2);
-                const gridY = Math.round(((worldY / unitY) - (worldX / unitX)) / 2);
+                const centerGridX = this.currentPlanet.width / 2;
+                const centerGridY = this.currentPlanet.height / 2;
+                const centerWorldX = (centerGridX - centerGridY) * unitX;
+                const centerWorldY = (centerGridX + centerGridY) * unitY;
+
+                const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
+                const targetY = ((this.height - 160 - 75) / 2) / this.renderer.zoom + this.cameraY;
+
+                const translateX = targetX - centerWorldX + 500;
+                const translateY = targetY - centerWorldY - 500;
+
+                const worldX = (mouseX / this.renderer.zoom) - translateX;
+                const worldY = (mouseY / this.renderer.zoom) - translateY;
+
+                const gridX = Math.round((worldX / unitX + worldY / unitY) / 2 - 3);
+                const gridY = Math.round((worldY / unitY - worldX / unitX) / 2 - 3);
 
                 console.log(`Click world pos: (${worldX.toFixed(0)}, ${worldY.toFixed(0)}) Grid: (${gridX}, ${gridY})`);
 
@@ -128,16 +142,13 @@ class Game {
                     const msg = `Built ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
                     this.log(msg);
                     console.log(msg);
-                    // deselect after successful placement
                     this.player.selectedBuilding = null;
-                    // update UI active states immediately
                     const buildingsList = document.getElementById('buildings-list');
                     if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
                 } else {
                     const msg = `Cannot build ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
                     this.log(msg);
                     console.log(msg);
-                    // keep selected so player can try another tile
                 }
             }
         }
@@ -175,18 +186,31 @@ class Game {
         const unitX = this.renderer.tileWidth / 2;
         const unitY = this.renderer.tileHeight / 2;
 
-        const worldX = (this.input.mouseX / this.renderer.zoom) + this.cameraX;
-        const worldY = ((this.input.mouseY - canvasTop) / this.renderer.zoom) + this.cameraY;
+        const mouseX = this.input.mouseX;
+        const mouseY = this.input.mouseY - canvasTop;
 
-        const gridX = Math.round(((worldX / unitX) + (worldY / unitY)) / 2);
-        const gridY = Math.round(((worldY / unitY) - (worldX / unitX)) / 2);
+        const centerGridX = this.currentPlanet.width / 2;
+        const centerGridY = this.currentPlanet.height / 2;
+        const centerWorldX = (centerGridX - centerGridY) * unitX;
+        const centerWorldY = (centerGridX + centerGridY) * unitY;
 
-        const tileWorld = this.gridToWorld(gridX, gridY);
+        const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
+        const targetY = ((this.height - 160 - 75) / 2) / this.renderer.zoom + this.cameraY;
 
-        const sx = (tileWorld.worldX - this.cameraX) * this.renderer.zoom;
-        const sy = (tileWorld.worldY - this.cameraY) * this.renderer.zoom + canvasTop;
+        const translateX = targetX - centerWorldX + 500;
+        const translateY = targetY - centerWorldY - 500;
 
-        console.log(`Preview screen: (${sx.toFixed(0)}, ${sy.toFixed(0)}) grid: (${gridX}, ${gridY})`);
+        const worldX = (mouseX / this.renderer.zoom) - translateX;
+        const worldY = (mouseY / this.renderer.zoom) - translateY;
+
+        const gridX = Math.round((worldX / unitX + worldY / unitY) / 2);
+        const gridY = Math.round((worldY / unitY - worldX / unitX) / 2);
+
+        const tileWorldX = (gridX - gridY) * unitX;
+        const tileWorldY = (gridX + gridY) * unitY;
+
+        const sx = (tileWorldX + translateX) * this.renderer.zoom;
+        const sy = (tileWorldY + translateY) * this.renderer.zoom + canvasTop;
 
         const sxOffset = unitX * this.renderer.zoom;
         const syOffset = unitY * this.renderer.zoom;
