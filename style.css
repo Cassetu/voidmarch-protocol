@@ -25,6 +25,24 @@ body {
     background: linear-gradient(135deg, #1a1f2e 0%, #252d3d 100%);
 }
 
+#end-turn-btn {
+    width: 100%;
+    padding: 8px;
+    background: #3a4a2a;
+    border: 1px solid #5a7a3a;
+    color: #a8d888;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+
+#end-turn-btn:hover {
+    background: #4a5a3a;
+    border-color: #7a9a5a;
+}
+
 #ui-overlay {
     position: absolute;
     top: 0;

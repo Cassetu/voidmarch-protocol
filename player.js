@@ -7,6 +7,10 @@ class Player {
         this.age = 'stone';
         this.selectedBuilding = null;
         this.buildings = [];
+        this.science = 0;
+        this.production = 0;
+        this.turn = 0;
+        this.hasEscaped = false;
         this.techs = {
             stone: { level: 1, cost: 0, name: 'Stone Age' },
             bronze: { level: 0, cost: 200, name: 'Bronze Working' },
@@ -14,6 +18,18 @@ class Player {
             medieval: { level: 0, cost: 600, name: 'Medieval' },
             renaissance: { level: 0, cost: 800, name: 'Renaissance' }
         };
+    }
+
+    addScience(amount) {
+        this.science += amount;
+    }
+
+    addProduction(amount) {
+        this.production += amount;
+    }
+
+    nextTurn() {
+        this.turn++;
     }
 
     addResources(amount) {

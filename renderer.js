@@ -11,12 +11,13 @@ class Renderer {
             rock: '#4a5a6a',
             ash: '#5a6a7a',
             darksoil: '#2a3a4a',
-            lava: '#6b4423',
+            lava: '#ff4500',
             water: '#3a5a7a',
             forest: '#3a5a3a',
             nebula: '#4a3a6a',
             void: '#1a2a3a',
-            stars: '#5a6a7a'
+            stars: '#5a6a7a',
+            floating: '#6a7a9a'
         };
         this.buildingColors = {
             settlement: '#6a7a8a',
@@ -88,6 +89,19 @@ class Renderer {
 
         this.ctx.strokeStyle = 'rgba(160, 176, 200, 0.15)';
         this.ctx.lineWidth = 1;
+        if (tile.hasGeothermal) {
+            this.ctx.fillStyle = 'rgba(255, 100, 0, 0.4)';
+            this.ctx.fill();
+        }
+
+        if (tile.isFloating) {
+            this.ctx.save();
+            this.ctx.strokeStyle = 'rgba(200, 220, 255, 0.6)';
+            this.ctx.lineWidth = 2;
+            this.ctx.setLineDash([4, 4]);
+            this.ctx.stroke();
+            this.ctx.restore();
+        }
         this.ctx.stroke();
     }
 

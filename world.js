@@ -29,6 +29,33 @@ class Planet {
         this.generateTerrain();
     }
 
+    calculateYields(terrain) {
+        const yields = { food: 0, production: 0, science: 0 };
+
+        switch(terrain) {
+            case 'darksoil':
+                yields.food = 2;
+                yields.production = 1;
+                break;
+            case 'rock':
+                yields.production = 2;
+                break;
+            case 'ash':
+                yields.production = 1;
+                yields.food = 1;
+                break;
+            case 'lava':
+                yields.production = 3;
+                break;
+            case 'floating':
+                yields.science = 2;
+                yields.production = 1;
+                break;
+        }
+
+        return yields;
+    }
+
     generateTerrain() {
         for (let y = 0; y < this.height; y++) {
             this.tiles[y] = [];
@@ -62,7 +89,10 @@ class Planet {
             resourceAmount: Math.random() * 50,
             fertility: Math.random(),
             contamination: 0,
-            building: null
+            building: null,
+            hasGeothermal: false,
+            isFloating: false,
+            yields: this.calculateYields(terrain)
         };
     }
 

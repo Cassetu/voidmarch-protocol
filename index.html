@@ -28,6 +28,20 @@
                 <span>
                         Age: <strong id="age-display">Stone</strong>
                     </span>
+                <span>
+                    Science
+                    <strong id="science-count">0</strong>
+                </span>
+                    <span>
+                    Production
+                    <strong id="production-count">0</strong>
+                </span>
+                    <span>
+                    Turn: <strong id="turn-count">0</strong>
+                </span>
+                    <span>
+                    Core: <strong id="core-stability">100%</strong>
+                </span>
             </div>
         </div>
         <div id="bottom-panel">
@@ -39,6 +53,7 @@
                 <div class="panel-section">
                     <button id="research-btn">Research Tech</button>
                 </div>
+                <button id="end-turn-btn">End Turn</button>
                 <div class="panel-section">
                     <h3>Select Building</h3>
                     <div id="buildings-list"></div>
@@ -58,6 +73,7 @@
 <script src="world.js"></script>
 <script src="renderer.js"></script>
 <script src="input.js"></script>
+<script src="events.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

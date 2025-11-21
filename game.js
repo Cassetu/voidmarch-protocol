@@ -12,6 +12,8 @@ class Game {
         this.world = new World(this.player);
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
+        this.eventSystem = new EventSystem(this.currentPlanet, this.player);
+        this.turnBased = true;
 
         this.gameState = 'volcanic';
         this.renderer.zoom = 0.8;
@@ -33,8 +35,44 @@ class Game {
         document.addEventListener('click', (e) => {
             console.log('GLOBAL click target:', e.target && e.target.id ? e.target.id : e.target);
         }, true);
+
+        document.getElementById('end-turn-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.endTurn();
+        });
     }
 
+    endTurn() {
+        this.player.nextTurn();
+
+        let totalFood = 0;
+        let totalProduction = 0;
+        let totalScience = 0;
+
+        this.currentPlanet.structures.forEach(building => {
+            const tile = this.currentPlanet.tiles[building.y][building.x];
+            totalFood += tile.yields.food;
+            totalProduction += tile.yields.production;
+            totalScience += tile.yields.science;
+
+            if (tile.hasGeothermal && building.type === 'forge') {
+                totalProduction += 5;
+            }
+        });
+
+        this.player.addFood(totalFood);
+        this.player.addProduction(totalProduction);
+        this.player.addScience(totalScience);
+
+        const eventResult = this.eventSystem.onTurnEnd();
+
+        if (eventResult.gameOver) {
+            this.log('PLANET CORE COLLAPSED - GAME OVER');
+            this.running = false;
+        }
+
+        this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
+    }
 
     centerCamera() {
         const halfW = this.renderer.tileWidth / 2;
@@ -87,7 +125,6 @@ class Game {
     update(deltaTime) {
         this.handleInput();
         this.input.update();
-        this.currentPlanet.update(deltaTime, this.player);
         this.updateCamera();
     }
 
@@ -307,7 +344,10 @@ class Game {
         document.getElementById('food-count').textContent = Math.floor(this.player.food);
         document.getElementById('population-count').textContent = Math.floor(this.player.population);
         document.getElementById('age-display').textContent = this.player.age.charAt(0).toUpperCase() + this.player.age.slice(1);
-
+        document.getElementById('science-count').textContent = Math.floor(this.player.science);
+        document.getElementById('production-count').textContent = Math.floor(this.player.production);
+        document.getElementById('turn-count').textContent = this.player.turn;
+        document.getElementById('core-stability').textContent = Math.floor(this.eventSystem.coreStability) + '%';
         this.updateBuildingUI();
     }
 
