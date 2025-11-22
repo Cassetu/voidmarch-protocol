@@ -136,6 +136,7 @@ class Game {
 
     endTurn() {
         if (this.gameMode === 'conquest') {
+            this.updateBuilders();
             this.endConquestTurn();
             return;
         }
@@ -588,9 +589,8 @@ class Game {
     }
 
     updateBuilders() {
-        const toRemove = [];
-
-        this.player.builders.forEach((builder, idx) => {
+        for (let i = this.player.builders.length - 1; i >= 0; i--) {
+            const builder = this.player.builders[i];
             const builderState = builder.update();
 
             const queuedBuilding = this.player.buildingQueue.find(b => b.builderId === builder.id);
@@ -607,10 +607,11 @@ class Game {
                     tile.building = tempBuilding;
                     this.currentPlanet.structures.push(tempBuilding);
                     builder.hasPlaced = true;
+                    this.log(`Builders arrived at (${builder.targetX}, ${builder.targetY}). Construction starting.`);
                 }
             }
 
-            if (builder.arrived) {
+            if (builder.arrived && builder.hasPlaced) {
                 const tile = this.currentPlanet.tiles[builder.targetY][builder.targetX];
                 if (tile && tile.building && tile.building.type === builder.buildingType) {
                     tile.building.buildProgress = builderState.progress;
@@ -624,14 +625,10 @@ class Game {
                     tile.building.buildProgress = 100;
                     this.log(`Building complete: ${builder.buildingType} at (${builder.targetX}, ${builder.targetY})`);
                 }
-                toRemove.push(idx);
 
+                this.player.builders.splice(i, 1);
                 this.player.buildingQueue = this.player.buildingQueue.filter(b => b.builderId !== builder.id);
             }
-        });
-
-        for (let i = toRemove.length - 1; i >= 0; i--) {
-            this.player.builders.splice(toRemove[i], 1);
         }
 
         this.player.buildingQueue.forEach(queuedBuilding => {
@@ -974,11 +971,11 @@ class Game {
                 const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
                 this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
             });
-
-            this.player.builders.forEach(builder => {
-                this.renderer.drawBuilder(builder, this.cameraX, this.cameraY);
-            });
         }
+
+        this.player.builders.forEach(builder => {
+            this.renderer.drawBuilder(builder, this.cameraX, this.cameraY);
+        });
 
         this.renderer.drawBuildingQueue(this.player.buildingQueue);
         this.ctx.restore();

@@ -39,13 +39,19 @@ class Builder {
             return true;
         }
 
-        const dx = Math.sign(this.targetX - this.currentX);
-        const dy = Math.sign(this.targetY - this.currentY);
+        const dx = this.targetX - this.currentX;
+        const dy = this.targetY - this.currentY;
 
-        if (Math.random() > 0.5) {
-            this.currentX += dx;
+        if (Math.abs(dx) > Math.abs(dy)) {
+            this.currentX += Math.sign(dx);
+        } else if (Math.abs(dy) > Math.abs(dx)) {
+            this.currentY += Math.sign(dy);
         } else {
-            this.currentY += dy;
+            if (Math.random() > 0.5) {
+                this.currentX += Math.sign(dx) || 0;
+            } else {
+                this.currentY += Math.sign(dy) || 0;
+            }
         }
 
         return false;
