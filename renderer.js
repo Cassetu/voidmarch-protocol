@@ -107,21 +107,26 @@ class Renderer {
 
         this.ctx.save();
 
-        const size = 20;
+        const size = 24;
         this.ctx.fillStyle = node.hacked ? '#555555' : '#ff0000';
-        this.ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
+        this.ctx.fillRect(screenX - size / 2, screenY - size / 2 - 10, size, size);
 
-        this.ctx.strokeStyle = node.hacked ? '#333333' : '#aa0000';
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(screenX - size / 2, screenY - size / 2, size, size);
+        this.ctx.strokeStyle = node.hacked ? '#333333' : '#ffff00';
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeRect(screenX - size / 2, screenY - size / 2 - 10, size, size);
 
         if (!node.hacked) {
             this.ctx.fillStyle = '#ffffff';
+            this.ctx.font = 'bold 12px monospace';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('N' + node.id, screenX, screenY - 2);
+
+            this.drawHealthBar(screenX, screenY - 10, node.health, node.maxHealth, 30);
+        } else {
+            this.ctx.fillStyle = '#00ff00';
             this.ctx.font = 'bold 10px monospace';
             this.ctx.textAlign = 'center';
-            this.ctx.fillText('N', screenX, screenY + 4);
-
-            this.drawHealthBar(screenX, screenY, node.health, node.maxHealth, 30);
+            this.ctx.fillText('HACKED', screenX, screenY - 2);
         }
 
         this.ctx.restore();

@@ -8,6 +8,12 @@ class Game {
         this.width = this.canvas.width = window.innerWidth;
         this.height = this.canvas.height = window.innerHeight;
 
+
+        this.cheatCodeSequence = [];
+        this.cheatCodeTarget = ['q', 'w', 'e', 'r', 't', 'y', 'c', 'a', 's'];
+        this.cheatCodeTimeout = null;
+
+
         this.hiringMode = null;
 
         this.deployMode = null;
@@ -38,6 +44,7 @@ class Game {
 
         window.addEventListener('resize', () => this.handleResize());
         window.addEventListener('wheel', (e) => this.handleZoom(e));
+        window.addEventListener('keypress', (e) => this.handleCheatCode(e));
         this.log('Voidmarch Protocol initialized');
 
         document.addEventListener('pointerdown', (e) => {
@@ -166,6 +173,75 @@ class Game {
         }
 
         this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
+    }
+
+    handleCheatCode(e) {
+        if (this.gameMode === 'conquest') return;
+
+        this.cheatCodeSequence.push(e.key.toLowerCase());
+
+        if (this.cheatCodeSequence.length > this.cheatCodeTarget.length) {
+            this.cheatCodeSequence.shift();
+        }
+
+        clearTimeout(this.cheatCodeTimeout);
+        this.cheatCodeTimeout = setTimeout(() => {
+            this.cheatCodeSequence = [];
+        }, 2000);
+
+        if (this.cheatCodeSequence.length === this.cheatCodeTarget.length) {
+            let matches = true;
+            for (let i = 0; i < this.cheatCodeTarget.length; i++) {
+                if (this.cheatCodeSequence[i] !== this.cheatCodeTarget[i]) {
+                    matches = false;
+                    break;
+                }
+            }
+
+            if (matches) {
+                this.activateCheatCode();
+                this.cheatCodeSequence = [];
+            }
+        }
+    }
+
+    activateCheatCode() {
+        this.log('CHEAT CODE ACTIVATED!');
+
+        this.player.resources = 5000;
+        this.player.science = 1000;
+        this.player.food = 500;
+        this.player.population = 200;
+
+        this.player.techTree.techs['mining'].researched = true;
+        this.player.techTree.techs['shelter'].researched = true;
+        this.player.techTree.techs['farming'].researched = true;
+        this.player.techTree.techs['deepMining'].researched = true;
+        this.player.techTree.techs['reinforcedStructures'].researched = true;
+        this.player.techTree.techs['hydroponics'].researched = true;
+        this.player.techTree.techs['geothermalHarvesting'].researched = true;
+
+        this.player.techTree.techs['exodusProtocol'].researched = true;
+
+        this.player.techTree.techs['mining'].unlocks.forEach(unlock => {
+            this.player.techTree.applyBonus(this.player.techTree.techs['mining'].bonus);
+        });
+        this.player.techTree.applyBonus(this.player.techTree.techs['mining'].bonus);
+        this.player.techTree.applyBonus(this.player.techTree.techs['shelter'].bonus);
+        this.player.techTree.applyBonus(this.player.techTree.techs['farming'].bonus);
+        this.player.techTree.applyBonus(this.player.techTree.techs['deepMining'].bonus);
+        this.player.techTree.applyBonus(this.player.techTree.techs['reinforcedStructures'].bonus);
+        this.player.techTree.applyBonus(this.player.techTree.techs['hydroponics'].bonus);
+        this.player.techTree.applyBonus(this.player.techTree.techs['geothermalHarvesting'].bonus);
+
+        document.getElementById('galaxy-map-btn').style.display = 'block';
+
+        this.log('Unlocked galaxy travel! Resources, science, food, and population boosted!');
+        this.log('Click Galaxy Map to travel to the second planet.');
+
+        setTimeout(() => {
+            this.showGalaxyMap();
+        }, 500);
     }
 
     showGalaxyMap() {
@@ -544,27 +620,50 @@ class Game {
         this.ctx.fillStyle = '#1a1f2e';
         this.ctx.fillRect(0, 0, this.width, this.height);
 
-        this.renderer.drawWorld(
-            this.currentPlanet,
-            this.cameraX,
-            this.cameraY,
-            this.player
+        this.ctx.save();
+        const topBarHeight = 75;
+        this.ctx.translate(0, topBarHeight);
+        this.ctx.scale(this.renderer.zoom, this.renderer.zoom);
+
+        const centerGridX = this.currentPlanet.width / 2;
+        const centerGridY = this.currentPlanet.height / 2;
+        const centerScreenX = (centerGridX - centerGridY) * (this.renderer.tileWidth / 2);
+        const centerScreenY = (centerGridX + centerGridY) * (this.renderer.tileHeight / 2);
+
+        const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
+        const targetY = ((this.height - topBarHeight - 160) / 2) / this.renderer.zoom + this.cameraY;
+
+        this.ctx.translate(
+            targetX - centerScreenX,
+            targetY - centerScreenY
         );
+
+        for (let y = 0; y < this.currentPlanet.height; y++) {
+            for (let x = 0; x < this.currentPlanet.width; x++) {
+                this.renderer.drawTile(x, y, this.currentPlanet.tiles[y][x], this.cameraX, this.cameraY);
+            }
+        }
+
+        this.currentPlanet.structures.forEach(building => {
+            this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
+        });
 
         if (this.conquestSystem) {
             this.conquestSystem.defenseNodes.forEach(node => {
                 this.renderer.drawDefenseNode(node, this.cameraX, this.cameraY);
             });
 
+            this.conquestSystem.sentinels.forEach(sentinel => {
+                this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
+            });
+
             this.conquestSystem.armies.forEach(army => {
                 const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
                 this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
             });
-
-            this.conquestSystem.sentinels.forEach(sentinel => {
-                this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
-            });
         }
+
+        this.ctx.restore();
 
         if (this.player.selectedBuilding && this.gameMode === 'building') {
             this._drawBuildingPreview();
@@ -693,8 +792,42 @@ class Game {
             this.player
         );
 
-        // draw building preview under cursor if a building is selected
-        if (this.player.selectedBuilding) {
+        if (this.conquestSystem) {
+            this.ctx.save();
+            const topBarHeight = 75;
+            this.ctx.translate(0, topBarHeight);
+            this.ctx.scale(this.renderer.zoom, this.renderer.zoom);
+
+            const centerGridX = this.currentPlanet.width / 2;
+            const centerGridY = this.currentPlanet.height / 2;
+            const centerScreenX = (centerGridX - centerGridY) * (this.renderer.tileWidth / 2);
+            const centerScreenY = (centerGridX + centerGridY) * (this.renderer.tileHeight / 2);
+
+            const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
+            const targetY = ((this.height - topBarHeight - 160) / 2) / this.renderer.zoom + this.cameraY;
+
+            this.ctx.translate(
+                targetX - centerScreenX,
+                targetY - centerScreenY
+            );
+
+            this.conquestSystem.defenseNodes.forEach(node => {
+                this.renderer.drawDefenseNode(node, this.cameraX, this.cameraY);
+            });
+
+            this.conquestSystem.sentinels.forEach(sentinel => {
+                this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
+            });
+
+            this.conquestSystem.armies.forEach(army => {
+                const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
+                this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
+            });
+
+            this.ctx.restore();
+        }
+
+        if (this.player.selectedBuilding && this.gameMode === 'building') {
             this._drawBuildingPreview();
         }
 
