@@ -477,8 +477,7 @@ body {
 #deploy-assault-btn,
 #deploy-ranger-btn,
 #deploy-tank-btn,
-#deploy-hacker-btn,
-#hack-node-btn {
+#deploy-hacker-btn {
     width: 100%;
     padding: 6px;
     margin-bottom: 4px;
@@ -495,8 +494,7 @@ body {
 #deploy-assault-btn:hover,
 #deploy-ranger-btn:hover,
 #deploy-tank-btn:hover,
-#deploy-hacker-btn:hover,
-#hack-node-btn:hover {
+#deploy-hacker-btn:hover {
     background: #3a4a6a;
     border-color: #6a8aaa;
 }

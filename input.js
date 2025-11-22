@@ -27,6 +27,13 @@ class Input {
         window.addEventListener('mouseup', () => {
             this.mouseDown = false;
         });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                return;
+            }
+            this.keys[e.key] = true;
+        });
     }
 
     update() {

@@ -139,7 +139,7 @@ class ConquestSystem {
                         maxHealth: 80 + (this.difficulty * 20),
                         damage: 15 + (this.difficulty * 5),
                         range: 2,
-                        moveRange: 3,
+                        moveRange: 2 + Math.floor(this.difficulty / 2),
                         type: node.armyType,
                         moved: false,
                         attacked: false,
@@ -169,17 +169,19 @@ class ConquestSystem {
         };
 
         const stats = {
-            assault: { health: 100, damage: 25, range: 1, moveRange: 3 },
-            ranger: { health: 60, damage: 20, range: 4, moveRange: 2 },
+            assault: { health: 100, damage: 25, range: 1, moveRange: 4 },
+            ranger: { health: 60, damage: 20, range: 4, moveRange: 3 },
             tank: { health: 200, damage: 15, range: 1, moveRange: 2 },
-            hacker: { health: 50, damage: 10, range: 2, moveRange: 3 }
+            hacker: { health: 50, damage: 10, range: 2, moveRange: 4 }
         };
 
         if (!this.game.player.spendResources(costs[armyType])) return false;
 
+        const playerBuildingTypes = ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'observatory'];
+
         const nearBuilding = this.planet.structures.some(building => {
             const distance = Math.abs(building.x - x) + Math.abs(building.y - y);
-            return distance <= 1 && (building.type === 'spaceship' || building.type === 'settlement');
+            return distance <= 1 && playerBuildingTypes.includes(building.type);
         });
 
         if (!nearBuilding) {
@@ -285,16 +287,19 @@ class ConquestSystem {
 
         const hacker = this.armies.find(a => {
             const distance = Math.abs(a.x - node.x) + Math.abs(a.y - node.y);
-            return a.type === 'hacker' && distance <= 2;
+            return a.type === 'hacker' && distance <= 2 && !a.attacked;
         });
 
         if (!hacker) {
-            this.game.log('Need a hacker unit within 2 tiles of the node!');
+            this.game.log('Need a hacker unit within 2 tiles of the node that hasn\'t acted!');
             return false;
         }
 
+        hacker.attacked = true;
+
         this.hackingMiniGame = {
             nodeId: nodeId,
+            hackerId: hacker.id,
             pattern: JSON.parse(JSON.stringify(node.circuitPattern)),
             timeLimit: 30,
             timeRemaining: 30,
@@ -320,12 +325,17 @@ class ConquestSystem {
         const pattern = this.hackingMiniGame.pattern;
         const size = pattern.length;
 
-        let sourceX = -1, sourceY = -1;
+        let sourceX = -1, sourceY = -1, targetX = -1, targetY = -1;
+
         for (let y = 0; y < size; y++) {
             for (let x = 0; x < size; x++) {
                 if (pattern[y][x].type === 'source') {
                     sourceX = x;
                     sourceY = y;
+                }
+                if (pattern[y][x].type === 'target') {
+                    targetX = x;
+                    targetY = y;
                 }
                 pattern[y][x].reachable = false;
             }
@@ -344,23 +354,17 @@ class ConquestSystem {
             neighbors.forEach(([nx, ny]) => {
                 if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
                     const neighbor = pattern[ny][nx];
-                    if (!neighbor.reachable && (neighbor.type === 'wire' || neighbor.type === 'target') &&
-                        (neighbor.powered || neighbor.correct)) {
-                        neighbor.reachable = true;
-                        queue.push([nx, ny]);
+                    if (!neighbor.reachable) {
+                        if (neighbor.type === 'wire' && neighbor.powered) {
+                            neighbor.reachable = true;
+                            queue.push([nx, ny]);
+                        } else if (neighbor.type === 'target') {
+                            neighbor.reachable = true;
+                            queue.push([nx, ny]);
+                        }
                     }
                 }
             });
-        }
-
-        let targetX = -1, targetY = -1;
-        for (let y = 0; y < size; y++) {
-            for (let x = 0; x < size; x++) {
-                if (pattern[y][x].type === 'target') {
-                    targetX = x;
-                    targetY = y;
-                }
-            }
         }
 
         if (pattern[targetY][targetX].reachable) {
@@ -407,55 +411,88 @@ class ConquestSystem {
         });
 
         this.sentinels.forEach(sentinel => {
+            if (sentinel.empStunned) {
+                return;
+            }
+
             let closestTarget = null;
             let closestDistance = Infinity;
 
-            this.armies.forEach(army => {
-                const distance = Math.abs(sentinel.x - army.x) + Math.abs(sentinel.y - army.y);
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestTarget = { type: 'unit', data: army, distance: distance };
+            const taunt = this.game.unitActionSystem.tauntedSentinels.get(sentinel.id);
+            if (taunt) {
+                const tauntedUnit = this.armies.find(a => a.id === taunt.targetId);
+                if (tauntedUnit) {
+                    closestTarget = { type: 'unit', data: tauntedUnit, distance: Math.abs(sentinel.x - tauntedUnit.x) + Math.abs(sentinel.y - tauntedUnit.y) };
+                    closestDistance = closestTarget.distance;
                 }
-            });
-
-            this.planet.structures.forEach(building => {
-                if (building.type === 'spaceship' || building.type === 'settlement') {
-                    const distance = Math.abs(sentinel.x - building.x) + Math.abs(sentinel.y - building.y);
+            } else {
+                this.armies.forEach(army => {
+                    const distance = Math.abs(sentinel.x - army.x) + Math.abs(sentinel.y - army.y);
                     if (distance < closestDistance) {
                         closestDistance = distance;
-                        closestTarget = { type: 'building', data: building, distance: distance };
+                        closestTarget = { type: 'unit', data: army, distance: distance };
                     }
-                }
-            });
+                });
 
-            if (closestTarget && closestTarget.distance <= sentinel.range) {
-                closestTarget.data.health -= sentinel.damage;
+                const playerBuildingTypes = ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'observatory'];
 
-                if (closestTarget.type === 'unit' && closestTarget.data.health <= 0) {
-                    this.armies = this.armies.filter(a => a.id !== closestTarget.data.id);
-                    this.game.log(`Your ${closestTarget.data.type} was destroyed!`);
-                } else if (closestTarget.type === 'building') {
-                    this.game.log(`${closestTarget.data.type} took ${sentinel.damage} damage!`);
-
-                    if (closestTarget.data.health <= 0) {
-                        this.game.log(`${closestTarget.data.type} destroyed! DEFEAT!`);
-                        return { defeat: true };
+                this.planet.structures.forEach(building => {
+                    if (playerBuildingTypes.includes(building.type)) {
+                        const distance = Math.abs(sentinel.x - building.x) + Math.abs(sentinel.y - building.y);
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestTarget = { type: 'building', data: building, distance: distance };
+                        }
                     }
-                }
-            } else if (closestTarget && closestTarget.distance <= sentinel.moveRange + sentinel.range) {
-                const dx = Math.sign(closestTarget.data.x - sentinel.x);
-                const dy = Math.sign(closestTarget.data.y - sentinel.y);
+                });
 
-                for (let i = 0; i < sentinel.moveRange; i++) {
-                    const newX = sentinel.x + (Math.abs(dx) > 0 ? dx : 0);
-                    const newY = sentinel.y + (Math.abs(dy) > 0 ? dy : 0);
+                if (closestTarget && closestTarget.distance <= sentinel.range) {
+                    closestTarget.data.health -= sentinel.damage;
 
-                    const occupied = this.armies.some(a => a.x === newX && a.y === newY) ||
-                                   this.sentinels.some(s => s.x === newX && s.y === newY && s.id !== sentinel.id);
+                    if (closestTarget.type === 'unit' && closestTarget.data.health <= 0) {
+                        this.armies = this.armies.filter(a => a.id !== closestTarget.data.id);
+                        this.game.log(`Your ${closestTarget.data.type} was destroyed!`);
+                    } else if (closestTarget.type === 'building') {
+                        this.game.log(`${closestTarget.data.type} took ${sentinel.damage} damage!`);
 
-                    if (!occupied && newX >= 0 && newX < this.planet.width && newY >= 0 && newY < this.planet.height) {
-                        sentinel.x = newX;
-                        sentinel.y = newY;
+                        if (closestTarget.data.health <= 0) {
+                            if (closestTarget.data.type === 'spaceship') {
+                                this.game.log(`Spaceship destroyed! DEFEAT!`);
+                                return { defeat: true };
+                            } else {
+                                this.game.log(`${closestTarget.data.type} destroyed and turned to ruins!`);
+
+                                const ruins = {
+                                    x: closestTarget.data.x,
+                                    y: closestTarget.data.y,
+                                    type: 'ruins',
+                                    health: 0,
+                                    maxHealth: 0,
+                                    originalType: closestTarget.data.type
+                                };
+
+                                this.planet.structures = this.planet.structures.filter(s => s !== closestTarget.data);
+                                this.planet.structures.push(ruins);
+                                this.planet.tiles[closestTarget.data.y][closestTarget.data.x].building = ruins;
+                            }
+                        }
+                    }
+                } else if (closestTarget && closestTarget.distance <= sentinel.moveRange + sentinel.range) {
+                    const dx = Math.sign(closestTarget.data.x - sentinel.x);
+                    const dy = Math.sign(closestTarget.data.y - sentinel.y);
+
+                    for (let i = 0; i < sentinel.moveRange; i++) {
+                        const newX = sentinel.x + (Math.abs(dx) > 0 ? dx : 0);
+                        const newY = sentinel.y + (Math.abs(dy) > 0 ? dy : 0);
+
+                        const occupied = this.armies.some(a => a.x === newX && a.y === newY) ||
+                                       this.sentinels.some(s => s.x === newX && s.y === newY && s.id !== sentinel.id);
+
+                        if (!occupied && newX >= 0 && newX < this.planet.width && newY >= 0 && newY < this.planet.height) {
+                            sentinel.x = newX;
+                            sentinel.y = newY;
+                            this.game.unitActionSystem.processOverwatch(sentinel);
+                        }
                     }
                 }
             }

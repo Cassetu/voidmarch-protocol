@@ -103,7 +103,10 @@ class Planet {
     canPlaceBuilding(gridX, gridY) {
         if (gridX < 0 || gridX >= this.width || gridY < 0 || gridY >= this.height) return false;
         const tile = this.tiles[gridY][gridX];
-        return !tile.building && tile.type !== 'water' && tile.type !== 'lava' && tile.type !== 'void';
+
+        const canBuildOver = !tile.building || tile.building.type === 'ruins';
+
+        return canBuildOver && tile.type !== 'water' && tile.type !== 'lava' && tile.type !== 'void';
     }
 
     placeBuilding(gridX, gridY, buildingType, player) {
@@ -125,6 +128,10 @@ class Planet {
 
         const cost = buildingCosts[buildingType];
         if (!cost || !player.spendResources(cost.resources)) return false;
+
+        if (this.tiles[gridY][gridX].building && this.tiles[gridY][gridX].building.type === 'ruins') {
+            this.structures = this.structures.filter(s => s !== this.tiles[gridY][gridX].building);
+        }
 
         const building = new Building(gridX, gridY, buildingType);
         console.log(`Building created at grid (${gridX}, ${gridY}), building.x=${building.x}, building.y=${building.y}`);
@@ -187,7 +194,23 @@ class Building {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.health = 100;
+
+        const healthMap = {
+            settlement: 150,
+            farm: 80,
+            warehouse: 120,
+            observatory: 100,
+            barracks: 200,
+            temple: 150,
+            forge: 180,
+            market: 100,
+            castle: 300,
+            library: 120,
+            university: 150
+        };
+
+        this.health = healthMap[type] || 100;
+        this.maxHealth = this.health;
         this.production = 0;
         this.buildingInfo = {
             settlement: { name: 'Settlement', description: 'Houses population', icon: 'S' },

@@ -91,8 +91,8 @@ class Renderer {
 
         this.drawHealthBar(screenX, screenY - 10, unit.health, unit.maxHealth, 20);
 
-        if (unit.moved) {
-            this.ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
+        if (unit.moved || unit.attacked) {
+            this.ctx.fillStyle = 'rgba(100, 100, 100, 0.6)';
             this.ctx.beginPath();
             this.ctx.arc(screenX, screenY - 10, 10, 0, Math.PI * 2);
             this.ctx.fill();
@@ -132,41 +132,47 @@ class Renderer {
         this.ctx.restore();
     }
 
-    drawWorld(planet, cameraX, cameraY, player) {
+    drawMovementRange(unit, cameraX, cameraY) {
+        if (!unit || unit.moved) return;
+
+        const unitX = unit.x;
+        const unitY = unit.y;
+        const range = unit.moveRange;
+
         this.ctx.save();
-        const topBarHeight = 75;
-        this.ctx.translate(0, topBarHeight);
+        this.ctx.globalAlpha = 0.3;
 
-        this.ctx.scale(this.zoom, this.zoom);
+        for (let dy = -range; dy <= range; dy++) {
+            for (let dx = -range; dx <= range; dx++) {
+                const distance = Math.abs(dx) + Math.abs(dy);
+                if (distance <= range && distance > 0) {
+                    const tileX = unitX + dx;
+                    const tileY = unitY + dy;
 
-        const centerGridX = planet.width / 2;
-        const centerGridY = planet.height / 2;
+                    const screenX = (tileX - tileY) * (this.tileWidth / 2);
+                    const screenY = (tileX + tileY) * (this.tileHeight / 2);
 
-        const centerScreenX = (centerGridX - centerGridY) * (this.tileWidth / 2);
-        const centerScreenY = (centerGridX + centerGridY) * (this.tileHeight / 2);
+                    this.ctx.fillStyle = 'rgba(100, 200, 255, 0.4)';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX, screenY - this.tileHeight / 2);
+                    this.ctx.lineTo(screenX + this.tileWidth / 2, screenY);
+                    this.ctx.lineTo(screenX, screenY + this.tileHeight / 2);
+                    this.ctx.lineTo(screenX - this.tileWidth / 2, screenY);
+                    this.ctx.closePath();
+                    this.ctx.fill();
 
-        const targetX = (this.width / 2) / this.zoom + cameraX;
-        const targetY = ((this.height - topBarHeight) / 2) / this.zoom + cameraY;
-        const verticalNudge = 0;
-        const horizontalNudge = 0;
-
-        this.ctx.translate(
-            targetX - centerScreenX + horizontalNudge,
-            targetY - centerScreenY + verticalNudge
-        );
-
-        for (let y = 0; y < planet.height; y++) {
-            for (let x = 0; x < planet.width; x++) {
-                this.drawTile(x, y, planet.tiles[y][x], cameraX, cameraY);
+                    this.ctx.strokeStyle = 'rgba(100, 200, 255, 0.8)';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                }
             }
         }
 
-        planet.structures.forEach(building => {
-            this.drawBuilding(building, cameraX, cameraY);
-        });
-
+        this.ctx.globalAlpha = 1;
         this.ctx.restore();
     }
+
+
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
         const screenX = (gridX - gridY) * (this.tileWidth / 2);
@@ -837,6 +843,31 @@ class Renderer {
                 this.ctx.stroke();
                 break;
 
+            case 'ruins':
+                this.ctx.fillStyle = '#3a3a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX + 8, screenY - 4);
+                this.ctx.lineTo(screenX + 8, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a2a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX - 8, screenY - 4);
+                this.ctx.lineTo(screenX - 8, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a4a4a';
+                this.ctx.fillRect(screenX - 3, screenY - 2, 6, 8);
+                this.ctx.fillRect(screenX - 6, screenY + 2, 4, 4);
+                this.ctx.fillRect(screenX + 2, screenY + 4, 4, 3);
+                break;
+
             case 'defense_node':
                 break;
 
@@ -845,6 +876,126 @@ class Renderer {
                 this.ctx.fillRect(screenX - 12, screenY - 8, 24, 16);
         }
 
+        if (building.health < building.maxHealth && building.type !== 'ruins') {
+            this.drawHealthBar(screenX, screenY + 15, building.health, building.maxHealth, 30);
+        }
+
+        this.ctx.restore();
+    }
+
+    drawAttackRange(unit, cameraX, cameraY) {
+        if (!unit) return;
+
+        const unitX = unit.x;
+        const unitY = unit.y;
+        const range = unit.range;
+
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.4;
+
+        for (let dy = -range; dy <= range; dy++) {
+            for (let dx = -range; dx <= range; dx++) {
+                const distance = Math.abs(dx) + Math.abs(dy);
+                if (distance <= range && distance > 0) {
+                    const tileX = unitX + dx;
+                    const tileY = unitY + dy;
+
+                    const screenX = (tileX - tileY) * (this.tileWidth / 2);
+                    const screenY = (tileX + tileY) * (this.tileHeight / 2);
+
+                    this.ctx.fillStyle = 'rgba(255, 50, 50, 0.5)';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX, screenY - this.tileHeight / 2);
+                    this.ctx.lineTo(screenX + this.tileWidth / 2, screenY);
+                    this.ctx.lineTo(screenX, screenY + this.tileHeight / 2);
+                    this.ctx.lineTo(screenX - this.tileWidth / 2, screenY);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    this.ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                }
+            }
+        }
+
+        this.ctx.globalAlpha = 1;
+        this.ctx.restore();
+    }
+
+    drawSentinelMovementRanges(sentinels, cameraX, cameraY) {
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.25;
+
+        sentinels.forEach(sentinel => {
+            const range = sentinel.moveRange;
+
+            for (let dy = -range; dy <= range; dy++) {
+                for (let dx = -range; dx <= range; dx++) {
+                    const distance = Math.abs(dx) + Math.abs(dy);
+                    if (distance <= range && distance > 0) {
+                        const tileX = sentinel.x + dx;
+                        const tileY = sentinel.y + dy;
+
+                        const screenX = (tileX - tileY) * (this.tileWidth / 2);
+                        const screenY = (tileX + tileY) * (this.tileHeight / 2);
+
+                        this.ctx.fillStyle = 'rgba(138, 43, 226, 0.4)';
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(screenX, screenY - this.tileHeight / 2);
+                        this.ctx.lineTo(screenX + this.tileWidth / 2, screenY);
+                        this.ctx.lineTo(screenX, screenY + this.tileHeight / 2);
+                        this.ctx.lineTo(screenX - this.tileWidth / 2, screenY);
+                        this.ctx.closePath();
+                        this.ctx.fill();
+
+                        this.ctx.strokeStyle = 'rgba(148, 0, 211, 0.6)';
+                        this.ctx.lineWidth = 1;
+                        this.ctx.stroke();
+                    }
+                }
+            }
+        });
+
+        this.ctx.globalAlpha = 1;
+        this.ctx.restore();
+    }
+
+    drawSentinelAttackRanges(sentinels, cameraX, cameraY) {
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.3;
+
+        sentinels.forEach(sentinel => {
+            const range = sentinel.range;
+
+            for (let dy = -range; dy <= range; dy++) {
+                for (let dx = -range; dx <= range; dx++) {
+                    const distance = Math.abs(dx) + Math.abs(dy);
+                    if (distance <= range && distance > 0) {
+                        const tileX = sentinel.x + dx;
+                        const tileY = sentinel.y + dy;
+
+                        const screenX = (tileX - tileY) * (this.tileWidth / 2);
+                        const screenY = (tileX + tileY) * (this.tileHeight / 2);
+
+                        this.ctx.fillStyle = 'rgba(255, 140, 0, 0.4)';
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(screenX, screenY - this.tileHeight / 2);
+                        this.ctx.lineTo(screenX + this.tileWidth / 2, screenY);
+                        this.ctx.lineTo(screenX, screenY + this.tileHeight / 2);
+                        this.ctx.lineTo(screenX - this.tileWidth / 2, screenY);
+                        this.ctx.closePath();
+                        this.ctx.fill();
+
+                        this.ctx.strokeStyle = 'rgba(255, 165, 0, 0.7)';
+                        this.ctx.lineWidth = 1;
+                        this.ctx.stroke();
+                    }
+                }
+            }
+        });
+
+        this.ctx.globalAlpha = 1;
         this.ctx.restore();
     }
 }

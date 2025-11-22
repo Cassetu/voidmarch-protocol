@@ -7,7 +7,7 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.width = this.canvas.width = window.innerWidth;
         this.height = this.canvas.height = window.innerHeight;
-
+        this.unitActionSystem = new UnitActionSystem(this);
 
         this.cheatCodeSequence = [];
         this.cheatCodeTarget = ['q', 'w', 'e', 'r', 't', 'y', 'c', 'a', 's'];
@@ -64,6 +64,7 @@ class Game {
         if (deployAssaultBtn) {
             deployAssaultBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.player.selectedBuilding = null;
                 this.hiringMode = 'assault';
                 this.log('Click adjacent to your buildings to hire Assault unit');
             });
@@ -73,6 +74,7 @@ class Game {
         if (deployRangerBtn) {
             deployRangerBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.player.selectedBuilding = null;
                 this.hiringMode = 'ranger';
                 this.log('Click adjacent to your buildings to hire Ranger unit');
             });
@@ -82,6 +84,7 @@ class Game {
         if (deployTankBtn) {
             deployTankBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.player.selectedBuilding = null;
                 this.hiringMode = 'tank';
                 this.log('Click adjacent to your buildings to hire Tank unit');
             });
@@ -91,25 +94,22 @@ class Game {
         if (deployHackerBtn) {
             deployHackerBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.player.selectedBuilding = null;
                 this.hiringMode = 'hacker';
                 this.log('Click adjacent to your buildings to hire Hacker unit');
             });
         }
 
-        const hackNodeBtn = document.getElementById('hack-node-btn');
-        if (hackNodeBtn) {
-            hackNodeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (this.conquestSystem && this.conquestSystem.selectedUnit) {
-                    const node = this.conquestSystem.defenseNodes.find(n => !n.hacked);
-                    if (node && this.conquestSystem.startHacking(node.id)) {
-                        this.showHackingMiniGame();
-                    }
-                } else {
-                    this.log('Select a unit first, or get a hacker near a node!');
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (this.unitActionSystem.actionMode) {
+                    this.unitActionSystem.actionMode = null;
+                    this.unitActionSystem.selectedUnit = null;
+                    this.selectedUnit = null;
+                    this.log('Action cancelled');
                 }
-            });
-        }
+            }
+        });
     }
 
     endTurn() {
@@ -312,6 +312,7 @@ class Game {
     endConquestTurn() {
         if (!this.conquestSystem) return;
 
+        this.unitActionSystem.onTurnEnd();
         const result = this.conquestSystem.endPlayerTurn();
 
         if (result.victory) {
@@ -425,36 +426,85 @@ class Game {
                 const worldX = (mouseX / this.renderer.zoom) - translateX;
                 const worldY = (mouseY / this.renderer.zoom) - translateY;
 
-                const gridX = Math.round((worldX / unitX + worldY / unitY) / 2 - 3);
-                const gridY = Math.round((worldY / unitY - worldX / unitX) / 2 - 3);
+                const gridX = Math.round((worldX / unitX + worldY / unitY) / 2);
+                const gridY = Math.round((worldY / unitY - worldX / unitX) / 2);
 
                 if (this.gameMode === 'conquest' && this.conquestSystem) {
                     if (this.conquestSystem.hackingMiniGame) {
                         return;
                     }
 
-                    if (this.hiringMode) {
+                    if (this.player.selectedBuilding) {
+                        if (this.currentPlanet.placeBuilding(gridX, gridY, this.player.selectedBuilding, this.player)) {
+                            const msg = `Built ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
+                            this.log(msg);
+                            this.player.selectedBuilding = null;
+                            const buildingsList = document.getElementById('buildings-list');
+                            if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
+                        } else {
+                            const msg = `Cannot build ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
+                            this.log(msg);
+                        }
+                    } else if (this.hiringMode) {
                         if (this.conquestSystem.hireUnit(this.hiringMode, gridX, gridY)) {
                             this.hiringMode = null;
+                        }
+                    } else if (this.unitActionSystem.actionMode === 'move') {
+                        if (this.unitActionSystem.selectedUnit) {
+                            const moved = this.conquestSystem.moveUnit(this.unitActionSystem.selectedUnit.id, gridX, gridY);
+                            if (moved) {
+                                this.unitActionSystem.actionMode = null;
+                                this.selectedUnit = null;
+                                this.unitActionSystem.selectedUnit = null;
+                            }
+                        }
+                    } else if (this.unitActionSystem.actionMode === 'attack') {
+                        if (this.unitActionSystem.selectedUnit) {
+                            const unit = this.unitActionSystem.selectedUnit;
+                            const attacked = this.conquestSystem.attackWithUnit(unit.id, gridX, gridY);
+
+                            if (attacked && unit.chargeDamage) {
+                                const sentinel = this.conquestSystem.sentinels.find(s => s.x === gridX && s.y === gridY);
+                                if (sentinel) {
+                                    sentinel.health -= unit.damage;
+                                    this.log(`CHARGE STRIKE bonus damage!`);
+
+                                    if (sentinel.health <= 0) {
+                                        this.conquestSystem.sentinels = this.conquestSystem.sentinels.filter(s => s.id !== sentinel.id);
+                                        this.log(`Sentinel destroyed!`);
+                                    }
+                                }
+                                delete unit.chargeDamage;
+                            }
+
+                            if (attacked) {
+                                this.unitActionSystem.actionMode = null;
+                                this.selectedUnit = null;
+                                this.unitActionSystem.selectedUnit = null;
+                            }
                         }
                     } else {
                         const selection = this.conquestSystem.selectUnit(gridX, gridY);
 
                         if (selection && selection.type === 'unit') {
                             this.selectedUnit = selection.data;
-                            this.log(`Selected ${selection.data.type} (HP: ${Math.floor(selection.data.health)}/${selection.data.maxHealth})`);
+                            this.unitActionSystem.showActionMenu(selection.data);
                         } else if (selection && selection.type === 'building') {
                             this.showBuildingInfo(selection.data);
-                        } else if (this.selectedUnit) {
-                            const moved = this.conquestSystem.moveUnit(this.selectedUnit.id, gridX, gridY);
-
-                            if (!moved) {
-                                const attacked = this.conquestSystem.attackWithUnit(this.selectedUnit.id, gridX, gridY);
-                                if (!attacked) {
-                                    this.selectedUnit = null;
-                                }
-                            }
                         }
+                    }
+                } else if (this.gameMode === 'building' && this.player.selectedBuilding) {
+                    if (this.currentPlanet.placeBuilding(gridX, gridY, this.player.selectedBuilding, this.player)) {
+                        const msg = `Built ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
+                        this.log(msg);
+                        console.log(msg);
+                        this.player.selectedBuilding = null;
+                        const buildingsList = document.getElementById('buildings-list');
+                        if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
+                    } else {
+                        const msg = `Cannot build ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
+                        this.log(msg);
+                        console.log(msg);
                     }
                 }
             }
@@ -542,7 +592,7 @@ class Game {
 
                     if (cell.type === 'source') {
                         ctx.fillStyle = '#00ff00';
-                        ctx.javascriptfillRect(px + 5, py + 5, cellSize - 10, cellSize - 10);
+                        ctx.fillRect(px + 5, py + 5, cellSize - 10, cellSize - 10);
                         ctx.fillStyle = '#ffffff';
                         ctx.font = 'bold 12px monospace';
                         ctx.textAlign = 'center';
@@ -614,62 +664,6 @@ class Game {
         }, 100);
 
         renderHackingGrid();
-    }
-
-    render() {
-        this.ctx.fillStyle = '#1a1f2e';
-        this.ctx.fillRect(0, 0, this.width, this.height);
-
-        this.ctx.save();
-        const topBarHeight = 75;
-        this.ctx.translate(0, topBarHeight);
-        this.ctx.scale(this.renderer.zoom, this.renderer.zoom);
-
-        const centerGridX = this.currentPlanet.width / 2;
-        const centerGridY = this.currentPlanet.height / 2;
-        const centerScreenX = (centerGridX - centerGridY) * (this.renderer.tileWidth / 2);
-        const centerScreenY = (centerGridX + centerGridY) * (this.renderer.tileHeight / 2);
-
-        const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
-        const targetY = ((this.height - topBarHeight - 160) / 2) / this.renderer.zoom + this.cameraY;
-
-        this.ctx.translate(
-            targetX - centerScreenX,
-            targetY - centerScreenY
-        );
-
-        for (let y = 0; y < this.currentPlanet.height; y++) {
-            for (let x = 0; x < this.currentPlanet.width; x++) {
-                this.renderer.drawTile(x, y, this.currentPlanet.tiles[y][x], this.cameraX, this.cameraY);
-            }
-        }
-
-        this.currentPlanet.structures.forEach(building => {
-            this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
-        });
-
-        if (this.conquestSystem) {
-            this.conquestSystem.defenseNodes.forEach(node => {
-                this.renderer.drawDefenseNode(node, this.cameraX, this.cameraY);
-            });
-
-            this.conquestSystem.sentinels.forEach(sentinel => {
-                this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
-            });
-
-            this.conquestSystem.armies.forEach(army => {
-                const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
-                this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
-            });
-        }
-
-        this.ctx.restore();
-
-        if (this.player.selectedBuilding && this.gameMode === 'building') {
-            this._drawBuildingPreview();
-        }
-
-        this.updateUI();
     }
 
     gridToWorld(gridX, gridY) {
@@ -785,35 +779,60 @@ class Game {
         this.ctx.fillStyle = '#1a1f2e';
         this.ctx.fillRect(0, 0, this.width, this.height);
 
-        this.renderer.drawWorld(
-            this.currentPlanet,
-            this.cameraX,
-            this.cameraY,
-            this.player
+        this.ctx.save();
+        const topBarHeight = 75;
+        this.ctx.translate(0, topBarHeight);
+        this.ctx.scale(this.renderer.zoom, this.renderer.zoom);
+
+        const centerGridX = this.currentPlanet.width / 2;
+        const centerGridY = this.currentPlanet.height / 2;
+        const centerScreenX = (centerGridX - centerGridY) * (this.renderer.tileWidth / 2);
+        const centerScreenY = (centerGridX + centerGridY) * (this.renderer.tileHeight / 2);
+
+        const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
+        const targetY = ((this.height - topBarHeight - 160) / 2) / this.renderer.zoom + this.cameraY;
+
+        this.ctx.translate(
+            targetX - centerScreenX,
+            targetY - centerScreenY
         );
 
+        for (let y = 0; y < this.currentPlanet.height; y++) {
+            for (let x = 0; x < this.currentPlanet.width; x++) {
+                this.renderer.drawTile(x, y, this.currentPlanet.tiles[y][x], this.cameraX, this.cameraY);
+            }
+        }
+
+        this.currentPlanet.structures.forEach(building => {
+            this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
+        });
+
         if (this.conquestSystem) {
-            this.ctx.save();
-            const topBarHeight = 75;
-            this.ctx.translate(0, topBarHeight);
-            this.ctx.scale(this.renderer.zoom, this.renderer.zoom);
-
-            const centerGridX = this.currentPlanet.width / 2;
-            const centerGridY = this.currentPlanet.height / 2;
-            const centerScreenX = (centerGridX - centerGridY) * (this.renderer.tileWidth / 2);
-            const centerScreenY = (centerGridX + centerGridY) * (this.renderer.tileHeight / 2);
-
-            const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
-            const targetY = ((this.height - topBarHeight - 160) / 2) / this.renderer.zoom + this.cameraY;
-
-            this.ctx.translate(
-                targetX - centerScreenX,
-                targetY - centerScreenY
-            );
-
             this.conquestSystem.defenseNodes.forEach(node => {
                 this.renderer.drawDefenseNode(node, this.cameraX, this.cameraY);
             });
+
+            if (this.unitActionSystem.actionMode === 'move') {
+                this.renderer.drawSentinelMovementRanges(this.conquestSystem.sentinels, this.cameraX, this.cameraY);
+                this.renderer.drawSentinelAttackRanges(this.conquestSystem.sentinels, this.cameraX, this.cameraY);
+            }
+
+            if (this.unitActionSystem.actionMode === 'attack') {
+                this.renderer.drawSentinelMovementRanges(this.conquestSystem.sentinels, this.cameraX, this.cameraY);
+                this.renderer.drawSentinelAttackRanges(this.conquestSystem.sentinels, this.cameraX, this.cameraY);
+            }
+
+            if (this.selectedUnit && !this.unitActionSystem.actionMode) {
+                this.renderer.drawMovementRange(this.selectedUnit, this.cameraX, this.cameraY);
+            }
+
+            if (this.unitActionSystem.actionMode === 'move' && this.unitActionSystem.selectedUnit) {
+                this.renderer.drawMovementRange(this.unitActionSystem.selectedUnit, this.cameraX, this.cameraY);
+            }
+
+            if (this.unitActionSystem.actionMode === 'attack' && this.unitActionSystem.selectedUnit) {
+                this.renderer.drawAttackRange(this.unitActionSystem.selectedUnit, this.cameraX, this.cameraY);
+            }
 
             this.conquestSystem.sentinels.forEach(sentinel => {
                 this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
@@ -823,9 +842,9 @@ class Game {
                 const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
                 this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
             });
-
-            this.ctx.restore();
         }
+
+        this.ctx.restore();
 
         if (this.player.selectedBuilding && this.gameMode === 'building') {
             this._drawBuildingPreview();
@@ -850,7 +869,6 @@ class Game {
         document.getElementById('deploy-ranger-btn').style.display = isConquest ? 'block' : 'none';
         document.getElementById('deploy-tank-btn').style.display = isConquest ? 'block' : 'none';
         document.getElementById('deploy-hacker-btn').style.display = isConquest ? 'block' : 'none';
-        document.getElementById('hack-node-btn').style.display = isConquest ? 'block' : 'none';
 
         if (isConquest) {
             document.getElementById('deploy-assault-btn').textContent = 'Hire Assault (80)';
@@ -859,7 +877,7 @@ class Game {
             document.getElementById('deploy-hacker-btn').textContent = 'Hire Hacker (100)';
         }
 
-        document.getElementById('buildings-list').style.display = isConquest ? 'none' : 'block';
+        document.getElementById('buildings-list').style.display = 'block';
 
         if (isConquest) {
             document.getElementById('conquest-info').style.display = 'block';
