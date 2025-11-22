@@ -1244,7 +1244,7 @@ class Game {
 
         availableTechs.forEach(techId => {
             const tech = this.player.techTree.techs[techId];
-            const canAfford = this.player.science >= tech.cost;
+            const canAfford = this.player.sciencePerTurn >= tech.cost;
 
             const techDiv = document.createElement('div');
             techDiv.className = 'tech-item' + (canAfford ? '' : ' tech-disabled');
