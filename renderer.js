@@ -75,19 +75,11 @@ class Renderer {
             this.ctx.stroke();
         }
 
-        this.ctx.fillStyle = color;
-        this.ctx.beginPath();
-        this.ctx.arc(screenX, screenY - 10, 10, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        this.ctx.strokeStyle = '#000000';
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
-
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 8px monospace';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText(unit.type[0].toUpperCase(), screenX, screenY - 8);
+        if (color === '#ff0000') {
+            this.drawSentinel(screenX, screenY, unit);
+        } else {
+            this.drawPlayerUnit(screenX, screenY, unit);
+        }
 
         this.drawHealthBar(screenX, screenY - 10, unit.health, unit.maxHealth, 20);
 
@@ -99,6 +91,211 @@ class Renderer {
         }
 
         this.ctx.restore();
+    }
+
+    drawSentinel(screenX, screenY, sentinel) {
+        const baseY = screenY - 5;
+
+        this.ctx.save();
+
+        const leftX = screenX - 8;
+        const rightX = screenX + 8;
+        const topY = baseY - 20;
+        const midY = baseY - 10;
+        const botY = baseY + 5;
+
+        this.ctx.fillStyle = '#2a3a4a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, topY);
+        this.ctx.lineTo(rightX, midY - 5);
+        this.ctx.lineTo(screenX, midY + 5);
+        this.ctx.lineTo(leftX, midY - 5);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#4a5a6a';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = '#1a2a3a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX, midY - 5);
+        this.ctx.lineTo(screenX, midY + 5);
+        this.ctx.lineTo(screenX - 4, botY);
+        this.ctx.lineTo(leftX - 4, midY);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#3a4a5a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, midY + 5);
+        this.ctx.lineTo(rightX, midY - 5);
+        this.ctx.lineTo(rightX + 4, midY);
+        this.ctx.lineTo(screenX + 4, botY);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#ff3333';
+        this.ctx.beginPath();
+        this.ctx.arc(screenX - 2, midY - 3, 2.5, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(screenX + 2, midY - 3, 2.5, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#1a1a2a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX - 2, botY);
+        this.ctx.lineTo(leftX + 2, botY);
+        this.ctx.lineTo(leftX, botY + 10);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#1a1a2a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(rightX - 2, botY);
+        this.ctx.lineTo(rightX + 2, botY);
+        this.ctx.lineTo(rightX, botY + 10);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.restore();
+    }
+
+    drawPlayerUnit(screenX, screenY, unit) {
+        const baseY = screenY;
+
+        this.ctx.save();
+
+        const leftX = screenX - 6;
+        const rightX = screenX + 6;
+        const headY = baseY - 20;
+        const chestTop = baseY - 12;
+        const chestBot = baseY + 3;
+        const legBot = baseY + 12;
+
+        this.ctx.fillStyle = '#c97861';
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, headY);
+        this.ctx.lineTo(rightX + 2, headY + 4);
+        this.ctx.lineTo(screenX + 2, headY + 10);
+        this.ctx.lineTo(leftX - 2, headY + 4);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#a86a4a';
+        this.ctx.lineWidth = 1;
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = '#8b5a3c';
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, chestTop);
+        this.ctx.lineTo(rightX + 3, chestTop + 3);
+        this.ctx.lineTo(rightX + 1, chestBot);
+        this.ctx.lineTo(screenX, chestBot + 3);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#6a4a2c';
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX, chestTop + 3);
+        this.ctx.lineTo(screenX, chestTop);
+        this.ctx.lineTo(screenX, chestBot + 3);
+        this.ctx.lineTo(leftX - 3, chestBot);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#c97861';
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX - 3, chestBot);
+        this.ctx.lineTo(leftX - 1, chestBot + 2);
+        this.ctx.lineTo(leftX - 2, legBot);
+        this.ctx.lineTo(leftX - 4, legBot - 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#c97861';
+        this.ctx.beginPath();
+        this.ctx.moveTo(rightX + 1, chestBot);
+        this.ctx.lineTo(rightX + 3, chestBot + 2);
+        this.ctx.lineTo(rightX + 2, legBot);
+        this.ctx.lineTo(rightX, legBot - 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        switch(unit.type) {
+            case 'assault':
+                this.ctx.fillStyle = '#5a3a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(rightX + 3, chestTop + 4);
+                this.ctx.lineTo(rightX + 8, chestTop);
+                this.ctx.lineTo(rightX + 10, chestTop + 6);
+                this.ctx.lineTo(rightX + 5, chestTop + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.strokeStyle = '#8a4a4a';
+                this.ctx.lineWidth = 1;
+                this.ctx.stroke();
+                break;
+
+            case 'ranger':
+                this.ctx.fillStyle = '#3a5a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(rightX + 1, chestTop + 2);
+                this.ctx.lineTo(rightX + 10, chestTop - 4);
+                this.ctx.lineTo(rightX + 12, chestTop + 2);
+                this.ctx.lineTo(rightX + 3, chestTop + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.fillStyle = '#5a7a5a';
+                this.ctx.beginPath();
+                this.ctx.arc(rightX + 11, chestTop - 2, 2, 0, Math.PI * 2);
+                this.ctx.fill();
+                break;
+
+            case 'tank':
+                this.ctx.fillStyle = '#4a5a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 8, chestTop + 1);
+                this.ctx.lineTo(screenX + 8, chestTop - 1);
+                this.ctx.lineTo(screenX + 10, chestBot + 2);
+                this.ctx.lineTo(screenX - 10, chestBot);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.fillStyle = '#6a7a8a';
+                this.ctx.fillRect(screenX - 6, chestBot - 2, 3, 6);
+                this.ctx.fillRect(screenX + 3, chestBot - 2, 3, 6);
+                break;
+
+            case 'hacker':
+                this.ctx.fillStyle = '#5a3a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(rightX + 2, chestTop + 3);
+                this.ctx.lineTo(rightX + 9, chestTop - 2);
+                this.ctx.lineTo(rightX + 10, chestBot - 2);
+                this.ctx.lineTo(rightX + 3, chestBot + 2);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.fillStyle = '#7a5a8a';
+                this.ctx.beginPath();
+                this.ctx.arc(rightX + 9, chestTop - 4, 1.5, 0, Math.PI * 2);
+                this.ctx.fill();
+                break;
+        }
+
+        this.ctx.restore();
+    }
+
+    drawBuildingQueue(buildingQueue) {
+        buildingQueue.forEach(queuedBuilding => {
+            const screenX = (queuedBuilding.x - queuedBuilding.y) * (this.tileWidth / 2);
+            const screenY = (queuedBuilding.x + queuedBuilding.y) * (this.tileHeight / 2);
+
+            if (queuedBuilding.hasEnemy) {
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.font = 'bold 20px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('!', screenX, screenY - 40);
+            }
+        });
     }
 
     drawDefenseNode(node, cameraX, cameraY) {
@@ -209,14 +406,67 @@ class Renderer {
         this.ctx.stroke();
     }
 
+    drawBuildingFrame(screenX, screenY, building) {
+        const size = 16;
+
+        this.ctx.strokeStyle = '#8a8a8a';
+        this.ctx.lineWidth = 2;
+        this.ctx.setLineDash([4, 4]);
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, screenY - size);
+        this.ctx.lineTo(screenX + size, screenY);
+        this.ctx.lineTo(screenX, screenY + size);
+        this.ctx.lineTo(screenX - size, screenY);
+        this.ctx.closePath();
+        this.ctx.stroke();
+
+        this.ctx.setLineDash([]);
+
+        const progress = building.buildProgress;
+        const greenValue = Math.floor((progress / 100) * 255);
+        const grayValue = 150 - Math.floor((progress / 100) * 50);
+
+        this.ctx.strokeStyle = `rgb(${grayValue}, ${greenValue}, ${grayValue})`;
+        this.ctx.lineWidth = 3;
+
+        this.ctx.beginPath();
+        this.ctx.arc(screenX, screenY - 8, 14, 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        const circumference = 2 * Math.PI * 14;
+        const drawLength = (progress / 100) * circumference;
+
+        this.ctx.strokeStyle = `rgb(0, 200, 0)`;
+        this.ctx.lineWidth = 3;
+        this.ctx.lineCap = 'round';
+
+        this.ctx.beginPath();
+        const startAngle = -Math.PI / 2;
+        const endAngle = startAngle + (progress / 100) * Math.PI * 2;
+        this.ctx.arc(screenX, screenY - 8, 14, startAngle, endAngle);
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 10px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(`${Math.floor(progress)}%`, screenX, screenY - 8);
+
+        this.ctx.restore();
+    }
+
     drawBuilding(building, cameraX, cameraY) {
         const screenX = (building.x - building.y) * (this.tileWidth / 2);
         const screenY = (building.x + building.y) * (this.tileHeight / 2);
 
         this.ctx.save();
 
-        switch(building.type) {
-            case 'settlement':
+        if (building.isFrame) {
+            this.drawBuildingFrame(screenX, screenY, building);
+        } else {
+            switch(building.type) {
+                case 'settlement':
                 this.ctx.fillStyle = '#5a4a3a';
                 this.ctx.beginPath();
                 this.ctx.moveTo(screenX, screenY - 20);
@@ -874,11 +1124,36 @@ class Renderer {
             default:
                 this.ctx.fillStyle = '#6a7a8a';
                 this.ctx.fillRect(screenX - 12, screenY - 8, 24, 16);
-        }
+            }
 
-        if (building.health < building.maxHealth && building.type !== 'ruins') {
-            this.drawHealthBar(screenX, screenY + 15, building.health, building.maxHealth, 30);
+            if (building.health < building.maxHealth && building.type !== 'ruins') {
+                this.drawHealthBar(screenX, screenY + 15, building.health, building.maxHealth, 30);
+            }
+
+            this.ctx.restore();
         }
+    }
+
+    drawBuilder(builder, cameraX, cameraY) {
+        const screenX = (builder.currentX - builder.currentY) * (this.tileWidth / 2);
+        const screenY = (builder.currentX + builder.currentY) * (this.tileHeight / 2);
+
+        this.ctx.save();
+
+        this.ctx.fillStyle = '#ffaa00';
+        this.ctx.beginPath();
+        this.ctx.arc(screenX, screenY - 8, 6, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.strokeStyle = '#ffdd00';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = '#ffdd00';
+        this.ctx.font = 'bold 7px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('B', screenX, screenY - 8);
 
         this.ctx.restore();
     }

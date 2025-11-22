@@ -194,6 +194,8 @@ class Building {
         this.x = x;
         this.y = y;
         this.type = type;
+        this.isFrame = true;
+        this.buildProgress = 0;
 
         const healthMap = {
             settlement: 150,

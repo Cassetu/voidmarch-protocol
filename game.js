@@ -32,6 +32,7 @@ class Game {
         this.gameState = 'volcanic';
         this.renderer.zoom = 0.8;
         this.currentPlanet = this.world.createVolcanicWorld();
+        this.initializeStartingBuildings();
         this.running = true;
 
         this.galaxy = new Galaxy(this);
@@ -112,6 +113,27 @@ class Game {
         });
     }
 
+    initializeStartingBuildings() {
+        const settlement = new Building(25, 20, 'settlement');
+        settlement.isFrame = false;
+        settlement.buildProgress = 100;
+
+        const farm = new Building(26, 21, 'farm');
+        farm.isFrame = false;
+        farm.buildProgress = 100;
+
+        this.currentPlanet.tiles[20][25].building = settlement;
+        this.currentPlanet.tiles[21][26].building = farm;
+
+        this.currentPlanet.structures.push(settlement);
+        this.currentPlanet.structures.push(farm);
+
+        this.player.addBuilding(settlement);
+        this.player.addBuilding(farm);
+
+        this.log('Starting settlement and farm placed');
+    }
+
     endTurn() {
         if (this.gameMode === 'conquest') {
             this.endConquestTurn();
@@ -119,6 +141,7 @@ class Game {
         }
 
         this.player.nextTurn();
+        this.updateBuilders();
 
         let totalFood = 0;
         let totalProduction = 0;
@@ -435,16 +458,48 @@ class Game {
                     }
 
                     if (this.player.selectedBuilding) {
-                        if (this.currentPlanet.placeBuilding(gridX, gridY, this.player.selectedBuilding, this.player)) {
-                            const msg = `Built ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
-                            this.log(msg);
-                            this.player.selectedBuilding = null;
-                            const buildingsList = document.getElementById('buildings-list');
-                            if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
-                        } else {
-                            const msg = `Cannot build ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
-                            this.log(msg);
+                        const hasNearbyEnemy = this.conquestSystem && this.conquestSystem.sentinels.some(s => {
+                            const dist = Math.abs(s.x - gridX) + Math.abs(s.y - gridY);
+                            return dist <= s.range;
+                        });
+
+                        if (hasNearbyEnemy) {
+                            this.log('Enemy nearby! Cannot send builders to this location.');
+                            return;
                         }
+
+                        const settlement = this.selectNearestSettlement(gridX, gridY);
+                        if (!settlement) {
+                            this.log('No settlement or spaceship nearby to send builders from!');
+                            return;
+                        }
+
+                        const distance = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
+                        const builderId = this.player.builders.length;
+
+                        const builder = new Builder(
+                            builderId,
+                            settlement.x,
+                            settlement.y,
+                            gridX,
+                            gridY,
+                            this.player.selectedBuilding,
+                            distance
+                        );
+
+                        this.player.builders.push(builder);
+                        this.player.buildingQueue.push({
+                            x: gridX,
+                            y: gridY,
+                            type: this.player.selectedBuilding,
+                            builderId: builderId,
+                            hasEnemy: false
+                        });
+
+                        this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
+                        this.player.selectedBuilding = null;
+                        const buildingsList = document.getElementById('buildings-list');
+                        if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
                     } else if (this.hiringMode) {
                         if (this.conquestSystem.hireUnit(this.hiringMode, gridX, gridY)) {
                             this.hiringMode = null;
@@ -509,6 +564,83 @@ class Game {
                 }
             }
         }
+    }
+
+    selectNearestSettlement(targetX, targetY) {
+        const settlements = this.currentPlanet.structures.filter(s =>
+            s.type === 'settlement' || s.type === 'spaceship'
+        );
+
+        if (settlements.length === 0) return null;
+
+        let nearest = settlements[0];
+        let minDist = Math.abs(nearest.x - targetX) + Math.abs(nearest.y - targetY);
+
+        for (let i = 1; i < settlements.length; i++) {
+            const dist = Math.abs(settlements[i].x - targetX) + Math.abs(settlements[i].y - targetY);
+            if (dist < minDist) {
+                minDist = dist;
+                nearest = settlements[i];
+            }
+        }
+
+        return nearest;
+    }
+
+    updateBuilders() {
+        const toRemove = [];
+
+        this.player.builders.forEach((builder, idx) => {
+            const builderState = builder.update();
+
+            const queuedBuilding = this.player.buildingQueue.find(b => b.builderId === builder.id);
+            if (queuedBuilding) {
+                queuedBuilding.builderProgress = builderState.progress;
+            }
+
+            if (builder.arrived && !builder.hasPlaced) {
+                const tile = this.currentPlanet.tiles[builder.targetY][builder.targetX];
+                if (tile && !tile.building) {
+                    const tempBuilding = new Building(builder.targetX, builder.targetY, builder.buildingType);
+                    tempBuilding.isFrame = true;
+                    tempBuilding.buildProgress = 0;
+                    tile.building = tempBuilding;
+                    this.currentPlanet.structures.push(tempBuilding);
+                    builder.hasPlaced = true;
+                }
+            }
+
+            if (builder.arrived) {
+                const tile = this.currentPlanet.tiles[builder.targetY][builder.targetX];
+                if (tile && tile.building && tile.building.type === builder.buildingType) {
+                    tile.building.buildProgress = builderState.progress;
+                }
+            }
+
+            if (builder.isComplete()) {
+                const tile = this.currentPlanet.tiles[builder.targetY][builder.targetX];
+                if (tile && tile.building && tile.building.type === builder.buildingType) {
+                    tile.building.isFrame = false;
+                    tile.building.buildProgress = 100;
+                    this.log(`Building complete: ${builder.buildingType} at (${builder.targetX}, ${builder.targetY})`);
+                }
+                toRemove.push(idx);
+
+                this.player.buildingQueue = this.player.buildingQueue.filter(b => b.builderId !== builder.id);
+            }
+        });
+
+        for (let i = toRemove.length - 1; i >= 0; i--) {
+            this.player.builders.splice(toRemove[i], 1);
+        }
+
+        this.player.buildingQueue.forEach(queuedBuilding => {
+            const hasEnemy = this.conquestSystem && this.conquestSystem.sentinels.some(s => {
+                const dist = Math.abs(s.x - queuedBuilding.x) + Math.abs(s.y - queuedBuilding.y);
+                return dist <= s.range;
+            });
+            queuedBuilding.hasEnemy = hasEnemy;
+        });
     }
 
     showBuildingInfo(building) {
@@ -842,8 +974,13 @@ class Game {
                 const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
                 this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
             });
+
+            this.player.builders.forEach(builder => {
+                this.renderer.drawBuilder(builder, this.cameraX, this.cameraY);
+            });
         }
 
+        this.renderer.drawBuildingQueue(this.player.buildingQueue);
         this.ctx.restore();
 
         if (this.player.selectedBuilding && this.gameMode === 'building') {

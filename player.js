@@ -27,6 +27,8 @@ class Player {
         this.canBuildAnywhere = false;
         this.canEscape = false;
         this.coreStable = false;
+        this.builders = [];
+        this.buildingQueue = [];
         this.techs = {
             stone: { level: 1, cost: 0, name: 'Stone Age' },
             bronze: { level: 0, cost: 200, name: 'Bronze Working' },
