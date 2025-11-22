@@ -434,10 +434,18 @@ class ConquestSystem {
                     }
                 });
 
+                this.game.player.builders.forEach(builder => {
+                    const distance = Math.abs(sentinel.x - builder.currentX) + Math.abs(sentinel.y - builder.currentY);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestTarget = { type: 'builder', data: builder, distance: distance };
+                    }
+                });
+
                 const playerBuildingTypes = ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'observatory'];
 
                 this.planet.structures.forEach(building => {
-                    if (playerBuildingTypes.includes(building.type)) {
+                    if (playerBuildingTypes.includes(building.type) && !building.isFrame) {
                         const distance = Math.abs(sentinel.x - building.x) + Math.abs(sentinel.y - building.y);
                         if (distance < closestDistance) {
                             closestDistance = distance;
@@ -452,6 +460,10 @@ class ConquestSystem {
                     if (closestTarget.type === 'unit' && closestTarget.data.health <= 0) {
                         this.armies = this.armies.filter(a => a.id !== closestTarget.data.id);
                         this.game.log(`Your ${closestTarget.data.type} was destroyed!`);
+                    } else if (closestTarget.type === 'builder') {
+                        this.game.log(`Builder destroyed by sentinel!`);
+                        this.game.player.builders = this.game.player.builders.filter(b => b.id !== closestTarget.data.id);
+                        this.game.player.buildingQueue = this.game.player.buildingQueue.filter(bq => bq.builderId !== closestTarget.data.id);
                     } else if (closestTarget.type === 'building') {
                         this.game.log(`${closestTarget.data.type} took ${sentinel.damage} damage!`);
 
@@ -486,7 +498,8 @@ class ConquestSystem {
                         const newY = sentinel.y + (Math.abs(dy) > 0 ? dy : 0);
 
                         const occupied = this.armies.some(a => a.x === newX && a.y === newY) ||
-                                       this.sentinels.some(s => s.x === newX && s.y === newY && s.id !== sentinel.id);
+                                       this.sentinels.some(s => s.x === newX && s.y === newY && s.id !== sentinel.id) ||
+                                       this.game.player.builders.some(b => b.currentX === newX && b.currentY === newY);
 
                         if (!occupied && newX >= 0 && newX < this.planet.width && newY >= 0 && newY < this.planet.height) {
                             sentinel.x = newX;

@@ -401,11 +401,16 @@ class TechTree {
             }
         }
 
-        return this.player.science >= tech.cost;
+        return this.player.sciencePerTurn >= tech.cost;
     }
 
     startResearch(techId) {
         if (!this.canResearch(techId)) return false;
+
+        const tech = this.techs[techId];
+        if (this.player.sciencePerTurn < tech.cost) {
+            return false;
+        }
 
         if (this.currentResearch) {
             this.researchQueue.push(techId);
@@ -417,20 +422,26 @@ class TechTree {
         return true;
     }
 
-    progressResearch(scienceThisTurn) {
+    progressResearch() {
         if (!this.currentResearch) {
             if (this.researchQueue.length > 0) {
-                this.currentResearch = this.researchQueue.shift();
-                this.researchProgress = 0;
+                const nextTech = this.researchQueue[0];
+                if (this.player.sciencePerTurn >= this.techs[nextTech].cost) {
+                    this.currentResearch = this.researchQueue.shift();
+                    this.researchProgress = 0;
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
         }
 
         const tech = this.techs[this.currentResearch];
-        this.researchProgress += scienceThisTurn;
+        this.researchProgress++;
 
-        if (this.researchProgress >= tech.cost) {
+        const turnsRequired = tech.cost;
+        if (this.researchProgress >= turnsRequired) {
             return this.completeTech(this.currentResearch);
         }
 
@@ -515,12 +526,12 @@ class TechTree {
         if (!this.currentResearch) return null;
 
         const tech = this.techs[this.currentResearch];
-        const progress = Math.floor((this.researchProgress / tech.cost) * 100);
+        const turnsRemaining = tech.cost - this.researchProgress;
 
         return {
             name: tech.name,
-            progress: progress,
-            turnsRemaining: Math.ceil((tech.cost - this.researchProgress) / Math.max(1, this.player.science))
+            progress: this.researchProgress,
+            turnsRemaining: turnsRemaining
         };
     }
 }

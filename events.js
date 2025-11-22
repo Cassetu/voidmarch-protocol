@@ -1,14 +1,15 @@
 class EventSystem {
-    constructor(planet, player) {
+    constructor(planet, player, game) {
         this.planet = planet;
         this.player = player;
+        this.game = game;
         this.coreStability = 100;
         this.turn = 0;
         this.nextEruptionTurn = this.getRandomEruptionTurn();
     }
 
     getRandomEruptionTurn() {
-        return Math.floor(Math.random() * 5) + 3;
+        return Math.floor(Math.random() * 6) + 10;
     }
 
     onTurnEnd() {
@@ -87,6 +88,10 @@ class EventSystem {
                     }
                 }
             }
+        }
+
+        if (this.player.game) {
+            this.player.game.screenShake(800, 30);
         }
 
         return { x, y, destroyedBuildings };

@@ -7,7 +7,7 @@ class Player {
         this.age = 'stone';
         this.selectedBuilding = null;
         this.buildings = [];
-        this.science = 0;
+        this.sciencePerTurn = 0;
         this.production = 0;
         this.turn = 0;
         this.hasEscaped = false;
@@ -36,10 +36,6 @@ class Player {
             medieval: { level: 0, cost: 600, name: 'Medieval' },
             renaissance: { level: 0, cost: 800, name: 'Renaissance' }
         };
-    }
-
-    addScience(amount) {
-        this.science += amount;
     }
 
     addProduction(amount) {

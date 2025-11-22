@@ -8,37 +8,27 @@ class Game {
         this.width = this.canvas.width = window.innerWidth;
         this.height = this.canvas.height = window.innerHeight;
         this.unitActionSystem = new UnitActionSystem(this);
-
         this.cheatCodeSequence = [];
         this.cheatCodeTarget = ['q', 'w', 'e', 'r', 't', 'y', 'c', 'a', 's'];
         this.cheatCodeTimeout = null;
-
-
         this.hiringMode = null;
-
         this.deployMode = null;
         this.selectedUnit = null;
-
         this.player = new Player();
         this.world = new World(this.player);
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
-        this.eventSystem = new EventSystem(this.currentPlanet, this.player);
+        this.eventSystem = new EventSystem(this.currentPlanet, this.player, this);
         this.turnBased = true;
-
         this.player.techTree = new TechTree(this.player);
-        this.eventSystem = new EventSystem(this.currentPlanet, this.player);
-
         this.gameState = 'volcanic';
         this.renderer.zoom = 0.8;
         this.currentPlanet = this.world.createVolcanicWorld();
         this.initializeStartingBuildings();
         this.running = true;
-
         this.galaxy = new Galaxy(this);
         this.conquestSystem = null;
         this.gameMode = 'building';
-
         this.cameraX = 0;
         this.cameraY = 0;
 
@@ -114,16 +104,33 @@ class Game {
     }
 
     initializeStartingBuildings() {
-        const settlement = new Building(25, 20, 'settlement');
+        let startX = 25;
+        let startY = 20;
+
+        for (let y = 15; y < 30; y++) {
+            for (let x = 20; x < 35; x++) {
+                if (this.currentPlanet.tiles[y][x].type !== 'lava' &&
+                    this.currentPlanet.tiles[y + 1] &&
+                    this.currentPlanet.tiles[y + 1][x + 1] &&
+                    this.currentPlanet.tiles[y + 1][x + 1].type !== 'lava') {
+                    startX = x;
+                    startY = y;
+                    break;
+                }
+            }
+            if (startX !== 25 || startY !== 20) break;
+        }
+
+        const settlement = new Building(startX, startY, 'settlement');
         settlement.isFrame = false;
         settlement.buildProgress = 100;
 
-        const farm = new Building(26, 21, 'farm');
+        const farm = new Building(startX + 1, startY + 1, 'farm');
         farm.isFrame = false;
         farm.buildProgress = 100;
 
-        this.currentPlanet.tiles[20][25].building = settlement;
-        this.currentPlanet.tiles[21][26].building = farm;
+        this.currentPlanet.tiles[startY][startX].building = settlement;
+        this.currentPlanet.tiles[startY + 1][startX + 1].building = farm;
 
         this.currentPlanet.structures.push(settlement);
         this.currentPlanet.structures.push(farm);
@@ -140,6 +147,8 @@ class Game {
             this.endConquestTurn();
             return;
         }
+
+        this.eventSystem.planet = this.currentPlanet;
 
         this.player.nextTurn();
         this.updateBuilders();
@@ -169,11 +178,12 @@ class Game {
         totalProduction += this.player.productionBonus;
         totalFood += this.player.foodBonus;
 
+        this.player.sciencePerTurn = totalScience;
+
         this.player.addFood(totalFood);
         this.player.addProduction(totalProduction);
-        this.player.addScience(totalScience);
 
-        const researchResult = this.player.techTree.progressResearch(totalScience);
+        const researchResult = this.player.techTree.progressResearch();
 
         if (researchResult && researchResult.completed) {
             this.log(`RESEARCH COMPLETE: ${this.player.techTree.techs[researchResult.completed].name}`);
@@ -189,14 +199,36 @@ class Game {
             }
         }
 
-        const eventResult = this.eventSystem.onTurnEnd();
+        if (this.galaxy.currentPlanetIndex === 0) {
+            const eventResult = this.eventSystem.onTurnEnd();
 
-        if (eventResult.gameOver) {
-            this.log('PLANET CORE COLLAPSED - GAME OVER');
-            this.running = false;
+            if (eventResult.gameOver) {
+                this.log('PLANET CORE COLLAPSED - GAME OVER');
+                this.running = false;
+            }
         }
 
         this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
+    }
+
+    screenShake(duration, intensity) {
+        const startTime = Date.now();
+        const originalX = this.cameraX;
+        const originalY = this.cameraY;
+
+        const shake = () => {
+            const elapsed = Date.now() - startTime;
+            if (elapsed < duration) {
+                this.cameraX = originalX + (Math.random() - 0.5) * intensity;
+                this.cameraY = originalY + (Math.random() - 0.5) * intensity;
+                requestAnimationFrame(shake);
+            } else {
+                this.cameraX = originalX;
+                this.cameraY = originalY;
+            }
+        };
+
+        shake();
     }
 
     handleCheatCode(e) {
@@ -459,6 +491,8 @@ class Game {
                     }
 
                     if (this.player.selectedBuilding) {
+                        console.log('Building selected in conquest mode:', this.player.selectedBuilding, 'at', gridX, gridY);
+
                         const hasNearbyEnemy = this.conquestSystem && this.conquestSystem.sentinels.some(s => {
                             const dist = Math.abs(s.x - gridX) + Math.abs(s.y - gridY);
                             return dist <= s.range;
@@ -477,6 +511,7 @@ class Game {
 
                         const distance = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
                         const builderId = this.player.builders.length;
+                        const buildingType = this.player.selectedBuilding;
 
                         const builder = new Builder(
                             builderId,
@@ -484,7 +519,7 @@ class Game {
                             settlement.y,
                             gridX,
                             gridY,
-                            this.player.selectedBuilding,
+                            buildingType,
                             distance
                         );
 
@@ -492,79 +527,139 @@ class Game {
                         this.player.buildingQueue.push({
                             x: gridX,
                             y: gridY,
-                            type: this.player.selectedBuilding,
+                            type: buildingType,
                             builderId: builderId,
                             hasEnemy: false
                         });
 
-                        this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
+                        const tile = this.currentPlanet.tiles[gridY][gridX];
+                        console.log('Creating frame at', gridX, gridY, 'buildingType:', buildingType);
+                        if (tile && !tile.building) {
+                            const tempBuilding = new Building(gridX, gridY, buildingType);
+                            tempBuilding.isFrame = true;
+                            tempBuilding.buildProgress = 0;
+                            tile.building = tempBuilding;
+                            this.currentPlanet.structures.push(tempBuilding);
+                            console.log('Frame created on planet 2:', tempBuilding);
+                        }
+
+                        this.log(`Sending builders from ${settlement.type} to construct ${buildingType}`);
                         this.player.selectedBuilding = null;
                         const buildingsList = document.getElementById('buildings-list');
                         if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
-                    } else if (this.hiringMode) {
-                        if (this.conquestSystem.hireUnit(this.hiringMode, gridX, gridY)) {
-                            this.hiringMode = null;
-                        }
-                    } else if (this.unitActionSystem.actionMode === 'move') {
-                        if (this.unitActionSystem.selectedUnit) {
-                            const moved = this.conquestSystem.moveUnit(this.unitActionSystem.selectedUnit.id, gridX, gridY);
-                            if (moved) {
-                                this.unitActionSystem.actionMode = null;
-                                this.selectedUnit = null;
-                                this.unitActionSystem.selectedUnit = null;
-                            }
-                        }
-                    } else if (this.unitActionSystem.actionMode === 'attack') {
-                        if (this.unitActionSystem.selectedUnit) {
-                            const unit = this.unitActionSystem.selectedUnit;
-                            const attacked = this.conquestSystem.attackWithUnit(unit.id, gridX, gridY);
-
-                            if (attacked && unit.chargeDamage) {
-                                const sentinel = this.conquestSystem.sentinels.find(s => s.x === gridX && s.y === gridY);
-                                if (sentinel) {
-                                    sentinel.health -= unit.damage;
-                                    this.log(`CHARGE STRIKE bonus damage!`);
-
-                                    if (sentinel.health <= 0) {
-                                        this.conquestSystem.sentinels = this.conquestSystem.sentinels.filter(s => s.id !== sentinel.id);
-                                        this.log(`Sentinel destroyed!`);
-                                    }
-                                }
-                                delete unit.chargeDamage;
-                            }
-
-                            if (attacked) {
-                                this.unitActionSystem.actionMode = null;
-                                this.selectedUnit = null;
-                                this.unitActionSystem.selectedUnit = null;
-                            }
-                        }
-                    } else {
-                        const selection = this.conquestSystem.selectUnit(gridX, gridY);
-
-                        if (selection && selection.type === 'unit') {
-                            this.selectedUnit = selection.data;
-                            this.unitActionSystem.showActionMenu(selection.data);
-                        } else if (selection && selection.type === 'building') {
-                            this.showBuildingInfo(selection.data);
-                        }
                     }
                 } else if (this.gameMode === 'building' && this.player.selectedBuilding) {
-                    if (this.currentPlanet.placeBuilding(gridX, gridY, this.player.selectedBuilding, this.player)) {
-                        const msg = `Built ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
-                        this.log(msg);
-                        console.log(msg);
-                        this.player.selectedBuilding = null;
-                        const buildingsList = document.getElementById('buildings-list');
-                        if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
-                    } else {
-                        const msg = `Cannot build ${this.player.selectedBuilding} at (${gridX}, ${gridY})`;
-                        this.log(msg);
-                        console.log(msg);
+                      const settlement = this.selectNearestSettlement(gridX, gridY);
+                      if (!settlement) {
+                          this.log('No settlement nearby to send builders from!');
+                          return;
+                      }
+
+                      const distance = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
+                      const builderId = this.player.builders.length;
+
+                      const builder = new Builder(
+                          builderId,
+                          settlement.x,
+                          settlement.y,
+                          gridX,
+                          gridY,
+                          this.player.selectedBuilding,
+                          distance
+                      );
+
+                      this.player.builders.push(builder);
+                      this.player.buildingQueue.push({
+                          x: gridX,
+                          y: gridY,
+                          type: this.player.selectedBuilding,
+                          builderId: builderId,
+                          hasEnemy: false
+                      });
+
+                      const tile = this.currentPlanet.tiles[gridY][gridX];
+                      if (tile && !tile.building) {
+                          const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
+                          tempBuilding.isFrame = true;
+                          tempBuilding.buildProgress = 0;
+                          tile.building = tempBuilding;
+                          this.currentPlanet.structures.push(tempBuilding);
+                          console.log('Frame created on planet 2:', tempBuilding);
+                      }
+
+                      this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
+                      this.player.selectedBuilding = null;
+                      const buildingsList = document.getElementById('buildings-list');
+                      if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
+                }
+
+                if (!this.player.selectedBuilding && !this.hiringMode && !this.unitActionSystem.actionMode) {
+                    const tile = this.currentPlanet.tiles[gridY][gridX];
+                    if (tile) {
+                        this.showTileInfo(tile, gridX, gridY);
                     }
                 }
             }
         }
+    }
+
+    showTileInfo(tile, x, y) {
+        const infoPanel = document.getElementById('building-info');
+        if (!infoPanel) return;
+
+        const tileNames = {
+            lava: 'Lava',
+            rock: 'Rock',
+            ash: 'Volcanic Ash',
+            darksoil: 'Dark Soil',
+            grass: 'Grassland',
+            water: 'Water',
+            forest: 'Forest',
+            ice: 'Ice',
+            frozen: 'Frozen Ground',
+            tundra: 'Tundra',
+            sand: 'Sand',
+            dunes: 'Sand Dunes',
+            oasis: 'Oasis',
+            island: 'Island',
+            reef: 'Coral Reef',
+            deepwater: 'Deep Water',
+            jungle: 'Jungle',
+            swamp: 'Swamp',
+            canopy: 'Canopy',
+            floating: 'Floating Island',
+            void: 'Void',
+            nebula: 'Nebula',
+            stars: 'Starfield'
+        };
+
+        const tileName = tileNames[tile.type] || tile.type;
+
+        let html = `
+            <p style="font-size: 10px; color: #a8b8d8;"><strong>${tileName}</strong></p>
+            <p style="font-size: 9px; color: #8fa3c8;">Position: (${x}, ${y})</p>
+            <p style="font-size: 9px; color: #8fa3c8;">Food: +${tile.yields.food}</p>
+            <p style="font-size: 9px; color: #8fa3c8;">Production: +${tile.yields.production}</p>
+            <p style="font-size: 9px; color: #8fa3c8;">Science: +${tile.yields.science}</p>
+        `;
+
+        if (tile.hasGeothermal) {
+            html += `<p style="font-size: 9px; color: #ff8800;">🔥 Geothermal Vent</p>`;
+        }
+
+        if (tile.isFloating) {
+            html += `<p style="font-size: 9px; color: #88ccff;">☁️ Floating Terrain</p>`;
+        }
+
+        if (tile.type === 'lava') {
+            html += `<p style="font-size: 9px; color: #ff4400;">⚠️ Impassable</p>`;
+        }
+
+        if (tile.building) {
+            html += `<p style="font-size: 9px; color: #ffaa00; margin-top: 6px;">Building: ${tile.building.type}</p>`;
+        }
+
+        infoPanel.innerHTML = html;
     }
 
     selectNearestSettlement(targetX, targetY) {
@@ -591,27 +686,30 @@ class Game {
     updateBuilders() {
         for (let i = this.player.builders.length - 1; i >= 0; i--) {
             const builder = this.player.builders[i];
-            const builderState = builder.update();
 
+            if (!builder.path && !builder.arrived) {
+                builder.path = builder.findPath(this.currentPlanet);
+                if (!builder.path) {
+                    this.log(`Cannot reach building site at (${builder.targetX}, ${builder.targetY}) - blocked by lava!`);
+                    this.player.builders.splice(i, 1);
+                    this.player.buildingQueue = this.player.buildingQueue.filter(b => b.builderId !== builder.id);
+
+                    const tile = this.currentPlanet.tiles[builder.targetY][builder.targetX];
+                    if (tile && tile.building && tile.building.isFrame) {
+                        this.currentPlanet.structures = this.currentPlanet.structures.filter(s => s !== tile.building);
+                        tile.building = null;
+                    }
+                    continue;
+                }
+            }
+
+            const builderState = builder.update();
             const queuedBuilding = this.player.buildingQueue.find(b => b.builderId === builder.id);
             if (queuedBuilding) {
                 queuedBuilding.builderProgress = builderState.progress;
             }
 
-            if (builder.arrived && !builder.hasPlaced) {
-                const tile = this.currentPlanet.tiles[builder.targetY][builder.targetX];
-                if (tile && !tile.building) {
-                    const tempBuilding = new Building(builder.targetX, builder.targetY, builder.buildingType);
-                    tempBuilding.isFrame = true;
-                    tempBuilding.buildProgress = 0;
-                    tile.building = tempBuilding;
-                    this.currentPlanet.structures.push(tempBuilding);
-                    builder.hasPlaced = true;
-                    this.log(`Builders arrived at (${builder.targetX}, ${builder.targetY}). Construction starting.`);
-                }
-            }
-
-            if (builder.arrived && builder.hasPlaced) {
+            if (builder.arrived) {
                 const tile = this.currentPlanet.tiles[builder.targetY][builder.targetX];
                 if (tile && tile.building && tile.building.type === builder.buildingType) {
                     tile.building.buildProgress = builderState.progress;
@@ -623,6 +721,15 @@ class Game {
                 if (tile && tile.building && tile.building.type === builder.buildingType) {
                     tile.building.isFrame = false;
                     tile.building.buildProgress = 100;
+                    this.player.addBuilding(tile.building);
+                    this.log(`Building complete: ${builder.buildingType} at (${builder.targetX}, ${builder.targetY})`);
+                } else if (tile && !tile.building) {
+                    const completedBuilding = new Building(builder.targetX, builder.targetY, builder.buildingType);
+                    completedBuilding.isFrame = false;
+                    completedBuilding.buildProgress = 100;
+                    tile.building = completedBuilding;
+                    this.currentPlanet.structures.push(completedBuilding);
+                    this.player.addBuilding(completedBuilding);
                     this.log(`Building complete: ${builder.buildingType} at (${builder.targetX}, ${builder.targetY})`);
                 }
 
@@ -932,6 +1039,18 @@ class Game {
             }
         }
 
+        if (Math.random() < 0.05) {
+            for (let y = 0; y < this.currentPlanet.height; y++) {
+                for (let x = 0; x < this.currentPlanet.width; x++) {
+                    if (this.currentPlanet.tiles[y][x].type === 'lava' && Math.random() < 0.1) {
+                        this.renderer.createLavaSpark(x, y);
+                    }
+                }
+            }
+        }
+
+        this.renderer.updateLavaSparks();
+
         this.currentPlanet.structures.forEach(building => {
             this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
         });
@@ -973,6 +1092,8 @@ class Game {
             });
         }
 
+        this.renderer.drawLavaSparks(this.cameraX, this.cameraY);
+
         this.player.builders.forEach(builder => {
             this.renderer.drawBuilder(builder, this.cameraX, this.cameraY);
         });
@@ -992,7 +1113,7 @@ class Game {
         document.getElementById('food-count').textContent = Math.floor(this.player.food);
         document.getElementById('population-count').textContent = Math.floor(this.player.population);
         document.getElementById('age-display').textContent = this.player.age.charAt(0).toUpperCase() + this.player.age.slice(1);
-        document.getElementById('science-count').textContent = Math.floor(this.player.science);
+        document.getElementById('science-count').textContent = `+${Math.floor(this.player.sciencePerTurn)}`;
         document.getElementById('production-count').textContent = Math.floor(this.player.production);
         document.getElementById('turn-count').textContent = this.player.turn;
         document.getElementById('core-stability').textContent = Math.floor(this.eventSystem.coreStability) + '%';
@@ -1084,7 +1205,7 @@ class Game {
             const researchInfo = this.player.techTree.getResearchInfo();
 
             if (researchInfo) {
-                researchBtn.textContent = `${researchInfo.name} (${researchInfo.progress}%)`;
+                researchBtn.textContent = `${researchInfo.name} (${researchInfo.progress}/${this.player.techTree.techs[this.player.techTree.currentResearch].cost} turns)`;
                 researchBtn.disabled = true;
             } else {
                 researchBtn.textContent = 'Choose Research';
@@ -1097,7 +1218,7 @@ class Game {
         } else {
             const researchInfo = this.player.techTree.getResearchInfo();
             if (researchInfo) {
-                researchBtn.textContent = `${researchInfo.name} (${researchInfo.progress}%)`;
+                researchBtn.textContent = `${researchInfo.name} (${researchInfo.progress}/${this.player.techTree.techs[this.player.techTree.currentResearch].cost} turns)`;
                 researchBtn.disabled = true;
             } else {
                 researchBtn.textContent = 'No Available Research';

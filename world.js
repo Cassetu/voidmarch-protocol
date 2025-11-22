@@ -72,6 +72,7 @@ class Planet {
     generateTile(x, y) {
         let terrain = 'grass';
         let height = Math.random();
+        let details = [];
 
         if (this.type === 'volcanic') {
             if (height > 0.7) terrain = 'lava';
@@ -88,6 +89,31 @@ class Planet {
             else terrain = 'stars';
         }
 
+        if (terrain === 'rock' || terrain === 'ash') {
+            for (let i = 0; i < 3; i++) {
+                details.push({
+                    x: (Math.random() - 0.5) * 20,
+                    y: (Math.random() - 0.5) * 10
+                });
+            }
+        } else if (terrain === 'lava') {
+            for (let i = 0; i < 5; i++) {
+                details.push({
+                    x: (Math.random() - 0.5) * 25,
+                    y: (Math.random() - 0.5) * 12,
+                    brightness: Math.random(),
+                    size: 2 + Math.random() * 2
+                });
+            }
+        } else if (terrain === 'darksoil') {
+            for (let i = 0; i < 4; i++) {
+                details.push({
+                    x: (Math.random() - 0.5) * 22,
+                    y: (Math.random() - 0.5) * 11
+                });
+            }
+        }
+
         return {
             type: terrain,
             resourceAmount: Math.random() * 50,
@@ -96,7 +122,8 @@ class Planet {
             building: null,
             hasGeothermal: false,
             isFloating: false,
-            yields: this.calculateYields(terrain)
+            yields: this.calculateYields(terrain),
+            details: details
         };
     }
 

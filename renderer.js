@@ -6,6 +6,7 @@ class Renderer {
         this.tileWidth = 64;
         this.tileHeight = 32;
         this.zoom = 1;
+        this.lavaSparks = [];
         this.colorMap = {
             grass: '#3d4f5c',
             rock: '#4a5a6a',
@@ -44,6 +45,49 @@ class Renderer {
             university: '#5a6a7a',
             observatory: '#6a6a7a'
         };
+    }
+
+    createLavaSpark(gridX, gridY) {
+        const screenX = (gridX - gridY) * (this.tileWidth / 2);
+        const screenY = (gridX + gridY) * (this.tileHeight / 2);
+
+        this.lavaSparks.push({
+            x: screenX + (Math.random() - 0.5) * 20,
+            y: screenY + (Math.random() - 0.5) * 10,
+            vx: (Math.random() - 0.5) * 3,
+            vy: -Math.random() * 5 - 3,
+            life: 1.0,
+            size: Math.random() * 3 + 2
+        });
+    }
+
+    updateLavaSparks() {
+        for (let i = this.lavaSparks.length - 1; i >= 0; i--) {
+            const spark = this.lavaSparks[i];
+            spark.x += spark.vx;
+            spark.y += spark.vy;
+            spark.vy += 0.3;
+            spark.life -= 0.02;
+
+            if (spark.life <= 0) {
+                this.lavaSparks.splice(i, 1);
+            }
+        }
+    }
+
+    drawLavaSparks(cameraX, cameraY) {
+        this.ctx.save();
+
+        this.lavaSparks.forEach(spark => {
+            this.ctx.globalAlpha = spark.life;
+            this.ctx.fillStyle = `rgb(255, ${Math.floor(100 + spark.life * 100)}, 0)`;
+            this.ctx.beginPath();
+            this.ctx.arc(spark.x, spark.y, spark.size, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
+
+        this.ctx.globalAlpha = 1;
+        this.ctx.restore();
     }
 
     drawHealthBar(x, y, health, maxHealth, width) {
@@ -369,7 +413,63 @@ class Renderer {
         this.ctx.restore();
     }
 
+    generateTile(x, y) {
+        let terrain = 'grass';
+        let height = Math.random();
 
+        if (this.type === 'volcanic') {
+            if (height > 0.7) terrain = 'lava';
+            else if (height > 0.5) terrain = 'rock';
+            else if (height > 0.3) terrain = 'ash';
+            else terrain = 'darksoil';
+        } else if (this.type === 'ecosystem') {
+            if (height > 0.6) terrain = 'forest';
+            else if (height > 0.4) terrain = 'grass';
+            else terrain = 'water';
+        } else if (this.type === 'galaxy') {
+            if (height > 0.7) terrain = 'void';
+            else if (height > 0.5) terrain = 'nebula';
+            else terrain = 'stars';
+        }
+
+        const details = [];
+        if (terrain === 'rock' || terrain === 'ash') {
+            for (let i = 0; i < 3; i++) {
+                details.push({
+                    x: (Math.random() - 0.5) * 20,
+                    y: (Math.random() - 0.5) * 10
+                });
+            }
+        } else if (terrain === 'lava') {
+            for (let i = 0; i < 5; i++) {
+                details.push({
+                    x: (Math.random() - 0.5) * 25,
+                    y: (Math.random() - 0.5) * 12,
+                    brightness: Math.random(),
+                    size: 2 + Math.random() * 2
+                });
+            }
+        } else if (terrain === 'darksoil') {
+            for (let i = 0; i < 4; i++) {
+                details.push({
+                    x: (Math.random() - 0.5) * 22,
+                    y: (Math.random() - 0.5) * 11
+                });
+            }
+        }
+
+        return {
+            type: terrain,
+            resourceAmount: Math.random() * 50,
+            fertility: Math.random(),
+            contamination: 0,
+            building: null,
+            hasGeothermal: false,
+            isFloating: false,
+            yields: this.calculateYields(terrain),
+            details: details
+        };
+    }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
         const screenX = (gridX - gridY) * (this.tileWidth / 2);
@@ -388,8 +488,48 @@ class Renderer {
         points.forEach(p => this.ctx.lineTo(p[0], p[1]));
         this.ctx.fill();
 
+        if (tile.type === 'rock' || tile.type === 'ash') {
+            if (tile.details) {
+                tile.details.forEach(detail => {
+                    const px = screenX + detail.x;
+                    const py = screenY + detail.y;
+                    this.ctx.fillStyle = this.darkenColor(this.colorMap[tile.type], 0.4);
+                    this.ctx.fillRect(px, py, 2, 2);
+                });
+            }
+        }
+
+        if (tile.type === 'lava') {
+            if (tile.details) {
+                tile.details.forEach(detail => {
+                    const px = screenX + detail.x;
+                    const py = screenY + detail.y;
+                    this.ctx.fillStyle = `rgba(255, ${Math.floor(150 + detail.brightness * 100)}, 0, ${0.3 + detail.brightness * 0.4})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(px, py, detail.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                });
+            }
+        }
+
+        if (tile.type === 'darksoil') {
+            if (tile.details) {
+                tile.details.forEach(detail => {
+                    const px = screenX + detail.x;
+                    const py = screenY + detail.y;
+                    this.ctx.strokeStyle = this.lightenColor(this.colorMap[tile.type], 0.3);
+                    this.ctx.lineWidth = 1;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(px - 2, py);
+                    this.ctx.lineTo(px + 2, py - 1);
+                    this.ctx.stroke();
+                });
+            }
+        }
+
         this.ctx.strokeStyle = 'rgba(160, 176, 200, 0.15)';
         this.ctx.lineWidth = 1;
+
         if (tile.hasGeothermal) {
             this.ctx.fillStyle = 'rgba(255, 100, 0, 0.4)';
             this.ctx.fill();
@@ -404,6 +544,22 @@ class Renderer {
             this.ctx.restore();
         }
         this.ctx.stroke();
+    }
+
+    darkenColor(color, amount) {
+        const hex = color.replace('#', '');
+        const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - Math.floor(amount * 255));
+        const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - Math.floor(amount * 255));
+        const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - Math.floor(amount * 255));
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
+    lightenColor(color, amount) {
+        const hex = color.replace('#', '');
+        const r = Math.min(255, parseInt(hex.substr(0, 2), 16) + Math.floor(amount * 255));
+        const g = Math.min(255, parseInt(hex.substr(2, 2), 16) + Math.floor(amount * 255));
+        const b = Math.min(255, parseInt(hex.substr(4, 2), 16) + Math.floor(amount * 255));
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
     }
 
     drawBuildingFrame(screenX, screenY, building) {
