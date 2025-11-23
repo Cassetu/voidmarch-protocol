@@ -17,7 +17,8 @@ class TechTree {
                 prerequisites: [],
                 unlocks: ['warehouse', 'deepMining'],
                 bonus: { production: 2 },
-                description: 'Extract resources from volcanic rock'
+                description: 'Extract resources from volcanic rock',
+                planets: ['volcanic']
             },
             shelter: {
                 name: 'Emergency Shelter',
@@ -27,7 +28,8 @@ class TechTree {
                 prerequisites: [],
                 unlocks: ['settlement', 'reinforcedStructures'],
                 bonus: { population: 5 },
-                description: 'Basic protection from eruptions'
+                description: 'Basic protection from eruptions',
+                planets: ['volcanic']
             },
             farming: {
                 name: 'Ash Farming',
@@ -37,9 +39,9 @@ class TechTree {
                 prerequisites: [],
                 unlocks: ['farm', 'hydroponics'],
                 bonus: { food: 3 },
-                description: 'Grow crops in volcanic soil'
+                description: 'Grow crops in volcanic soil',
+                planets: ['volcanic']
             },
-
             deepMining: {
                 name: 'Deep Mining',
                 cost: 100,
@@ -48,7 +50,8 @@ class TechTree {
                 prerequisites: ['mining'],
                 unlocks: ['geothermalHarvesting', 'forge'],
                 bonus: { production: 5 },
-                description: 'Mine deeper into unstable crust'
+                description: 'Mine deeper into unstable crust',
+                planets: ['volcanic']
             },
             reinforcedStructures: {
                 name: 'Reinforced Structures',
@@ -58,7 +61,8 @@ class TechTree {
                 prerequisites: ['shelter'],
                 unlocks: ['bunker', 'seismicDampers'],
                 bonus: { buildingHP: 50 },
-                description: 'Buildings resist eruption damage'
+                description: 'Buildings resist eruption damage',
+                planets: ['volcanic']
             },
             hydroponics: {
                 name: 'Hydroponics',
@@ -68,9 +72,9 @@ class TechTree {
                 prerequisites: ['farming'],
                 unlocks: ['verticalFarm', 'bioengineering'],
                 bonus: { food: 8 },
-                description: 'Grow food without soil'
+                description: 'Grow food without soil',
+                planets: ['volcanic']
             },
-
             geothermalHarvesting: {
                 name: 'Geothermal Harvesting',
                 cost: 200,
@@ -79,7 +83,8 @@ class TechTree {
                 prerequisites: ['deepMining'],
                 unlocks: ['geothermalPlant', 'magmaForge', 'thermalVents'],
                 bonus: { production: 10, energy: 5 },
-                description: 'Harness planetary heat for power'
+                description: 'Harness planetary heat for power',
+                planets: ['volcanic']
             },
             seismicDampers: {
                 name: 'Seismic Dampers',
@@ -89,7 +94,8 @@ class TechTree {
                 prerequisites: ['reinforcedStructures'],
                 unlocks: ['seismicNetwork', 'earthquakePredictor'],
                 bonus: { eruption_resistance: 30 },
-                description: 'Reduce earthquake damage by 30%'
+                description: 'Reduce earthquake damage by 30%',
+                planets: ['volcanic']
             },
             verticalFarm: {
                 name: 'Vertical Farming',
@@ -99,9 +105,9 @@ class TechTree {
                 prerequisites: ['hydroponics'],
                 unlocks: ['biodome', 'geneticSeeds'],
                 bonus: { food: 15 },
-                description: 'Stack farms to save space'
+                description: 'Stack farms to save space',
+                planets: ['volcanic']
             },
-
             thermalVents: {
                 name: 'Thermal Vent Control',
                 cost: 300,
@@ -110,7 +116,8 @@ class TechTree {
                 prerequisites: ['geothermalHarvesting'],
                 unlocks: ['coreStabilizer', 'magmaPump'],
                 bonus: { core_stability_slowdown: 0.2 },
-                description: 'Slow core collapse by 20%'
+                description: 'Slow core collapse by 20%',
+                planets: ['volcanic']
             },
             magmaForge: {
                 name: 'Magma Forge',
@@ -120,7 +127,8 @@ class TechTree {
                 prerequisites: ['geothermalHarvesting'],
                 unlocks: ['advancedAlloys', 'plasmaTools'],
                 bonus: { production: 15 },
-                description: 'Use lava to craft materials'
+                description: 'Use lava to craft materials',
+                planets: ['volcanic']
             },
             seismicNetwork: {
                 name: 'Seismic Network',
@@ -130,7 +138,8 @@ class TechTree {
                 prerequisites: ['seismicDampers'],
                 unlocks: ['earlyWarning', 'volcanology'],
                 bonus: { eruption_warning: 2 },
-                description: 'Predict eruptions 2 turns early'
+                description: 'Predict eruptions 2 turns early',
+                planets: ['volcanic']
             },
             biodome: {
                 name: 'Biodome Technology',
@@ -140,9 +149,9 @@ class TechTree {
                 prerequisites: ['verticalFarm'],
                 unlocks: ['closedEcosystem', 'oxygenRecycling'],
                 bonus: { food: 20, population: 10 },
-                description: 'Self-contained habitat'
+                description: 'Self-contained habitat',
+                planets: ['volcanic']
             },
-
             coreStabilizer: {
                 name: 'Core Stabilizer',
                 cost: 500,
@@ -151,7 +160,8 @@ class TechTree {
                 prerequisites: ['thermalVents'],
                 unlocks: ['planetaryEngineering', 'coreReactor'],
                 bonus: { core_stability_slowdown: 0.5 },
-                description: 'Slow collapse by 50%'
+                description: 'Slow collapse by 50%',
+                planets: ['volcanic']
             },
             advancedAlloys: {
                 name: 'Heat-Resistant Alloys',
@@ -161,7 +171,8 @@ class TechTree {
                 prerequisites: ['magmaForge'],
                 unlocks: ['heatShielding', 'volcanicArmor'],
                 bonus: { production: 20, buildingHP: 100 },
-                description: 'Materials that withstand extreme heat'
+                description: 'Materials that withstand extreme heat',
+                planets: ['volcanic']
             },
             volcanology: {
                 name: 'Volcanology',
@@ -171,7 +182,8 @@ class TechTree {
                 prerequisites: ['seismicNetwork'],
                 unlocks: ['mantleMapping', 'eruption_control'],
                 bonus: { science: 15, eruption_warning: 3 },
-                description: 'Study volcanic patterns'
+                description: 'Study volcanic patterns',
+                planets: ['volcanic']
             },
             closedEcosystem: {
                 name: 'Closed Ecosystem',
@@ -181,9 +193,9 @@ class TechTree {
                 prerequisites: ['biodome'],
                 unlocks: ['spaceHabitat', 'lifeSupportSystems'],
                 bonus: { food: 30, self_sufficient: true },
-                description: 'No external food needed'
+                description: 'No external food needed',
+                planets: ['volcanic']
             },
-
             floatingPlatforms: {
                 name: 'Floating Platforms',
                 cost: 300,
@@ -192,7 +204,8 @@ class TechTree {
                 prerequisites: ['reinforcedStructures'],
                 unlocks: ['skyCity', 'antigravity'],
                 bonus: { floating_build: true },
-                description: 'Build on floating islands'
+                description: 'Build on floating islands',
+                planets: ['volcanic']
             },
             rocketry: {
                 name: 'Basic Rocketry',
@@ -202,7 +215,8 @@ class TechTree {
                 prerequisites: ['advancedAlloys'],
                 unlocks: ['orbitTech', 'fuelSynthesis'],
                 bonus: { rocket_capacity: 10 },
-                description: 'First step to space'
+                description: 'First step to space',
+                planets: ['volcanic']
             },
             mantleMapping: {
                 name: 'Mantle Mapping',
@@ -212,7 +226,8 @@ class TechTree {
                 prerequisites: ['volcanology'],
                 unlocks: ['coreDiving', 'predictiveModels'],
                 bonus: { science: 25, eruption_warning: 5 },
-                description: 'Map entire planetary core'
+                description: 'Map entire planetary core',
+                planets: ['volcanic']
             },
             spaceHabitat: {
                 name: 'Space Habitat Design',
@@ -222,9 +237,9 @@ class TechTree {
                 prerequisites: ['closedEcosystem', 'floatingPlatforms'],
                 unlocks: ['generationShip', 'colonizationPod'],
                 bonus: { ship_capacity: 50 },
-                description: 'Live in space indefinitely'
+                description: 'Live in space indefinitely',
+                planets: ['volcanic']
             },
-
             antigravity: {
                 name: 'Antigravity Fields',
                 cost: 700,
@@ -233,7 +248,8 @@ class TechTree {
                 prerequisites: ['floatingPlatforms', 'coreStabilizer'],
                 unlocks: ['levitatingCity', 'gravityManipulation'],
                 bonus: { all_tiles_buildable: true },
-                description: 'Build anywhere, even on lava'
+                description: 'Build anywhere, even on lava',
+                planets: ['volcanic']
             },
             orbitTech: {
                 name: 'Orbital Technology',
@@ -243,7 +259,8 @@ class TechTree {
                 prerequisites: ['rocketry'],
                 unlocks: ['spaceElevator', 'orbitalStation'],
                 bonus: { rocket_capacity: 30 },
-                description: 'Reach stable orbit'
+                description: 'Reach stable orbit',
+                planets: ['volcanic']
             },
             coreDiving: {
                 name: 'Core Diving',
@@ -253,7 +270,8 @@ class TechTree {
                 prerequisites: ['mantleMapping', 'heatShielding'],
                 unlocks: ['coreHarvesting', 'planetaryReversal'],
                 bonus: { production: 40 },
-                description: 'Extract resources from core'
+                description: 'Extract resources from core',
+                planets: ['volcanic']
             },
             generationShip: {
                 name: 'Generation Ship',
@@ -263,9 +281,9 @@ class TechTree {
                 prerequisites: ['spaceHabitat', 'orbitTech'],
                 unlocks: ['exodusProtocol'],
                 bonus: { ship_capacity: 200 },
-                description: 'Ship for 200 population'
+                description: 'Ship for 200 population',
+                planets: ['volcanic']
             },
-
             heatShielding: {
                 name: 'Thermal Shielding',
                 cost: 500,
@@ -274,7 +292,8 @@ class TechTree {
                 prerequisites: ['advancedAlloys'],
                 unlocks: ['coreDiving', 'lavaSuits'],
                 bonus: { eruption_resistance: 60 },
-                description: 'Survive direct lava exposure'
+                description: 'Survive direct lava exposure',
+                planets: ['volcanic']
             },
             fuelSynthesis: {
                 name: 'Fuel Synthesis',
@@ -284,7 +303,8 @@ class TechTree {
                 prerequisites: ['rocketry', 'geothermalHarvesting'],
                 unlocks: ['fusionDrive', 'antimatterCollector'],
                 bonus: { rocket_fuel_efficiency: 2 },
-                description: 'Create rocket fuel from heat'
+                description: 'Create rocket fuel from heat',
+                planets: ['volcanic']
             },
             predictiveModels: {
                 name: 'Predictive Models',
@@ -294,7 +314,8 @@ class TechTree {
                 prerequisites: ['mantleMapping'],
                 unlocks: ['eruption_control', 'collapseCalculator'],
                 bonus: { eruption_warning: 7, science: 30 },
-                description: 'Predict all eruptions'
+                description: 'Predict all eruptions',
+                planets: ['volcanic']
             },
             spaceElevator: {
                 name: 'Space Elevator',
@@ -304,9 +325,9 @@ class TechTree {
                 prerequisites: ['orbitTech', 'advancedAlloys'],
                 unlocks: ['massEvacuation'],
                 bonus: { evacuation_speed: 50 },
-                description: 'Evacuate 50 people per turn'
+                description: 'Evacuate 50 people per turn',
+                planets: ['volcanic']
             },
-
             coreHarvesting: {
                 name: 'Core Harvesting',
                 cost: 1200,
@@ -315,7 +336,8 @@ class TechTree {
                 prerequisites: ['coreDiving'],
                 unlocks: ['coreReactor'],
                 bonus: { production: 100, core_stability_loss: 2 },
-                description: 'Massive resources, speeds collapse'
+                description: 'Massive resources, speeds collapse',
+                planets: ['volcanic']
             },
             fusionDrive: {
                 name: 'Fusion Drive',
@@ -325,7 +347,8 @@ class TechTree {
                 prerequisites: ['fuelSynthesis'],
                 unlocks: ['warpDrive', 'exodusProtocol'],
                 bonus: { rocket_speed: 10 },
-                description: 'Faster than light travel'
+                description: 'Faster than light travel',
+                planets: ['volcanic']
             },
             eruption_control: {
                 name: 'Eruption Suppression',
@@ -335,7 +358,8 @@ class TechTree {
                 prerequisites: ['predictiveModels', 'volcanology'],
                 unlocks: ['planetarySalvation'],
                 bonus: { eruption_chance: -50 },
-                description: 'Reduce eruptions by 50%'
+                description: 'Reduce eruptions by 50%',
+                planets: ['volcanic']
             },
             massEvacuation: {
                 name: 'Mass Evacuation',
@@ -345,9 +369,9 @@ class TechTree {
                 prerequisites: ['spaceElevator', 'generationShip'],
                 unlocks: ['exodusProtocol'],
                 bonus: { evacuation_speed: 100 },
-                description: 'Save everyone quickly'
+                description: 'Save everyone quickly',
+                planets: ['volcanic']
             },
-
             exodusProtocol: {
                 name: 'Exodus Protocol',
                 cost: 2000,
@@ -356,7 +380,8 @@ class TechTree {
                 prerequisites: ['generationShip', 'fusionDrive', 'massEvacuation'],
                 unlocks: [],
                 bonus: { can_escape: true },
-                description: 'ESCAPE THE PLANET - Victory!'
+                description: 'ESCAPE THE PLANET - Victory!',
+                planets: ['volcanic']
             },
             planetarySalvation: {
                 name: 'Planetary Salvation',
@@ -366,7 +391,8 @@ class TechTree {
                 prerequisites: ['eruption_control', 'coreStabilizer', 'planetaryEngineering'],
                 unlocks: [],
                 bonus: { core_stable: true },
-                description: 'STABILIZE THE CORE - Victory!'
+                description: 'STABILIZE THE CORE - Victory!',
+                planets: ['volcanic']
             },
             planetaryEngineering: {
                 name: 'Planetary Engineering',
@@ -376,7 +402,8 @@ class TechTree {
                 prerequisites: ['coreStabilizer', 'mantleMapping'],
                 unlocks: ['planetarySalvation'],
                 bonus: { core_stability_slowdown: 0.8 },
-                description: 'Reshape entire planets'
+                description: 'Reshape entire planets',
+                planets: ['volcanic']
             },
             coreReactor: {
                 name: 'Core Reactor',
@@ -386,7 +413,164 @@ class TechTree {
                 prerequisites: ['coreStabilizer', 'coreHarvesting'],
                 unlocks: ['planetaryEngineering'],
                 bonus: { production: 150, energy: 100 },
-                description: 'Harness core energy directly'
+                description: 'Harness core energy directly',
+                planets: ['volcanic']
+            },
+
+            // Conquest planet techs
+            combatTraining: {
+                name: 'Combat Training',
+                cost: 25,
+                type: 'military',
+                researched: false,
+                prerequisites: [],
+                unlocks: ['advancedTactics', 'armorPlating'],
+                bonus: { unit_damage: 5 },
+                description: 'Basic military training',
+                planets: ['conquest']
+            },
+            scavenging: {
+                name: 'Scavenging',
+                cost: 30,
+                type: 'survival',
+                researched: false,
+                prerequisites: [],
+                unlocks: ['efficientSalvage', 'resourceDetection'],
+                bonus: { production: 3 },
+                description: 'Salvage resources from wreckage',
+                planets: ['conquest']
+            },
+            fieldMedicine: {
+                name: 'Field Medicine',
+                cost: 35,
+                type: 'survival',
+                researched: false,
+                prerequisites: [],
+                unlocks: ['combatMedics', 'stimPacks'],
+                bonus: { unit_heal: 10 },
+                description: 'Heal units in the field',
+                planets: ['conquest']
+            },
+            advancedTactics: {
+                name: 'Advanced Tactics',
+                cost: 80,
+                type: 'military',
+                researched: false,
+                prerequisites: ['combatTraining'],
+                unlocks: ['flanking', 'ambushTech'],
+                bonus: { unit_damage: 10 },
+                description: 'Superior battle strategies',
+                planets: ['conquest']
+            },
+            armorPlating: {
+                name: 'Armor Plating',
+                cost: 90,
+                type: 'military',
+                researched: false,
+                prerequisites: ['combatTraining'],
+                unlocks: ['reactiveArmor', 'shieldGenerators'],
+                bonus: { unit_health: 20 },
+                description: 'Better protection for units',
+                planets: ['conquest']
+            },
+            efficientSalvage: {
+                name: 'Efficient Salvage',
+                cost: 100,
+                type: 'survival',
+                researched: false,
+                prerequisites: ['scavenging'],
+                unlocks: ['automatedSalvage'],
+                bonus: { production: 8 },
+                description: 'Extract more from wreckage',
+                planets: ['conquest']
+            },
+            combatMedics: {
+                name: 'Combat Medics',
+                cost: 110,
+                type: 'survival',
+                researched: false,
+                prerequisites: ['fieldMedicine'],
+                unlocks: ['reviveTech'],
+                bonus: { unit_heal: 20 },
+                description: 'Dedicated healing units',
+                planets: ['conquest']
+            },
+            hackingProtocols: {
+                name: 'Hacking Protocols',
+                cost: 120,
+                type: 'tech',
+                researched: false,
+                prerequisites: ['advancedTactics'],
+                unlocks: ['virusUpload', 'systemOverride'],
+                bonus: { hacking_speed: 20 },
+                description: 'Faster node hacking',
+                planets: ['conquest']
+            },
+            flanking: {
+                name: 'Flanking Maneuvers',
+                cost: 150,
+                type: 'military',
+                researched: false,
+                prerequisites: ['advancedTactics'],
+                unlocks: ['surroundTactics'],
+                bonus: { unit_damage: 15, unit_move: 1 },
+                description: 'Attack from multiple angles',
+                planets: ['conquest']
+            },
+            shieldGenerators: {
+                name: 'Shield Generators',
+                cost: 200,
+                type: 'military',
+                researched: false,
+                prerequisites: ['armorPlating'],
+                unlocks: ['fortifiedPositions'],
+                bonus: { unit_health: 40 },
+                description: 'Energy shields for units',
+                planets: ['conquest']
+            },
+            virusUpload: {
+                name: 'Virus Upload',
+                cost: 180,
+                type: 'tech',
+                researched: false,
+                prerequisites: ['hackingProtocols'],
+                unlocks: ['sentinelCorruption'],
+                bonus: { hacking_speed: 40 },
+                description: 'Disable sentinel systems',
+                planets: ['conquest']
+            },
+            sentinelCorruption: {
+                name: 'Sentinel Corruption',
+                cost: 300,
+                type: 'tech',
+                researched: false,
+                prerequisites: ['virusUpload'],
+                unlocks: ['totalDominance'],
+                bonus: { sentinel_weaken: 20 },
+                description: 'Weaken all sentinels by 20%',
+                planets: ['conquest']
+            },
+            fortifiedPositions: {
+                name: 'Fortified Positions',
+                cost: 250,
+                type: 'military',
+                researched: false,
+                prerequisites: ['shieldGenerators'],
+                unlocks: ['totalDominance'],
+                bonus: { building_health: 100 },
+                description: 'Stronger defensive structures',
+                planets: ['conquest']
+            },
+            totalDominance: {
+                name: 'Total Dominance',
+                cost: 500,
+                type: 'victory',
+                researched: false,
+                prerequisites: ['sentinelCorruption', 'fortifiedPositions'],
+                unlocks: [],
+                bonus: { conquest_victory: true },
+                description: 'CONQUER THE PLANET - Victory!',
+                planets: ['conquest']
             }
         };
     }
@@ -514,12 +698,25 @@ class TechTree {
     }
 
     getAvailableTechs() {
+        const currentPlanet = this.getCurrentPlanetType();
+
         return Object.keys(this.techs).filter(techId => {
             const tech = this.techs[techId];
             if (tech.researched) return false;
+            if (!tech.planets.includes(currentPlanet)) return false;
 
             return tech.prerequisites.every(prereq => this.techs[prereq].researched);
         });
+    }
+
+    getCurrentPlanetType() {
+        if (!this.player.game) return 'volcanic';
+        const galaxy = this.player.game.galaxy;
+        if (!galaxy) return 'volcanic';
+
+        const planetIndex = galaxy.currentPlanetIndex;
+        if (planetIndex === 0) return 'volcanic';
+        return 'conquest';
     }
 
     getResearchInfo() {

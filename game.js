@@ -17,6 +17,7 @@ class Game {
         this.deployMode = null;
         this.selectedUnit = null;
         this.player = new Player();
+        this.player.game = this;
         this.world = new World(this.player);
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
