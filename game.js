@@ -145,14 +145,6 @@ class Game {
     }
 
     endTurn() {
-        if (this.gameMode === 'conquest') {
-            this.updateBuilders();
-            this.endConquestTurn();
-            return;
-        }
-
-        this.eventSystem.planet = this.currentPlanet;
-
         this.player.nextTurn();
         this.updateBuilders();
 
@@ -161,6 +153,8 @@ class Game {
         let totalScience = 0;
 
         this.currentPlanet.structures.forEach(building => {
+            if (building.isFrame || building.type === 'ruins' || building.type === 'defense_node') return;
+
             const tile = this.currentPlanet.tiles[building.y][building.x];
             totalFood += tile.yields.food;
             totalProduction += tile.yields.production;
@@ -209,9 +203,31 @@ class Game {
                 this.log('PLANET CORE COLLAPSED - GAME OVER');
                 this.running = false;
             }
+
+            this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
+        } else {
+            this.log(`Turn ${this.player.turn} complete.`);
         }
 
-        this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
+        if (this.gameMode === 'conquest') {
+            this.unitActionSystem.onTurnEnd();
+            const result = this.conquestSystem.endPlayerTurn();
+
+            if (result.victory) {
+                const planetId = this.galaxy.currentPlanetIndex;
+                this.galaxy.conqueredPlanet(planetId);
+                this.log('PLANET CONQUERED! Returning to peaceful mode.');
+                this.gameMode = 'building';
+                this.conquestSystem = null;
+                this.showGalaxyMap();
+            } else if (result.defeat) {
+                this.log('DEFEAT! Your spaceship was destroyed. Retreating...');
+                this.galaxy.travelToPlanet(0);
+                this.currentPlanet = this.galaxy.planets[0];
+                this.gameMode = 'building';
+                this.conquestSystem = null;
+            }
+        }
     }
 
     screenShake(duration, intensity) {
@@ -613,6 +629,84 @@ class Game {
                       this.player.selectedBuilding = null;
                       const buildingsList = document.getElementById('buildings-list');
                       if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
+                }
+
+                if (this.gameMode === 'conquest' && this.hiringMode) {
+                    const tile = this.currentPlanet.tiles[gridY][gridX];
+                    if (tile && (tile.type === 'water' || tile.type === 'lava' || tile.type === 'void')) {
+                        this.log('Cannot hire units on impassable terrain!');
+                        return;
+                    }
+
+                    if (this.conquestSystem.hireUnit(this.hiringMode, gridX, gridY)) {
+                        this.hiringMode = null;
+                    }
+                    return;
+                }
+
+                if (this.gameMode === 'conquest' && this.conquestSystem) {
+                    if (this.unitActionSystem.actionMode === 'move' && this.unitActionSystem.selectedUnit) {
+                        const unit = this.unitActionSystem.selectedUnit;
+                        if (this.conquestSystem.moveUnit(unit.id, gridX, gridY)) {
+                            this.unitActionSystem.actionMode = null;
+                            this.unitActionSystem.selectedUnit = null;
+                            this.selectedUnit = null;
+                        }
+                        return;
+                    }
+
+                    if (this.unitActionSystem.actionMode === 'attack' && this.unitActionSystem.selectedUnit) {
+                        const unit = this.unitActionSystem.selectedUnit;
+                        const damage = unit.chargeDamage || unit.damage;
+
+                        const sentinel = this.conquestSystem.sentinels.find(s => s.x === gridX && s.y === gridY);
+                        if (sentinel) {
+                            const distance = Math.abs(unit.x - gridX) + Math.abs(unit.y - gridY);
+                            if (distance <= unit.range) {
+                                sentinel.health -= damage;
+                                unit.attacked = true;
+                                unit.chargeDamage = null;
+                                this.log(`${unit.type} attacked sentinel for ${damage} damage!`);
+
+                                if (sentinel.health <= 0) {
+                                    this.conquestSystem.sentinels = this.conquestSystem.sentinels.filter(s => s.id !== sentinel.id);
+                                    this.log('Sentinel destroyed!');
+                                }
+                            } else {
+                                this.log('Target out of range!');
+                            }
+                        }
+
+                        this.unitActionSystem.actionMode = null;
+                        this.unitActionSystem.selectedUnit = null;
+                        this.selectedUnit = null;
+                        return;
+                    }
+
+                    const clickedUnit = this.conquestSystem.armies.find(a => a.x === gridX && a.y === gridY);
+                    if (clickedUnit) {
+                        this.selectedUnit = clickedUnit;
+                        this.unitActionSystem.showActionMenu(clickedUnit);
+                        return;
+                    }
+
+                    const clickedBuilding = this.currentPlanet.structures.find(s => s.x === gridX && s.y === gridY);
+                    if (clickedBuilding) {
+                        this.showBuildingInfo(clickedBuilding);
+
+                        if (clickedBuilding.type === 'defense_node' && !clickedBuilding.hacked) {
+                            const nearbyHacker = this.conquestSystem.armies.find(a => {
+                                if (a.type !== 'hacker' || a.attacked) return false;
+                                const dist = Math.abs(a.x - gridX) + Math.abs(a.y - gridY);
+                                return dist <= 2;
+                            });
+
+                            if (nearbyHacker) {
+                                this.log('Hacker nearby! Use Hack Node action from unit menu.');
+                            }
+                        }
+                        return;
+                    }
                 }
 
                 if (!this.player.selectedBuilding && !this.hiringMode && !this.unitActionSystem.actionMode) {

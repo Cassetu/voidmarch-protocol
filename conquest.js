@@ -206,13 +206,19 @@ class ConquestSystem {
             hacker: { health: 50, damage: 10, range: 2, moveRange: 4 }
         };
 
-        if (!this.game.player.spendResources(costs[armyType])) return false;
+        const cost = costs[armyType];
+        if (this.game.player.resources < cost) {
+            this.game.log(`Not enough resources! Need ${cost}`);
+            return false;
+        }
 
         const playerBuildingTypes = ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'observatory'];
 
         const nearBuilding = this.planet.structures.some(building => {
+            if (!playerBuildingTypes.includes(building.type)) return false;
+            if (building.isFrame) return false;
             const distance = Math.abs(building.x - x) + Math.abs(building.y - y);
-            return distance <= 1 && playerBuildingTypes.includes(building.type);
+            return distance <= 1;
         });
 
         if (!nearBuilding) {
@@ -220,13 +226,22 @@ class ConquestSystem {
             return false;
         }
 
+        const tile = this.planet.tiles[y][x];
+        if (tile.type === 'water' || tile.type === 'lava' || tile.type === 'void') {
+            this.game.log('Cannot hire units on impassable terrain!');
+            return false;
+        }
+
         const occupied = this.armies.some(a => a.x === x && a.y === y) ||
-                        this.sentinels.some(s => s.x === x && s.y === y);
+                        this.sentinels.some(s => s.x === x && s.y === y) ||
+                        tile.building;
 
         if (occupied) {
             this.game.log('Tile occupied!');
             return false;
         }
+
+        this.game.player.resources -= cost;
 
         const unit = {
             id: this.armies.length,
