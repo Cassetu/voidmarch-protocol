@@ -611,8 +611,23 @@ class ConquestSystem {
                     }
                 } else if (closestTarget.type === 'builder') {
                     this.game.log(`Builder destroyed by sentinel!`);
-                    this.game.player.builders = this.game.player.builders.filter(b => b.id !== target.id);
-                    this.game.player.buildingQueue = this.game.player.buildingQueue.filter(bq => bq.builderId !== target.id);
+                    const targetX = closestTarget.data.currentX;
+                    const targetY = closestTarget.data.currentY;
+                    const builderId = closestTarget.data.id;
+
+                    this.game.player.builders = this.game.player.builders.filter(b => b.id !== builderId);
+
+                    const queueItem = this.game.player.buildingQueue.find(bq => bq.builderId === builderId);
+                    if (queueItem) {
+                        const tile = this.planet.tiles[queueItem.y][queueItem.x];
+                        if (tile && tile.building && tile.building.isFrame) {
+                            this.planet.structures = this.planet.structures.filter(s => s !== tile.building);
+                            tile.building = null;
+                            this.game.log(`Construction frame at (${queueItem.x}, ${queueItem.y}) abandoned.`);
+                        }
+                    }
+
+                    this.game.player.buildingQueue = this.game.player.buildingQueue.filter(bq => bq.builderId !== builderId);
                 } else if (closestTarget.type === 'building') {
                     this.game.log(`${target.type} took ${sentinel.damage} damage!`);
 

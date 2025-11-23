@@ -6,6 +6,49 @@ class EventSystem {
         this.coreStability = 100;
         this.turn = 0;
         this.nextEruptionTurn = this.getRandomEruptionTurn();
+        this.eruption75Triggered = false;
+        this.eruption35Triggered = false;
+    }
+
+    triggerHailstorm() {
+        if (!this.game.conquestSystem) return;
+
+        const damageDealt = [];
+
+        this.game.conquestSystem.armies.forEach(unit => {
+            unit.health -= 10;
+            damageDealt.push(unit.type);
+
+            if (unit.health <= 0) {
+                this.game.conquestSystem.armies = this.game.conquestSystem.armies.filter(a => a.id !== unit.id);
+                this.game.log(`${unit.type} froze to death in the hailstorm!`);
+            }
+        });
+
+        const builderIds = this.game.player.builders.map(b => b.id);
+        builderIds.forEach(builderId => {
+            const queueItem = this.game.player.buildingQueue.find(bq => bq.builderId === builderId);
+            if (queueItem) {
+                const tile = this.planet.tiles[queueItem.y][queueItem.x];
+                if (tile && tile.building && tile.building.isFrame) {
+                    this.planet.structures = this.planet.structures.filter(s => s !== tile.building);
+                    tile.building = null;
+                }
+            }
+        });
+
+        this.game.player.builders = [];
+        this.game.player.buildingQueue = [];
+
+        if (damageDealt.length > 0) {
+            this.game.log(`❄️ HAILSTORM! All units take 10 damage! ${damageDealt.length} units hit.`);
+        }
+
+        if (builderIds.length > 0) {
+            this.game.log(`Builders caught in hailstorm - construction abandoned!`);
+        }
+
+        return damageDealt.length;
     }
 
     getRandomEruptionTurn() {
@@ -18,6 +61,18 @@ class EventSystem {
 
         if (this.player.coreStable) {
             this.coreStability = Math.min(100, this.coreStability + 1);
+        }
+
+        if (!this.eruption75Triggered && this.coreStability <= 75) {
+            this.eruption75Triggered = true;
+            this.triggerVolcanicEvent();
+            this.game.log('CRITICAL: Core instability at 75% - Major eruption triggered!');
+        }
+
+        if (!this.eruption35Triggered && this.coreStability <= 35) {
+            this.eruption35Triggered = true;
+            this.triggerVolcanicEvent();
+            this.game.log('CATASTROPHIC: Core collapse imminent at 35% - Massive eruption!');
         }
 
         if (this.turn >= this.nextEruptionTurn) {

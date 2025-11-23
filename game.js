@@ -205,6 +205,11 @@ class Game {
             }
 
             this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
+        } else if (this.galaxy.currentPlanetIndex === 1 && this.gameMode === 'conquest') {
+            if (Math.random() < 0.3) {
+                this.eventSystem.triggerHailstorm();
+            }
+            this.log(`Turn ${this.player.turn} complete.`);
         } else {
             this.log(`Turn ${this.player.turn} complete.`);
         }
