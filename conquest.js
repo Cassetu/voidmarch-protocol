@@ -12,10 +12,12 @@ class ConquestSystem {
         this.spaceship = null;
         this.cryoPopulation = 0;
         this.hackingMiniGame = null;
+        this.guardian = null;
 
         this.spawnSpaceship();
         this.spawnDefenseNodes();
         this.spawnSentinels();
+        this.spawnGuardian();
     }
 
     spawnSpaceship() {
@@ -527,7 +529,12 @@ class ConquestSystem {
             }
         });
 
+        if (this.guardian && !this.guardian.defeated) {
+            this.updateGuardian();
+        }
+
         this.sentinels.forEach(sentinel => {
+            if (sentinel.isGuardian) return;
             if (sentinel.empStunned) return;
 
             const homeX = sentinel.homeX !== undefined ? sentinel.homeX : this.defenseNodes.find(n => n.id === sentinel.belongsToNode)?.x || sentinel.x;
@@ -676,6 +683,82 @@ class ConquestSystem {
         return { continue: true };
     }
 
+    updateGuardian() {
+        const guardian = this.guardian;
+
+        const healthPercent = (guardian.health / guardian.maxHealth) * 100;
+
+        if (healthPercent <= 66 && guardian.phase === 1) {
+            guardian.phase = 2;
+            guardian.damage += 20;
+            guardian.moveRange += 1;
+            this.game.log(`🔥 ${guardian.name} ENRAGED! Phase 2 activated!`);
+        } else if (healthPercent <= 33 && guardian.phase === 2) {
+            guardian.phase = 3;
+            guardian.damage += 20;
+            guardian.range += 1;
+            this.game.log(`⚡ ${guardian.name} CRITICAL MODE! Phase 3 activated!`);
+        }
+
+        if (guardian.specialCooldown > 0) {
+            guardian.specialCooldown--;
+        }
+
+        let closestTarget = null;
+        let closestDistance = Infinity;
+
+        this.armies.forEach(army => {
+            const distance = Math.abs(guardian.x - army.x) + Math.abs(guardian.y - army.y);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestTarget = army;
+            }
+        });
+
+        if (guardian.phase === 3 && guardian.specialCooldown === 0 && closestDistance <= 5) {
+            this.guardianAOEAttack(guardian);
+            guardian.specialCooldown = 3;
+            guardian.attacked = true;
+            return;
+        }
+
+        if (closestTarget && closestDistance <= guardian.range) {
+            closestTarget.health -= guardian.damage;
+            guardian.attacked = true;
+
+            this.game.log(`${guardian.name} attacks ${closestTarget.type} for ${guardian.damage} damage!`);
+
+            if (closestTarget.health <= 0) {
+                this.armies = this.armies.filter(a => a.id !== closestTarget.id);
+                this.game.log(`${closestTarget.type} was obliterated by ${guardian.name}!`);
+            }
+        } else if (closestTarget && closestDistance <= guardian.moveRange + guardian.range) {
+            this.moveSentinelToward(guardian, closestTarget.x, closestTarget.y, guardian.x, guardian.y, 100);
+        }
+    }
+
+    guardianAOEAttack(guardian) {
+        this.game.log(`💥 ${guardian.name} unleashes AREA DEVASTATION!`);
+
+        let hitCount = 0;
+        this.armies.forEach(army => {
+            const distance = Math.abs(guardian.x - army.x) + Math.abs(guardian.y - army.y);
+            if (distance <= 2) {
+                army.health -= Math.floor(guardian.damage * 0.75);
+                hitCount++;
+
+                if (army.health <= 0) {
+                    this.armies = this.armies.filter(a => a.id !== army.id);
+                    this.game.log(`${army.type} was caught in the blast!`);
+                }
+            }
+        });
+
+        if (hitCount > 0) {
+            this.game.log(`Area attack hit ${hitCount} units!`);
+        }
+    }
+
     moveSentinelToward(sentinel, targetX, targetY, homeX, homeY, maxDist) {
         const dx = Math.sign(targetX - sentinel.x);
         const dy = Math.sign(targetY - sentinel.y);
@@ -702,6 +785,38 @@ class ConquestSystem {
                 this.game.unitActionSystem.processOverwatch(sentinel);
             }
         }
+    }
+
+    spawnGuardian() {
+        const centerX = Math.floor(this.planet.width / 2);
+        const centerY = Math.floor(this.planet.height / 2);
+
+        const validPos = this.findValidPosition(centerX, centerY);
+        if (!validPos) return;
+
+        const guardianTypes = ['Colossus', 'Devastator', 'Annihilator', 'Destroyer'];
+        const guardianName = guardianTypes[Math.floor(Math.random() * guardianTypes.length)];
+
+        this.guardian = {
+            id: 999,
+            x: validPos.x,
+            y: validPos.y,
+            name: guardianName,
+            health: 500 + (this.difficulty * 200),
+            maxHealth: 500 + (this.difficulty * 200),
+            damage: 40 + (this.difficulty * 10),
+            range: 3,
+            moveRange: 3,
+            type: 'guardian',
+            moved: false,
+            attacked: false,
+            phase: 1,
+            isGuardian: true,
+            specialCooldown: 0
+        };
+
+        this.sentinels.push(this.guardian);
+        this.game.log(`⚠️ GUARDIAN ${guardianName} HAS AWAKENED! ⚠️`);
     }
 
     endPlayerTurn() {

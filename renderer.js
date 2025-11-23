@@ -119,13 +119,15 @@ class Renderer {
             this.ctx.stroke();
         }
 
-        if (color === '#ff0000') {
+        if (unit.isGuardian) {
+            this.drawGuardian(screenX, screenY, unit);
+        } else if (color === '#ff0000') {
             this.drawSentinel(screenX, screenY, unit);
         } else {
             this.drawPlayerUnit(screenX, screenY, unit);
         }
 
-        this.drawHealthBar(screenX, screenY - 10, unit.health, unit.maxHealth, 20);
+        this.drawHealthBar(screenX, screenY - 10, unit.health, unit.maxHealth, unit.isGuardian ? 40 : 20);
 
         if (unit.moved || unit.attacked) {
             this.ctx.fillStyle = 'rgba(100, 100, 100, 0.6)';
@@ -371,6 +373,102 @@ class Renderer {
             this.ctx.closePath();
             this.ctx.fill();
         }
+
+        this.ctx.restore();
+    }
+
+    drawGuardian(screenX, screenY, guardian) {
+        const baseY = screenY - 10;
+
+        this.ctx.save();
+
+        const size = 16;
+        const leftX = screenX - size;
+        const rightX = screenX + size;
+        const topY = baseY - 35;
+        const midY = baseY - 15;
+        const botY = baseY + 10;
+
+        let color1, color2, color3;
+
+        if (guardian.phase === 1) {
+            color1 = '#1a1a3a';
+            color2 = '#2a2a4a';
+            color3 = '#ff3333';
+        } else if (guardian.phase === 2) {
+            color1 = '#3a1a1a';
+            color2 = '#4a2a2a';
+            color3 = '#ff6633';
+        } else {
+            color1 = '#1a0a0a';
+            color2 = '#3a1a1a';
+            color3 = '#ff0000';
+        }
+
+        this.ctx.fillStyle = color1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, topY);
+        this.ctx.lineTo(rightX + 6, midY - 8);
+        this.ctx.lineTo(screenX, midY + 8);
+        this.ctx.lineTo(leftX - 6, midY - 8);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.strokeStyle = color2;
+        this.ctx.lineWidth = 3;
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = color2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX - 6, midY - 8);
+        this.ctx.lineTo(screenX, midY + 8);
+        this.ctx.lineTo(screenX - 8, botY);
+        this.ctx.lineTo(leftX - 8, midY);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = color2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, midY + 8);
+        this.ctx.lineTo(rightX + 6, midY - 8);
+        this.ctx.lineTo(rightX + 8, midY);
+        this.ctx.lineTo(screenX + 8, botY);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = color3;
+        this.ctx.beginPath();
+        this.ctx.arc(screenX - 4, midY - 5, 4, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(screenX + 4, midY - 5, 4, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        if (guardian.phase >= 2) {
+            this.ctx.strokeStyle = color3;
+            this.ctx.lineWidth = 2;
+            for (let i = 0; i < 4; i++) {
+                const angle = (i / 4) * Math.PI * 2;
+                const x1 = screenX + Math.cos(angle) * 12;
+                const y1 = midY + Math.sin(angle) * 12;
+                const x2 = screenX + Math.cos(angle) * 18;
+                const y2 = midY + Math.sin(angle) * 18;
+                this.ctx.beginPath();
+                this.ctx.moveTo(x1, y1);
+                this.ctx.lineTo(x2, y2);
+                this.ctx.stroke();
+            }
+        }
+
+        this.ctx.fillStyle = '#0a0a1a';
+        this.ctx.fillRect(leftX - 6, botY, 6, 12);
+        this.ctx.fillRect(rightX, botY, 6, 12);
+        this.ctx.fillRect(screenX - 3, botY, 6, 12);
+
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 8px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(guardian.name.toUpperCase(), screenX, topY - 8);
+        this.ctx.fillText(`P${guardian.phase}`, screenX, topY - 18);
 
         this.ctx.restore();
     }

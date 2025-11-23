@@ -191,7 +191,7 @@ class TechTree {
                 type: 'survival',
                 researched: false,
                 prerequisites: ['biodome'],
-                unlocks: ['spaceHabitat', 'lifeSupportSystems'],
+                unlocks: ['lifeSupportSystems', 'exodusProtocol'],
                 bonus: { food: 30, self_sufficient: true },
                 description: 'No external food needed',
                 planets: ['volcanic']
@@ -377,7 +377,7 @@ class TechTree {
                 cost: 2000,
                 type: 'victory',
                 researched: false,
-                prerequisites: ['generationShip', 'fusionDrive', 'massEvacuation'],
+                prerequisites: ['advancedAlloys', 'closedEcosystem', 'planetaryEngineering'],
                 unlocks: [],
                 bonus: { can_escape: true },
                 description: 'ESCAPE THE PLANET - Victory!',
