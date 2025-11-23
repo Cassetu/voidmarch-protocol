@@ -330,8 +330,16 @@ class ConquestSystem {
             this.game.log(`${unit.type} attacked sentinel for ${unit.damage} damage!`);
 
             if (sentinel.health <= 0) {
+                if (sentinel.isGuardian) {
+                    sentinel.defeated = true;
+                    this.game.log(`💀 ${sentinel.name} HAS BEEN DEFEATED! 💀`);
+                    this.game.log(`The Guardian drops rare technology!`);
+                    this.game.player.resources += 500;
+                    this.game.player.science += 200;
+                } else {
+                    this.game.log(`Sentinel destroyed!`);
+                }
                 this.sentinels = this.sentinels.filter(s => s.id !== sentinel.id);
-                this.game.log(`Sentinel destroyed!`);
             }
 
             return true;
@@ -686,6 +694,10 @@ class ConquestSystem {
     updateGuardian() {
         const guardian = this.guardian;
 
+        if (!guardian || guardian.defeated || guardian.health <= 0) {
+            return;
+        }
+
         const healthPercent = (guardian.health / guardian.maxHealth) * 100;
 
         if (healthPercent <= 66 && guardian.phase === 1) {
@@ -836,7 +848,7 @@ class ConquestSystem {
         this.turn++;
 
         const allNodesHacked = this.defenseNodes.every(n => n.hacked);
-        const allSentinelsDestroyed = this.sentinels.length === 0;
+        const allSentinelsDestroyed = this.sentinels.filter(s => !s.defeated).length === 0;
 
         if (allNodesHacked && allSentinelsDestroyed) {
             return { victory: true };

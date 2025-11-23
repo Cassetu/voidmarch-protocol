@@ -206,8 +206,11 @@ class Game {
 
             this.log(`Turn ${this.player.turn} complete. Core Stability: ${Math.floor(this.eventSystem.coreStability)}%`);
         } else if (this.galaxy.currentPlanetIndex === 1 && this.gameMode === 'conquest') {
-            if (Math.random() < 0.3) {
-                this.eventSystem.triggerHailstorm();
+            if (Math.random() < 0.10) {
+                const affected = this.eventSystem.triggerHailstorm();
+                if (affected > 0) {
+                    this.renderer.startHailstorm();
+                }
             }
             this.log(`Turn ${this.player.turn} complete.`);
         } else {
@@ -484,6 +487,8 @@ class Game {
         if (this.eventSystem.activeEruption) {
             this.eventSystem.updateEruption();
         }
+
+        this.renderer.updateSnowParticles();
     }
 
     handleInput() {
@@ -1323,6 +1328,8 @@ class Game {
         if (this.player.selectedBuilding && this.gameMode === 'building') {
             this._drawBuildingPreview();
         }
+
+        this.renderer.drawSnowParticles();
 
         this.updateUI();
     }

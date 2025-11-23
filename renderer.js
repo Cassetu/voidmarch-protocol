@@ -7,6 +7,9 @@ class Renderer {
         this.tileHeight = 32;
         this.zoom = 1;
         this.lavaSparks = [];
+        this.snowParticles = [];
+        this.hailstormActive = false;
+        this.hailstormEndTime = 0;
         this.colorMap = {
             grass: '#3d4f5c',
             rock: '#4a5a6a',
@@ -83,6 +86,73 @@ class Renderer {
             this.ctx.fillStyle = `rgb(255, ${Math.floor(100 + spark.life * 100)}, 0)`;
             this.ctx.beginPath();
             this.ctx.arc(spark.x, spark.y, spark.size, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
+
+        this.ctx.globalAlpha = 1;
+        this.ctx.restore();
+    }
+
+    startHailstorm() {
+        this.hailstormActive = true;
+        this.hailstormEndTime = Date.now() + 10000;
+
+        for (let i = 0; i < 200; i++) {
+            this.createSnowParticle();
+        }
+    }
+
+    createSnowParticle() {
+        this.snowParticles.push({
+            x: Math.random() * this.width,
+            y: Math.random() * -500,
+            vx: (Math.random() - 0.5) * 1,
+            vy: Math.random() * 2 + 1,
+            size: Math.random() * 3 + 1,
+            opacity: Math.random() * 0.5 + 0.5
+        });
+    }
+
+    updateSnowParticles() {
+        if (!this.hailstormActive) return;
+
+        if (Date.now() > this.hailstormEndTime) {
+            this.hailstormActive = false;
+            this.snowParticles = [];
+            return;
+        }
+
+        for (let i = this.snowParticles.length - 1; i >= 0; i--) {
+            const snow = this.snowParticles[i];
+            snow.x += snow.vx;
+            snow.y += snow.vy;
+
+            if (snow.y > this.height) {
+                snow.y = -10;
+                snow.x = Math.random() * this.width;
+            }
+        }
+
+        if (this.snowParticles.length < 200 && Math.random() < 0.3) {
+            this.createSnowParticle();
+        }
+    }
+
+    drawSnowParticles() {
+        if (!this.hailstormActive) return;
+
+        this.ctx.save();
+
+        this.snowParticles.forEach(snow => {
+            this.ctx.globalAlpha = snow.opacity;
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.beginPath();
+            this.ctx.arc(snow.x, snow.y, snow.size, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#e0f0ff';
+            this.ctx.beginPath();
+            this.ctx.arc(snow.x - snow.size * 0.3, snow.y - snow.size * 0.3, snow.size * 0.5, 0, Math.PI * 2);
             this.ctx.fill();
         });
 

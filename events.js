@@ -11,7 +11,7 @@ class EventSystem {
     }
 
     triggerHailstorm() {
-        if (!this.game.conquestSystem) return;
+        if (!this.game.conquestSystem) return 0;
 
         const damageDealt = [];
 
@@ -25,27 +25,8 @@ class EventSystem {
             }
         });
 
-        const builderIds = this.game.player.builders.map(b => b.id);
-        builderIds.forEach(builderId => {
-            const queueItem = this.game.player.buildingQueue.find(bq => bq.builderId === builderId);
-            if (queueItem) {
-                const tile = this.planet.tiles[queueItem.y][queueItem.x];
-                if (tile && tile.building && tile.building.isFrame) {
-                    this.planet.structures = this.planet.structures.filter(s => s !== tile.building);
-                    tile.building = null;
-                }
-            }
-        });
-
-        this.game.player.builders = [];
-        this.game.player.buildingQueue = [];
-
         if (damageDealt.length > 0) {
             this.game.log(`❄️ HAILSTORM! All units take 10 damage! ${damageDealt.length} units hit.`);
-        }
-
-        if (builderIds.length > 0) {
-            this.game.log(`Builders caught in hailstorm - construction abandoned!`);
         }
 
         return damageDealt.length;
