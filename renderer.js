@@ -501,12 +501,23 @@ class Renderer {
 
         if (tile.type === 'lava') {
             if (tile.details) {
-                tile.details.forEach(detail => {
-                    const px = screenX + detail.x;
-                    const py = screenY + detail.y;
-                    this.ctx.fillStyle = `rgba(255, ${Math.floor(150 + detail.brightness * 100)}, 0, ${0.3 + detail.brightness * 0.4})`;
+                const time = Date.now() / 400;
+                tile.details.forEach((detail, i) => {
+                    const phase = i * 0.7;
+                    const drift = Math.sin(time * 0.8 + phase) * 2;
+                    const pulse = (Math.sin(time * 1.5 + phase) + 1) / 2;
+
+                    const px = screenX + detail.x + drift;
+                    const py = screenY + detail.y + Math.cos(time * 0.6 + phase) * 1.5;
+
+                    const glow = detail.brightness * 0.5 + pulse * 0.5;
+                    const green = Math.floor(100 + glow * 155);
+                    const alpha = 0.4 + glow * 0.4;
+                    const size = detail.size * (0.9 + pulse * 0.3);
+
+                    this.ctx.fillStyle = `rgba(255, ${green}, 0, ${alpha})`;
                     this.ctx.beginPath();
-                    this.ctx.arc(px, py, detail.size, 0, Math.PI * 2);
+                    this.ctx.arc(px, py, size, 0, Math.PI * 2);
                     this.ctx.fill();
                 });
             }
@@ -1296,20 +1307,72 @@ class Renderer {
 
         this.ctx.save();
 
-        this.ctx.fillStyle = '#ffaa00';
-        this.ctx.beginPath();
-        this.ctx.arc(screenX, screenY - 8, 6, 0, Math.PI * 2);
-        this.ctx.fill();
+        const baseY = screenY;
+        const leftX = screenX - 6;
+        const rightX = screenX + 6;
+        const headY = baseY - 20;
+        const chestTop = baseY - 12;
+        const chestBot = baseY + 3;
+        const legBot = baseY + 12;
 
-        this.ctx.strokeStyle = '#ffdd00';
-        this.ctx.lineWidth = 1.5;
+        this.ctx.fillStyle = '#c97861';
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, headY);
+        this.ctx.lineTo(rightX + 2, headY + 4);
+        this.ctx.lineTo(screenX + 2, headY + 10);
+        this.ctx.lineTo(leftX - 2, headY + 4);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#a86a4a';
+        this.ctx.lineWidth = 1;
         this.ctx.stroke();
 
-        this.ctx.fillStyle = '#ffdd00';
-        this.ctx.font = 'bold 7px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('B', screenX, screenY - 8);
+        this.ctx.fillStyle = '#d4a03a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, chestTop);
+        this.ctx.lineTo(rightX + 3, chestTop + 3);
+        this.ctx.lineTo(rightX + 1, chestBot);
+        this.ctx.lineTo(screenX, chestBot + 3);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#b8862a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX, chestTop + 3);
+        this.ctx.lineTo(screenX, chestTop);
+        this.ctx.lineTo(screenX, chestBot + 3);
+        this.ctx.lineTo(leftX - 3, chestBot);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#c97861';
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX - 3, chestBot);
+        this.ctx.lineTo(leftX - 1, chestBot + 2);
+        this.ctx.lineTo(leftX - 2, legBot);
+        this.ctx.lineTo(leftX - 4, legBot - 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(rightX + 1, chestBot);
+        this.ctx.lineTo(rightX + 3, chestBot + 2);
+        this.ctx.lineTo(rightX + 2, legBot);
+        this.ctx.lineTo(rightX, legBot - 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#5a4a3a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(rightX + 3, chestTop + 4);
+        this.ctx.lineTo(rightX + 12, chestTop - 2);
+        this.ctx.lineTo(rightX + 13, chestTop + 2);
+        this.ctx.lineTo(rightX + 4, chestTop + 8);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#7a6a5a';
+        this.ctx.fillRect(rightX + 10, chestTop - 6, 4, 5);
 
         this.ctx.restore();
     }

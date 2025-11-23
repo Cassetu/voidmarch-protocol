@@ -11,6 +11,8 @@ class Game {
         this.cheatCodeSequence = [];
         this.cheatCodeTarget = ['q', 'w', 'e', 'r', 't', 'y', 'c', 'a', 's'];
         this.cheatCodeTimeout = null;
+        this.eruptionSequence = [];
+        this.eruptionTarget = ['e', 'r', 't', 'y'];
         this.hiringMode = null;
         this.deployMode = null;
         this.selectedUnit = null;
@@ -232,9 +234,34 @@ class Game {
     }
 
     handleCheatCode(e) {
+        const key = e.key.toLowerCase();
+
+        if (this.galaxy.currentPlanetIndex === 0) {
+            this.eruptionSequence.push(key);
+            if (this.eruptionSequence.length > this.eruptionTarget.length) {
+                this.eruptionSequence.shift();
+            }
+
+            if (this.eruptionSequence.length === this.eruptionTarget.length) {
+                let matches = true;
+                for (let i = 0; i < this.eruptionTarget.length; i++) {
+                    if (this.eruptionSequence[i] !== this.eruptionTarget[i]) {
+                        matches = false;
+                        break;
+                    }
+                }
+                if (matches) {
+                    this.log('MANUAL ERUPTION TRIGGERED!');
+                    this.eventSystem.causeEruption();
+                    this.eruptionSequence = [];
+                    return;
+                }
+            }
+        }
+
         if (this.gameMode === 'conquest') return;
 
-        this.cheatCodeSequence.push(e.key.toLowerCase());
+        this.cheatCodeSequence.push(key);
 
         if (this.cheatCodeSequence.length > this.cheatCodeTarget.length) {
             this.cheatCodeSequence.shift();

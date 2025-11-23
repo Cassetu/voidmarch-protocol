@@ -128,7 +128,7 @@ class Builder {
 
             const distanceToTarget = Math.abs(this.currentX - this.targetX) + Math.abs(this.currentY - this.targetY);
 
-            if (distanceToTarget === 1) {
+            if (distanceToTarget === 0) {
                 this.arrived = true;
                 this.turnsAtSite = 0;
                 return { state: 'arrived', progress: 0 };
