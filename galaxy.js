@@ -21,7 +21,7 @@ class Galaxy {
         });
 
         const planetTypes = [
-            { type: 'ice', biomes: ['frozen', 'tundra', 'glacier'], sentinels: 'Cryo-Sentinels' },
+            { type: 'ice', biomes: ['frozen', 'tundra'], sentinels: 'Cryo-Sentinels' },
             { type: 'desert', biomes: ['sand', 'dunes', 'oasis'], sentinels: 'Solar-Sentinels' },
             { type: 'ocean', biomes: ['water', 'reef', 'abyss'], sentinels: 'Hydro-Sentinels' },
             { type: 'jungle', biomes: ['forest', 'swamp', 'canopy'], sentinels: 'Bio-Sentinels' },
