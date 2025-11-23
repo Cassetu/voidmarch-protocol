@@ -213,7 +213,53 @@ class Galaxy {
                 };
             });
         });
+
+        this.generateLakes(planet, 4 + Math.floor(Math.random() * 4));
+
         return planet;
+    }
+
+    generateLakes(planet, count) {
+        for (let i = 0; i < count; i++) {
+            const centerX = 5 + Math.floor(Math.random() * (planet.width - 10));
+            const centerY = 5 + Math.floor(Math.random() * (planet.height - 10));
+            const radiusX = 3 + Math.floor(Math.random() * 5);
+            const radiusY = 2 + Math.floor(Math.random() * 4);
+            const rotation = Math.random() * Math.PI;
+
+            const noiseOffsets = [];
+            for (let n = 0; n < 16; n++) {
+                noiseOffsets.push((Math.random() - 0.5) * 0.6);
+            }
+
+            for (let y = centerY - radiusY - 3; y <= centerY + radiusY + 3; y++) {
+                for (let x = centerX - radiusX - 3; x <= centerX + radiusX + 3; x++) {
+                    if (x < 0 || x >= planet.width || y < 0 || y >= planet.height) continue;
+
+                    const dx = x - centerX;
+                    const dy = y - centerY;
+                    const rotatedX = dx * Math.cos(rotation) - dy * Math.sin(rotation);
+                    const rotatedY = dx * Math.sin(rotation) + dy * Math.cos(rotation);
+
+                    const angle = Math.atan2(dy, dx);
+                    const noiseIndex = Math.floor(((angle + Math.PI) / (Math.PI * 2)) * 16) % 16;
+                    const noise = noiseOffsets[noiseIndex];
+
+                    const normalizedDist = (rotatedX * rotatedX) / (radiusX * radiusX) + (rotatedY * rotatedY) / (radiusY * radiusY);
+                    const noisyDist = normalizedDist + noise;
+
+                    if (noisyDist <= 1) {
+                        planet.tiles[y][x].type = 'water';
+                        planet.tiles[y][x].yields = { food: 0, production: 0, science: 0 };
+                    } else if (noisyDist <= 1.4) {
+                        if (planet.tiles[y][x].type !== 'water') {
+                            planet.tiles[y][x].type = 'sand';
+                            planet.tiles[y][x].yields = { food: 1, production: 1, science: 0 };
+                        }
+                    }
+                }
+            }
+        }
     }
 
     conqueredPlanet(planetId) {

@@ -22,7 +22,7 @@ class Renderer {
             ice: '#a0d0ff',
             frozen: '#80b0e0',
             tundra: '#c0e0ff',
-            sand: '#e0c080',
+            sand: '#c2b280',
             dunes: '#d0b070',
             oasis: '#60a060',
             island: '#70b070',
@@ -520,6 +520,45 @@ class Renderer {
                     this.ctx.arc(px, py, size, 0, Math.PI * 2);
                     this.ctx.fill();
                 });
+            }
+        }
+
+        if (tile.type === 'water') {
+            const time = Date.now() / 1000;
+            for (let i = 0; i < 6; i++) {
+                const phase = i * 1.2;
+                const waveX = Math.sin(time * 0.5 + phase) * 8;
+                const waveY = Math.cos(time * 0.4 + phase) * 4;
+                const pulse = (Math.sin(time * 0.8 + phase) + 1) / 2;
+
+                const px = screenX + (i - 3) * 6 + waveX;
+                const py = screenY + waveY;
+
+                const blue = Math.floor(150 + pulse * 80);
+                const green = Math.floor(100 + pulse * 50);
+                const alpha = 0.3 + pulse * 0.3;
+                const size = 4 + pulse * 2;
+
+                this.ctx.fillStyle = `rgba(${green}, ${blue}, 255, ${alpha})`;
+                this.ctx.beginPath();
+                this.ctx.arc(px, py, size, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+        }
+
+        if (tile.type === 'sand') {
+            const seed = (gridX * 7 + gridY * 13) % 100;
+            for (let i = 0; i < 12; i++) {
+                const grainX = screenX + ((seed + i * 17) % 30 - 15);
+                const grainY = screenY + ((seed + i * 23) % 14 - 7);
+                const brightness = ((seed + i * 11) % 40) - 20;
+
+                const r = Math.min(255, 194 + brightness);
+                const g = Math.min(255, 178 + brightness);
+                const b = Math.min(255, 128 + brightness);
+
+                this.ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                this.ctx.fillRect(grainX, grainY, 3, 3);
             }
         }
 

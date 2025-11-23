@@ -19,8 +19,14 @@ class ConquestSystem {
     }
 
     spawnSpaceship() {
-        const spawnX = Math.floor(this.planet.width / 4);
-        const spawnY = Math.floor(this.planet.height / 4);
+        let spawnX = Math.floor(this.planet.width / 4);
+        let spawnY = Math.floor(this.planet.height / 4);
+
+        const validPos = this.findValidPosition(spawnX, spawnY);
+        if (validPos) {
+            spawnX = validPos.x;
+            spawnY = validPos.y;
+        }
 
         this.cryoPopulation = Math.floor(this.game.player.population * 0.5);
         const carriedResources = Math.floor(this.game.player.resources * 0.5);
@@ -53,11 +59,14 @@ class ConquestSystem {
         const armyTypes = ['assault', 'ranger', 'tank', 'hacker'];
 
         nodePositions.forEach((pos, index) => {
+            const validPos = this.findValidPosition(pos.x, pos.y);
+            if (!validPos) return;
+
             const armyType = armyTypes[index % armyTypes.length];
 
             const node = {
-                x: pos.x,
-                y: pos.y,
+                x: validPos.x,
+                y: validPos.y,
                 type: 'defense_node',
                 id: index,
                 health: 300,
@@ -70,9 +79,25 @@ class ConquestSystem {
             };
 
             this.defenseNodes.push(node);
-            this.planet.tiles[pos.y][pos.x].building = node;
+            this.planet.tiles[validPos.y][validPos.x].building = node;
             this.planet.structures.push(node);
         });
+    }
+
+    findValidPosition(startX, startY) {
+        const maxAttempts = 50;
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            const offsetX = Math.floor((Math.random() - 0.5) * 10);
+            const offsetY = Math.floor((Math.random() - 0.5) * 10);
+            const x = Math.max(0, Math.min(this.planet.width - 1, startX + offsetX));
+            const y = Math.max(0, Math.min(this.planet.height - 1, startY + offsetY));
+
+            const tile = this.planet.tiles[y][x];
+            if (tile.type !== 'water' && tile.type !== 'lava' && tile.type !== 'void' && !tile.building) {
+                return { x, y };
+            }
+        }
+        return null;
     }
 
     generateCircuitPattern() {
@@ -127,8 +152,14 @@ class ConquestSystem {
                 const angle = (i / sentinelCount) * Math.PI * 2;
                 const distance = 3 + Math.floor(Math.random() * 3);
 
-                const x = Math.round(node.x + Math.cos(angle) * distance);
-                const y = Math.round(node.y + Math.sin(angle) * distance);
+                let x = Math.round(node.x + Math.cos(angle) * distance);
+                let y = Math.round(node.y + Math.sin(angle) * distance);
+
+                const validPos = this.findValidPosition(x, y);
+                if (!validPos) continue;
+
+                x = validPos.x;
+                y = validPos.y;
 
                 if (x >= 0 && x < this.planet.width && y >= 0 && y < this.planet.height) {
                     this.sentinels.push({
