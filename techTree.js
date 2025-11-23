@@ -622,10 +622,12 @@ class TechTree {
         }
 
         const tech = this.techs[this.currentResearch];
-        this.researchProgress++;
+        const baseTurns = Math.ceil(tech.cost / 2);
+        const scienceMultiplier = Math.max(1, this.player.sciencePerTurn / 10);
 
-        const turnsRequired = tech.cost;
-        if (this.researchProgress >= turnsRequired) {
+        this.researchProgress += scienceMultiplier;
+
+        if (this.researchProgress >= baseTurns) {
             return this.completeTech(this.currentResearch);
         }
 
@@ -723,12 +725,15 @@ class TechTree {
         if (!this.currentResearch) return null;
 
         const tech = this.techs[this.currentResearch];
-        const turnsRemaining = tech.cost - this.researchProgress;
+        const baseTurns = Math.ceil(tech.cost / 2);
+        const scienceMultiplier = Math.max(1, this.player.sciencePerTurn / 10);
+        const turnsRemaining = Math.ceil((baseTurns - this.researchProgress) / scienceMultiplier);
 
         return {
             name: tech.name,
-            progress: this.researchProgress,
-            turnsRemaining: turnsRemaining
+            progress: Math.floor(this.researchProgress),
+            turnsRemaining: turnsRemaining,
+            totalTurns: baseTurns
         };
     }
 }

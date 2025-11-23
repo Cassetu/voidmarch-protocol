@@ -1419,7 +1419,7 @@ class Game {
             const researchInfo = this.player.techTree.getResearchInfo();
 
             if (researchInfo) {
-                researchBtn.textContent = `${researchInfo.name} (${researchInfo.progress}/${this.player.techTree.techs[this.player.techTree.currentResearch].cost} turns)`;
+                researchBtn.textContent = `${researchInfo.name} (${Math.floor(researchInfo.progress)}/${researchInfo.totalTurns}, ~${researchInfo.turnsRemaining} turns)`;
                 researchBtn.disabled = true;
             } else {
                 researchBtn.textContent = 'Choose Research';
@@ -1432,7 +1432,7 @@ class Game {
         } else {
             const researchInfo = this.player.techTree.getResearchInfo();
             if (researchInfo) {
-                researchBtn.textContent = `${researchInfo.name} (${researchInfo.progress}/${this.player.techTree.techs[this.player.techTree.currentResearch].cost} turns)`;
+                researchBtn.textContent = `${researchInfo.name} (${Math.floor(researchInfo.progress)}/${researchInfo.totalTurns}, ~${researchInfo.turnsRemaining} turns)`;
                 researchBtn.disabled = true;
             } else {
                 researchBtn.textContent = 'No Available Research';
