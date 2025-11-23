@@ -710,9 +710,12 @@ class Game {
                 }
 
                 if (!this.player.selectedBuilding && !this.hiringMode && !this.unitActionSystem.actionMode) {
-                    const tile = this.currentPlanet.tiles[gridY][gridX];
-                    if (tile) {
-                        this.showTileInfo(tile, gridX, gridY);
+                    if (gridX >= 0 && gridX < this.currentPlanet.width &&
+                        gridY >= 0 && gridY < this.currentPlanet.height) {
+                        const tile = this.currentPlanet.tiles[gridY][gridX];
+                        if (tile) {
+                            this.showTileInfo(tile, gridX, gridY);
+                        }
                     }
                 }
             }
