@@ -20,12 +20,12 @@ class Game {
         this.world = new World(this.player);
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
+        this.currentPlanet = this.world.createVolcanicWorld();
         this.eventSystem = new EventSystem(this.currentPlanet, this.player, this);
         this.turnBased = true;
         this.player.techTree = new TechTree(this.player);
         this.gameState = 'volcanic';
         this.renderer.zoom = 0.8;
-        this.currentPlanet = this.world.createVolcanicWorld();
         this.initializeStartingBuildings();
         this.running = true;
         this.galaxy = new Galaxy(this);
@@ -33,7 +33,7 @@ class Game {
         this.gameMode = 'building';
         this.cameraX = 0;
         this.cameraY = 0;
-
+        this.shakeIntensity = 0;
 
         window.addEventListener('resize', () => this.handleResize());
         window.addEventListener('wheel', (e) => this.handleZoom(e));
@@ -214,23 +214,9 @@ class Game {
     }
 
     screenShake(duration, intensity) {
-        const startTime = Date.now();
-        const originalX = this.cameraX;
-        const originalY = this.cameraY;
-
-        const shake = () => {
-            const elapsed = Date.now() - startTime;
-            if (elapsed < duration) {
-                this.cameraX = originalX + (Math.random() - 0.5) * intensity;
-                this.cameraY = originalY + (Math.random() - 0.5) * intensity;
-                requestAnimationFrame(shake);
-            } else {
-                this.cameraX = originalX;
-                this.cameraY = originalY;
-            }
-        };
-
-        shake();
+        this.shakeIntensity = intensity;
+        this.shakeStartTime = Date.now();
+        this.shakeDuration = duration;
     }
 
     handleCheatCode(e) {
@@ -252,7 +238,11 @@ class Game {
                 }
                 if (matches) {
                     this.log('MANUAL ERUPTION TRIGGERED!');
-                    this.eventSystem.causeEruption();
+                    const result = this.eventSystem.causeEruption();
+                    if (!result.resisted) {
+                        this.screenShake(10000, 25);
+                        this.log(`Eruption at (${result.x}, ${result.y}) - ${result.destroyedBuildings} buildings destroyed!`);
+                    }
                     this.eruptionSequence = [];
                     return;
                 }
@@ -468,6 +458,10 @@ class Game {
         this.handleInput();
         this.input.update();
         this.updateCamera();
+
+        if (this.eventSystem.activeEruption) {
+            this.eventSystem.updateEruption();
+        }
     }
 
     handleInput() {
@@ -684,6 +678,13 @@ class Game {
 
         if (tile.building) {
             html += `<p style="font-size: 9px; color: #ffaa00; margin-top: 6px;">Building: ${tile.building.type}</p>`;
+            if (tile.building.type !== 'ruins') {
+                const healthPercent = Math.floor((tile.building.health / tile.building.maxHealth) * 100);
+                let healthColor = '#88ff88';
+                if (healthPercent < 30) healthColor = '#ff5555';
+                else if (healthPercent < 60) healthColor = '#ffaa55';
+                html += `<p style="font-size: 9px; color: ${healthColor};">HP: ${Math.floor(tile.building.health)}/${tile.building.maxHealth} (${healthPercent}%)</p>`;
+            }
         }
 
         infoPanel.innerHTML = html;
@@ -1044,7 +1045,21 @@ class Game {
 
         this.ctx.save();
         const topBarHeight = 75;
-        this.ctx.translate(0, topBarHeight);
+        let shakeX = 0;
+        let shakeY = 0;
+        if (this.shakeIntensity && this.shakeStartTime) {
+            const elapsed = Date.now() - this.shakeStartTime;
+            if (elapsed < this.shakeDuration) {
+                const progress = elapsed / this.shakeDuration;
+                const currentIntensity = this.shakeIntensity * (1 - progress);
+                const time = Date.now() / 50;
+                shakeX = Math.sin(time) * currentIntensity;
+                shakeY = Math.cos(time * 1.3) * currentIntensity;
+            } else {
+                this.shakeIntensity = 0;
+            }
+        }
+        this.ctx.translate(shakeX, topBarHeight + shakeY);
         this.ctx.scale(this.renderer.zoom, this.renderer.zoom);
 
         const centerGridX = this.currentPlanet.width / 2;

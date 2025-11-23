@@ -58,11 +58,13 @@ class EventSystem {
         if (Math.random() * 100 < resistChance) {
             return { x: -1, y: -1, destroyedBuildings: 0, resisted: true };
         }
+
         const x = Math.floor(Math.random() * this.planet.width);
         const y = Math.floor(Math.random() * this.planet.height);
 
         const radius = 3;
         let destroyedBuildings = 0;
+        this.activeEruption = { x, y, radius, ticksRemaining: 20 };
 
         for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
@@ -72,29 +74,69 @@ class EventSystem {
                 if (nx >= 0 && nx < this.planet.width && ny >= 0 && ny < this.planet.height) {
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (distance <= radius) {
-                        const tile = this.planet.tiles[ny][nx];
+                    if (distance <= 1) {
+                        this.planet.tiles[ny][nx].type = 'lava';
+                    } else if (distance <= 2) {
+                        this.planet.tiles[ny][nx].type = 'ash';
+                    }
+                }
+            }
+        }
 
-                        if (tile.building) {
-                            this.planet.removeBuilding(nx, ny, this.player);
-                            destroyedBuildings++;
-                        }
+        return { x, y, destroyedBuildings };
+    }
 
-                        if (distance <= 1) {
-                            tile.type = 'lava';
-                        } else if (distance <= 2) {
-                            tile.type = 'ash';
+    updateEruption() {
+        if (!this.activeEruption) return;
+
+        const { x, y, radius } = this.activeEruption;
+        let destroyedThisTick = 0;
+
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const nx = x + dx;
+                const ny = y + dy;
+
+                if (nx >= 0 && nx < this.planet.width && ny >= 0 && ny < this.planet.height) {
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const tile = this.planet.tiles[ny][nx];
+
+                    if (tile.building && tile.building.type !== 'ruins') {
+                        const damage = Math.max(1, Math.floor((radius - distance + 1) * 5));
+                        tile.building.health -= damage;
+
+                        if (tile.building.health <= 0) {
+                            const oldType = tile.building.type;
+                            this.player.removeBuilding(tile.building);
+                            this.planet.structures = this.planet.structures.filter(s => s !== tile.building);
+
+                            const ruins = {
+                                x: nx,
+                                y: ny,
+                                type: 'ruins',
+                                health: 0,
+                                maxHealth: 0,
+                                originalType: oldType
+                            };
+                            tile.building = ruins;
+                            this.planet.structures.push(ruins);
+                            destroyedThisTick++;
+
+                            if (this.game) {
+                                this.game.log(`${oldType} destroyed by eruption!`);
+                            }
                         }
                     }
                 }
             }
         }
 
-        if (this.player.game) {
-            this.player.game.screenShake(800, 30);
+        this.activeEruption.ticksRemaining--;
+        if (this.activeEruption.ticksRemaining <= 0) {
+            this.activeEruption = null;
         }
 
-        return { x, y, destroyedBuildings };
+        return destroyedThisTick;
     }
 
     spawnFloatingIsland() {
