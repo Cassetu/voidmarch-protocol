@@ -1377,6 +1377,23 @@ class Renderer {
         this.ctx.restore();
     }
 
+    drawBuilderCount(screenX, screenY, count) {
+        this.ctx.save();
+
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.beginPath();
+        this.ctx.arc(screenX, screenY - 32, 8, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 10px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(count.toString(), screenX, screenY - 32);
+
+        this.ctx.restore();
+    }
+
     drawAttackRange(unit, cameraX, cameraY) {
         if (!unit) return;
 

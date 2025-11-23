@@ -12,7 +12,7 @@ class Game {
         this.cheatCodeTarget = ['q', 'w', 'e', 'r', 't', 'y', 'c', 'a', 's'];
         this.cheatCodeTimeout = null;
         this.eruptionSequence = [];
-        this.eruptionTarget = ['e', 'r', 't', 'y'];
+        this.eruptionTarget = ['e', 'r', 't', 'e'];
         this.hiringMode = null;
         this.deployMode = null;
         this.selectedUnit = null;
@@ -555,7 +555,7 @@ class Game {
 
                         const tile = this.currentPlanet.tiles[gridY][gridX];
                         console.log('Creating frame at', gridX, gridY, 'buildingType:', buildingType);
-                        if (tile && !tile.building) {
+                        if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
                             const tempBuilding = new Building(gridX, gridY, buildingType);
                             tempBuilding.isFrame = true;
                             tempBuilding.buildProgress = 0;
@@ -599,7 +599,7 @@ class Game {
                       });
 
                       const tile = this.currentPlanet.tiles[gridY][gridX];
-                      if (tile && !tile.building) {
+                      if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
                           const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
                           tempBuilding.isFrame = true;
                           tempBuilding.buildProgress = 0;
@@ -692,7 +692,7 @@ class Game {
 
     selectNearestSettlement(targetX, targetY) {
         const settlements = this.currentPlanet.structures.filter(s =>
-            s.type === 'settlement' || s.type === 'spaceship'
+            (s.type === 'settlement' || s.type === 'spaceship') && !s.isFrame
         );
 
         if (settlements.length === 0) return null;
@@ -1136,8 +1136,22 @@ class Game {
 
         this.renderer.drawLavaSparks(this.cameraX, this.cameraY);
 
+        const builderGroups = {};
         this.player.builders.forEach(builder => {
-            this.renderer.drawBuilder(builder, this.cameraX, this.cameraY);
+            const key = `${builder.currentX},${builder.currentY}`;
+            if (!builderGroups[key]) {
+                builderGroups[key] = [];
+            }
+            builderGroups[key].push(builder);
+        });
+
+        Object.values(builderGroups).forEach(group => {
+            this.renderer.drawBuilder(group[0], this.cameraX, this.cameraY);
+            if (group.length > 1) {
+                const screenX = (group[0].currentX - group[0].currentY) * (this.renderer.tileWidth / 2);
+                const screenY = (group[0].currentX + group[0].currentY) * (this.renderer.tileHeight / 2);
+                this.renderer.drawBuilderCount(screenX, screenY, group.length);
+            }
         });
 
         this.renderer.drawBuildingQueue(this.player.buildingQueue);

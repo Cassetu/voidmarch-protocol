@@ -73,8 +73,7 @@ class Builder {
 
                 const tile = planet.tiles[neighbor.y][neighbor.x];
                 if (tile.type === 'lava' || tile.type === 'water' || tile.type === 'void') {
-                    const distToGoal = heuristic(neighbor, goal);
-                    if (distToGoal > 1) continue;
+                    continue;
                 }
 
                 if (closedSet.has(`${neighbor.x},${neighbor.y}`)) continue;
