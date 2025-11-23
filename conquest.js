@@ -75,7 +75,9 @@ class ConquestSystem {
                 hacked: false,
                 hackingProgress: 0,
                 hackingRequired: 100,
-                circuitPattern: this.generateCircuitPattern()
+                circuitPattern: this.generateCircuitPattern(),
+                spawnProgress: 0,
+                spawning: false
             };
 
             this.defenseNodes.push(node);
@@ -456,10 +458,58 @@ class ConquestSystem {
             sentinel.attacked = false;
         });
 
-        this.sentinels.forEach(sentinel => {
-            if (sentinel.empStunned) {
-                return;
+        this.defenseNodes.forEach(node => {
+            if (node.hacked) return;
+
+            const nearbyThreat = this.armies.some(army => {
+                const dist = Math.abs(army.x - node.x) + Math.abs(army.y - node.y);
+                return dist <= 8;
+            });
+
+            if (nearbyThreat) {
+                if (!node.spawning) {
+                    node.spawning = true;
+                    node.spawnProgress = 0;
+                }
+                node.spawnProgress++;
+
+                if (node.spawnProgress >= 5) {
+                    const spawnPos = this.findValidPosition(node.x, node.y);
+                    if (spawnPos) {
+                        this.sentinels.push({
+                            id: this.sentinels.length,
+                            x: spawnPos.x,
+                            y: spawnPos.y,
+                            health: 80 + (this.difficulty * 20),
+                            maxHealth: 80 + (this.difficulty * 20),
+                            damage: 15 + (this.difficulty * 5),
+                            range: 2,
+                            moveRange: 2 + Math.floor(this.difficulty / 2),
+                            type: node.armyType,
+                            moved: false,
+                            attacked: false,
+                            belongsToNode: node.id,
+                            homeX: node.x,
+                            homeY: node.y
+                        });
+                        this.game.log(`Defense node ${node.id} spawned a sentinel!`);
+                    }
+                    node.spawnProgress = 0;
+                }
+            } else {
+                node.spawning = false;
+                node.spawnProgress = 0;
             }
+        });
+
+        this.sentinels.forEach(sentinel => {
+            if (sentinel.empStunned) return;
+
+            const homeX = sentinel.homeX !== undefined ? sentinel.homeX : this.defenseNodes.find(n => n.id === sentinel.belongsToNode)?.x || sentinel.x;
+            const homeY = sentinel.homeY !== undefined ? sentinel.homeY : this.defenseNodes.find(n => n.id === sentinel.belongsToNode)?.y || sentinel.y;
+
+            if (!sentinel.homeX) sentinel.homeX = homeX;
+            if (!sentinel.homeY) sentinel.homeY = homeY;
 
             let closestTarget = null;
             let closestDistance = Infinity;
@@ -499,65 +549,93 @@ class ConquestSystem {
                         }
                     }
                 });
+            }
 
-                if (closestTarget && closestTarget.distance <= sentinel.range) {
-                    closestTarget.data.health -= sentinel.damage;
+            const distFromHome = Math.abs(sentinel.x - homeX) + Math.abs(sentinel.y - homeY);
+            const maxWanderDist = 6;
 
-                    if (closestTarget.type === 'unit' && closestTarget.data.health <= 0) {
-                        this.armies = this.armies.filter(a => a.id !== closestTarget.data.id);
-                        this.game.log(`Your ${closestTarget.data.type} was destroyed!`);
-                    } else if (closestTarget.type === 'builder') {
-                        this.game.log(`Builder destroyed by sentinel!`);
-                        this.game.player.builders = this.game.player.builders.filter(b => b.id !== closestTarget.data.id);
-                        this.game.player.buildingQueue = this.game.player.buildingQueue.filter(bq => bq.builderId !== closestTarget.data.id);
-                    } else if (closestTarget.type === 'building') {
-                        this.game.log(`${closestTarget.data.type} took ${sentinel.damage} damage!`);
+            if (closestTarget && closestTarget.distance <= sentinel.range) {
+                const target = closestTarget.data;
+                target.health -= sentinel.damage;
 
-                        if (closestTarget.data.health <= 0) {
-                            if (closestTarget.data.type === 'spaceship') {
-                                this.game.log(`Spaceship destroyed! DEFEAT!`);
-                                return { defeat: true };
-                            } else {
-                                this.game.log(`${closestTarget.data.type} destroyed and turned to ruins!`);
+                if (closestTarget.type === 'unit' && target.health <= 0) {
+                    this.armies = this.armies.filter(a => a.id !== target.id);
+                    this.game.log(`Your ${target.type} was destroyed!`);
+                } else if (closestTarget.type === 'builder') {
+                    this.game.log(`Builder destroyed by sentinel!`);
+                    this.game.player.builders = this.game.player.builders.filter(b => b.id !== target.id);
+                    this.game.player.buildingQueue = this.game.player.buildingQueue.filter(bq => bq.builderId !== target.id);
+                } else if (closestTarget.type === 'building') {
+                    this.game.log(`${target.type} took ${sentinel.damage} damage!`);
 
-                                const ruins = {
-                                    x: closestTarget.data.x,
-                                    y: closestTarget.data.y,
-                                    type: 'ruins',
-                                    health: 0,
-                                    maxHealth: 0,
-                                    originalType: closestTarget.data.type
-                                };
-
-                                this.planet.structures = this.planet.structures.filter(s => s !== closestTarget.data);
-                                this.planet.structures.push(ruins);
-                                this.planet.tiles[closestTarget.data.y][closestTarget.data.x].building = ruins;
-                            }
+                    if (target.health <= 0) {
+                        if (target.type === 'spaceship') {
+                            this.game.log(`Spaceship destroyed! DEFEAT!`);
+                            return { defeat: true };
+                        } else {
+                            this.game.log(`${target.type} destroyed!`);
+                            const ruins = {
+                                x: target.x,
+                                y: target.y,
+                                type: 'ruins',
+                                health: 0,
+                                maxHealth: 0,
+                                originalType: target.type
+                            };
+                            this.planet.structures = this.planet.structures.filter(s => s !== target);
+                            this.planet.structures.push(ruins);
+                            this.planet.tiles[target.y][target.x].building = ruins;
                         }
                     }
-                } else if (closestTarget && closestTarget.distance <= sentinel.moveRange + sentinel.range) {
-                    const dx = Math.sign(closestTarget.data.x - sentinel.x);
-                    const dy = Math.sign(closestTarget.data.y - sentinel.y);
+                }
+                sentinel.attacked = true;
+            } else if (closestTarget && closestDistance <= sentinel.moveRange + sentinel.range && distFromHome < maxWanderDist) {
+                const targetX = closestTarget.type === 'builder' ? closestTarget.data.currentX : closestTarget.data.x;
+                const targetY = closestTarget.type === 'builder' ? closestTarget.data.currentY : closestTarget.data.y;
 
-                    for (let i = 0; i < sentinel.moveRange; i++) {
-                        const newX = sentinel.x + (Math.abs(dx) > 0 ? dx : 0);
-                        const newY = sentinel.y + (Math.abs(dy) > 0 ? dy : 0);
+                this.moveSentinelToward(sentinel, targetX, targetY, homeX, homeY, maxWanderDist);
+            } else if (distFromHome > maxWanderDist) {
+                this.moveSentinelToward(sentinel, homeX, homeY, homeX, homeY, maxWanderDist + 2);
+            } else if (Math.random() < 0.3) {
+                const wanderX = sentinel.x + Math.floor(Math.random() * 3) - 1;
+                const wanderY = sentinel.y + Math.floor(Math.random() * 3) - 1;
+                const newDistFromHome = Math.abs(wanderX - homeX) + Math.abs(wanderY - homeY);
 
-                        const occupied = this.armies.some(a => a.x === newX && a.y === newY) ||
-                                       this.sentinels.some(s => s.x === newX && s.y === newY && s.id !== sentinel.id) ||
-                                       this.game.player.builders.some(b => b.currentX === newX && b.currentY === newY);
-
-                        if (!occupied && newX >= 0 && newX < this.planet.width && newY >= 0 && newY < this.planet.height) {
-                            sentinel.x = newX;
-                            sentinel.y = newY;
-                            this.game.unitActionSystem.processOverwatch(sentinel);
-                        }
-                    }
+                if (newDistFromHome <= maxWanderDist) {
+                    this.moveSentinelToward(sentinel, wanderX, wanderY, homeX, homeY, maxWanderDist);
                 }
             }
         });
 
         return { continue: true };
+    }
+
+    moveSentinelToward(sentinel, targetX, targetY, homeX, homeY, maxDist) {
+        const dx = Math.sign(targetX - sentinel.x);
+        const dy = Math.sign(targetY - sentinel.y);
+
+        for (let i = 0; i < sentinel.moveRange; i++) {
+            const newX = sentinel.x + (dx !== 0 ? dx : 0);
+            const newY = sentinel.y + (dy !== 0 ? dy : 0);
+
+            const newDistFromHome = Math.abs(newX - homeX) + Math.abs(newY - homeY);
+            if (newDistFromHome > maxDist) break;
+
+            if (newX < 0 || newX >= this.planet.width || newY < 0 || newY >= this.planet.height) break;
+
+            const tile = this.planet.tiles[newY][newX];
+            if (tile.type === 'water' || tile.type === 'lava' || tile.type === 'void') break;
+
+            const occupied = this.armies.some(a => a.x === newX && a.y === newY) ||
+                            this.sentinels.some(s => s.x === newX && s.y === newY && s.id !== sentinel.id) ||
+                            this.game.player.builders.some(b => b.currentX === newX && b.currentY === newY);
+
+            if (!occupied) {
+                sentinel.x = newX;
+                sentinel.y = newY;
+                this.game.unitActionSystem.processOverwatch(sentinel);
+            }
+        }
     }
 
     endPlayerTurn() {
