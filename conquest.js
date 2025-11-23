@@ -164,16 +164,19 @@ class ConquestSystem {
                 y = validPos.y;
 
                 if (x >= 0 && x < this.planet.width && y >= 0 && y < this.planet.height) {
+                    const sentinelType = node.armyType;
+                    const stats = this.getSentinelStats(sentinelType);
+
                     this.sentinels.push({
                         id: this.sentinels.length,
                         x: x,
                         y: y,
-                        health: 80 + (this.difficulty * 20),
-                        maxHealth: 80 + (this.difficulty * 20),
-                        damage: 15 + (this.difficulty * 5),
-                        range: 2,
-                        moveRange: 2 + Math.floor(this.difficulty / 2),
-                        type: node.armyType,
+                        health: stats.health + (this.difficulty * 20),
+                        maxHealth: stats.health + (this.difficulty * 20),
+                        damage: stats.damage + (this.difficulty * 5),
+                        range: stats.range,
+                        moveRange: stats.moveRange + Math.floor(this.difficulty / 2),
+                        type: sentinelType,
                         moved: false,
                         attacked: false,
                         belongsToNode: node.id
@@ -181,6 +184,16 @@ class ConquestSystem {
                 }
             }
         });
+    }
+
+    getSentinelStats(type) {
+        const stats = {
+            assault: { health: 100, damage: 25, range: 1, moveRange: 4 },
+            ranger: { health: 60, damage: 20, range: 4, moveRange: 3 },
+            tank: { health: 200, damage: 15, range: 1, moveRange: 2 },
+            hacker: { health: 50, damage: 10, range: 2, moveRange: 4 }
+        };
+        return stats[type] || stats.assault;
     }
 
     unfreezePopulation(amount) {
@@ -310,6 +323,7 @@ class ConquestSystem {
         if (sentinel) {
             sentinel.health -= unit.damage;
             unit.attacked = true;
+            sentinel.aggroTarget = unitId;
 
             this.game.log(`${unit.type} attacked sentinel for ${unit.damage} damage!`);
 
@@ -323,7 +337,18 @@ class ConquestSystem {
 
         const building = this.planet.structures.find(s => s.x === targetX && s.y === targetY);
         if (building && building.type === 'defense_node' && !building.hacked) {
-            return false;
+            building.health -= unit.damage;
+            unit.attacked = true;
+
+            this.game.log(`${unit.type} attacked defense node for ${unit.damage} damage!`);
+
+            if (building.health <= 0) {
+                building.hacked = true;
+                building.health = 0;
+                this.game.log(`Defense node ${building.id} destroyed!`);
+            }
+
+            return true;
         }
 
         return false;
@@ -521,6 +546,14 @@ class ConquestSystem {
                     closestTarget = { type: 'unit', data: tauntedUnit, distance: Math.abs(sentinel.x - tauntedUnit.x) + Math.abs(sentinel.y - tauntedUnit.y) };
                     closestDistance = closestTarget.distance;
                 }
+            } else if (sentinel.aggroTarget !== undefined) {
+                const aggroUnit = this.armies.find(a => a.id === sentinel.aggroTarget);
+                if (aggroUnit) {
+                    closestTarget = { type: 'unit', data: aggroUnit, distance: Math.abs(sentinel.x - aggroUnit.x) + Math.abs(sentinel.y - aggroUnit.y) };
+                    closestDistance = closestTarget.distance;
+                } else {
+                    delete sentinel.aggroTarget;
+                }
             } else {
                 this.armies.forEach(army => {
                     const distance = Math.abs(sentinel.x - army.x) + Math.abs(sentinel.y - army.y);
@@ -552,7 +585,7 @@ class ConquestSystem {
             }
 
             const distFromHome = Math.abs(sentinel.x - homeX) + Math.abs(sentinel.y - homeY);
-            const maxWanderDist = 6;
+            const maxWanderDist = sentinel.aggroTarget !== undefined ? 100 : 6;
 
             if (closestTarget && closestTarget.distance <= sentinel.range) {
                 const target = closestTarget.data;
@@ -561,6 +594,9 @@ class ConquestSystem {
                 if (closestTarget.type === 'unit' && target.health <= 0) {
                     this.armies = this.armies.filter(a => a.id !== target.id);
                     this.game.log(`Your ${target.type} was destroyed!`);
+                    if (sentinel.aggroTarget === target.id) {
+                        delete sentinel.aggroTarget;
+                    }
                 } else if (closestTarget.type === 'builder') {
                     this.game.log(`Builder destroyed by sentinel!`);
                     this.game.player.builders = this.game.player.builders.filter(b => b.id !== target.id);
@@ -596,6 +632,9 @@ class ConquestSystem {
                 this.moveSentinelToward(sentinel, targetX, targetY, homeX, homeY, maxWanderDist);
             } else if (distFromHome > maxWanderDist) {
                 this.moveSentinelToward(sentinel, homeX, homeY, homeX, homeY, maxWanderDist + 2);
+                if (distFromHome > maxWanderDist + 5) {
+                    delete sentinel.aggroTarget;
+                }
             } else if (Math.random() < 0.3) {
                 const wanderX = sentinel.x + Math.floor(Math.random() * 3) - 1;
                 const wanderY = sentinel.y + Math.floor(Math.random() * 3) - 1;

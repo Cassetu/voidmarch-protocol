@@ -148,59 +148,229 @@ class Renderer {
         const midY = baseY - 10;
         const botY = baseY + 5;
 
-        this.ctx.fillStyle = '#2a3a4a';
-        this.ctx.beginPath();
-        this.ctx.moveTo(screenX, topY);
-        this.ctx.lineTo(rightX, midY - 5);
-        this.ctx.lineTo(screenX, midY + 5);
-        this.ctx.lineTo(leftX, midY - 5);
-        this.ctx.closePath();
-        this.ctx.fill();
-        this.ctx.strokeStyle = '#4a5a6a';
-        this.ctx.lineWidth = 1.5;
-        this.ctx.stroke();
+        if (sentinel.type === 'tank') {
+            this.ctx.fillStyle = '#1a2a3a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(screenX, topY);
+            this.ctx.lineTo(rightX + 4, midY - 5);
+            this.ctx.lineTo(screenX, midY + 5);
+            this.ctx.lineTo(leftX - 4, midY - 5);
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#2a3a4a';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
 
-        this.ctx.fillStyle = '#1a2a3a';
-        this.ctx.beginPath();
-        this.ctx.moveTo(leftX, midY - 5);
-        this.ctx.lineTo(screenX, midY + 5);
-        this.ctx.lineTo(screenX - 4, botY);
-        this.ctx.lineTo(leftX - 4, midY);
-        this.ctx.closePath();
-        this.ctx.fill();
+            this.ctx.fillStyle = '#0a1a2a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(leftX - 4, midY - 5);
+            this.ctx.lineTo(screenX, midY + 5);
+            this.ctx.lineTo(screenX - 6, botY);
+            this.ctx.lineTo(leftX - 6, midY);
+            this.ctx.closePath();
+            this.ctx.fill();
 
-        this.ctx.fillStyle = '#3a4a5a';
-        this.ctx.beginPath();
-        this.ctx.moveTo(screenX, midY + 5);
-        this.ctx.lineTo(rightX, midY - 5);
-        this.ctx.lineTo(rightX + 4, midY);
-        this.ctx.lineTo(screenX + 4, botY);
-        this.ctx.closePath();
-        this.ctx.fill();
+            this.ctx.fillStyle = '#2a3a4a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(screenX, midY + 5);
+            this.ctx.lineTo(rightX + 4, midY - 5);
+            this.ctx.lineTo(rightX + 6, midY);
+            this.ctx.lineTo(screenX + 6, botY);
+            this.ctx.closePath();
+            this.ctx.fill();
 
-        this.ctx.fillStyle = '#ff3333';
-        this.ctx.beginPath();
-        this.ctx.arc(screenX - 2, midY - 3, 2.5, 0, Math.PI * 2);
-        this.ctx.fill();
-        this.ctx.beginPath();
-        this.ctx.arc(screenX + 2, midY - 3, 2.5, 0, Math.PI * 2);
-        this.ctx.fill();
+            this.ctx.fillStyle = '#ff3333';
+            this.ctx.beginPath();
+            this.ctx.arc(screenX - 3, midY - 3, 3, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.arc(screenX + 3, midY - 3, 3, 0, Math.PI * 2);
+            this.ctx.fill();
 
-        this.ctx.fillStyle = '#1a1a2a';
-        this.ctx.beginPath();
-        this.ctx.moveTo(leftX - 2, botY);
-        this.ctx.lineTo(leftX + 2, botY);
-        this.ctx.lineTo(leftX, botY + 10);
-        this.ctx.closePath();
-        this.ctx.fill();
+            this.ctx.fillStyle = '#1a1a2a';
+            this.ctx.fillRect(leftX - 4, botY, 4, 8);
+            this.ctx.fillRect(rightX, botY, 4, 8);
+            this.ctx.fillRect(screenX - 2, botY, 4, 8);
+        } else if (sentinel.type === 'ranger') {
+            this.ctx.fillStyle = '#2a4a3a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(screenX, topY);
+            this.ctx.lineTo(rightX, midY - 5);
+            this.ctx.lineTo(screenX, midY + 5);
+            this.ctx.lineTo(leftX, midY - 5);
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#3a5a4a';
+            this.ctx.lineWidth = 1.5;
+            this.ctx.stroke();
 
-        this.ctx.fillStyle = '#1a1a2a';
-        this.ctx.beginPath();
-        this.ctx.moveTo(rightX - 2, botY);
-        this.ctx.lineTo(rightX + 2, botY);
-        this.ctx.lineTo(rightX, botY + 10);
-        this.ctx.closePath();
-        this.ctx.fill();
+            this.ctx.fillStyle = '#1a3a2a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(leftX, midY - 5);
+            this.ctx.lineTo(screenX, midY + 5);
+            this.ctx.lineTo(screenX - 4, botY);
+            this.ctx.lineTo(leftX - 4, midY);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#3a5a4a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(screenX, midY + 5);
+            this.ctx.lineTo(rightX, midY - 5);
+            this.ctx.lineTo(rightX + 4, midY);
+            this.ctx.lineTo(screenX + 4, botY);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#ff3333';
+            this.ctx.beginPath();
+            this.ctx.arc(screenX - 2, midY - 3, 2.5, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.arc(screenX + 2, midY - 3, 2.5, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.strokeStyle = '#4a6a5a';
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(rightX + 4, midY - 2);
+            this.ctx.lineTo(rightX + 12, midY - 8);
+            this.ctx.stroke();
+            this.ctx.fillStyle = '#5a7a6a';
+            this.ctx.beginPath();
+            this.ctx.arc(rightX + 12, midY - 8, 2, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#1a2a1a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(leftX - 2, botY);
+            this.ctx.lineTo(leftX + 2, botY);
+            this.ctx.lineTo(leftX, botY + 10);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(rightX - 2, botY);
+            this.ctx.lineTo(rightX + 2, botY);
+            this.ctx.lineTo(rightX, botY + 10);
+            this.ctx.closePath();
+            this.ctx.fill();
+        } else if (sentinel.type === 'hacker') {
+            this.ctx.fillStyle = '#3a2a4a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(screenX, topY);
+            this.ctx.lineTo(rightX, midY - 5);
+            this.ctx.lineTo(screenX, midY + 5);
+            this.ctx.lineTo(leftX, midY - 5);
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#4a3a5a';
+            this.ctx.lineWidth = 1.5;
+            this.ctx.stroke();
+
+            this.ctx.fillStyle = '#2a1a3a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(leftX, midY - 5);
+            this.ctx.lineTo(screenX, midY + 5);
+            this.ctx.lineTo(screenX - 4, botY);
+            this.ctx.lineTo(leftX - 4, midY);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#4a3a5a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(screenX, midY + 5);
+            this.ctx.lineTo(rightX, midY - 5);
+            this.ctx.lineTo(rightX + 4, midY);
+            this.ctx.lineTo(screenX + 4, botY);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#aa33ff';
+            this.ctx.beginPath();
+            this.ctx.arc(screenX - 2, midY - 3, 2.5, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.arc(screenX + 2, midY - 3, 2.5, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.strokeStyle = '#5a4a6a';
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(rightX + 4, midY);
+            this.ctx.lineTo(rightX + 10, midY - 4);
+            this.ctx.stroke();
+            this.ctx.fillStyle = '#6a5a7a';
+            this.ctx.fillRect(rightX + 8, midY - 8, 4, 6);
+
+            this.ctx.fillStyle = '#1a1a2a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(leftX - 2, botY);
+            this.ctx.lineTo(leftX + 2, botY);
+            this.ctx.lineTo(leftX, botY + 10);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(rightX - 2, botY);
+            this.ctx.lineTo(rightX + 2, botY);
+            this.ctx.lineTo(rightX, botY + 10);
+            this.ctx.closePath();
+            this.ctx.fill();
+        } else {
+            this.ctx.fillStyle = '#2a3a4a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(screenX, topY);
+            this.ctx.lineTo(rightX, midY - 5);
+            this.ctx.lineTo(screenX, midY + 5);
+            this.ctx.lineTo(leftX, midY - 5);
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#4a5a6a';
+            this.ctx.lineWidth = 1.5;
+            this.ctx.stroke();
+
+            this.ctx.fillStyle = '#1a2a3a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(leftX, midY - 5);
+            this.ctx.lineTo(screenX, midY + 5);
+            this.ctx.lineTo(screenX - 4, botY);
+            this.ctx.lineTo(leftX - 4, midY);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#3a4a5a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(screenX, midY + 5);
+            this.ctx.lineTo(rightX, midY - 5);
+            this.ctx.lineTo(rightX + 4, midY);
+            this.ctx.lineTo(screenX + 4, botY);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#ff3333';
+            this.ctx.beginPath();
+            this.ctx.arc(screenX - 2, midY - 3, 2.5, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.arc(screenX + 2, midY - 3, 2.5, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#1a1a2a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(leftX - 2, botY);
+            this.ctx.lineTo(leftX + 2, botY);
+            this.ctx.lineTo(leftX, botY + 10);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(rightX - 2, botY);
+            this.ctx.lineTo(rightX + 2, botY);
+            this.ctx.lineTo(rightX, botY + 10);
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
 
         this.ctx.restore();
     }

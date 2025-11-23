@@ -754,7 +754,67 @@ class Game {
 
         const tileName = tileNames[tile.type] || tile.type;
 
-        let html = `
+        let html = '';
+
+        if (this.gameMode === 'conquest' && this.conquestSystem) {
+            const playerUnit = this.conquestSystem.armies.find(a => a.x === x && a.y === y);
+            const sentinel = this.conquestSystem.sentinels.find(s => s.x === x && s.y === y);
+
+            if (playerUnit) {
+                const healthPercent = Math.floor((playerUnit.health / playerUnit.maxHealth) * 100);
+                let healthColor = '#88ff88';
+                if (healthPercent < 30) healthColor = '#ff5555';
+                else if (healthPercent < 60) healthColor = '#ffaa55';
+
+                html += `<p style="font-size: 11px; color: #88ff88; margin-bottom: 6px;"><strong>🎖️ ${playerUnit.type.toUpperCase()}</strong></p>`;
+                html += `<p style="font-size: 9px; color: ${healthColor};">HP: ${Math.floor(playerUnit.health)}/${playerUnit.maxHealth} (${healthPercent}%)</p>`;
+                html += `<p style="font-size: 9px; color: #8fa3c8;">Damage: ${playerUnit.damage}</p>`;
+                html += `<p style="font-size: 9px; color: #8fa3c8;">Range: ${playerUnit.range}</p>`;
+                html += `<p style="font-size: 9px; color: #8fa3c8;">Move: ${playerUnit.moveRange}</p>`;
+
+                if (playerUnit.moved) {
+                    html += `<p style="font-size: 9px; color: #999;">✓ Moved</p>`;
+                }
+                if (playerUnit.attacked) {
+                    html += `<p style="font-size: 9px; color: #999;">✓ Attacked</p>`;
+                }
+                if (playerUnit.overwatchActive) {
+                    html += `<p style="font-size: 9px; color: #ffaa00;">⚠️ Overwatch Active</p>`;
+                }
+                if (playerUnit.tauntTurns) {
+                    html += `<p style="font-size: 9px; color: #ffaa00;">🛡️ Taunt (${playerUnit.tauntTurns} turns)</p>`;
+                }
+
+                html += `<hr style="border: 0; border-top: 1px solid #3a4a5a; margin: 6px 0;">`;
+            }
+
+            if (sentinel) {
+                const healthPercent = Math.floor((sentinel.health / sentinel.maxHealth) * 100);
+                let healthColor = '#ff8888';
+                if (healthPercent < 30) healthColor = '#ff3333';
+                else if (healthPercent < 60) healthColor = '#ff6666';
+
+                html += `<p style="font-size: 11px; color: #ff8888; margin-bottom: 6px;"><strong>⚠️ SENTINEL ${sentinel.type.toUpperCase()}</strong></p>`;
+                html += `<p style="font-size: 9px; color: ${healthColor};">HP: ${Math.floor(sentinel.health)}/${sentinel.maxHealth} (${healthPercent}%)</p>`;
+                html += `<p style="font-size: 9px; color: #ff9999;">Damage: ${sentinel.damage}</p>`;
+                html += `<p style="font-size: 9px; color: #ff9999;">Range: ${sentinel.range}</p>`;
+                html += `<p style="font-size: 9px; color: #ff9999;">Move: ${sentinel.moveRange}</p>`;
+
+                if (sentinel.empStunned) {
+                    html += `<p style="font-size: 9px; color: #00ffff;">⚡ EMP Stunned (${sentinel.empStunTurns} turn)</p>`;
+                }
+                if (sentinel.aggroTarget !== undefined) {
+                    const targetUnit = this.conquestSystem.armies.find(a => a.id === sentinel.aggroTarget);
+                    if (targetUnit) {
+                        html += `<p style="font-size: 9px; color: #ffaa00;">🎯 Chasing ${targetUnit.type}</p>`;
+                    }
+                }
+
+                html += `<hr style="border: 0; border-top: 1px solid #3a4a5a; margin: 6px 0;">`;
+            }
+        }
+
+        html += `
             <p style="font-size: 10px; color: #a8b8d8;"><strong>${tileName}</strong></p>
             <p style="font-size: 9px; color: #8fa3c8;">Position: (${x}, ${y})</p>
             <p style="font-size: 9px; color: #8fa3c8;">Food: +${tile.yields.food}</p>
