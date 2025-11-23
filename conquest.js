@@ -554,31 +554,43 @@ class ConquestSystem {
                 } else {
                     delete sentinel.aggroTarget;
                 }
-            } else {
+            }
+
+            if (!closestTarget) {
                 this.armies.forEach(army => {
                     const distance = Math.abs(sentinel.x - army.x) + Math.abs(sentinel.y - army.y);
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestTarget = { type: 'unit', data: army, distance: distance };
+                    if (distance <= sentinel.moveRange + sentinel.range) {
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestTarget = { type: 'unit', data: army, distance: distance };
+                        }
                     }
                 });
+            }
 
+            if (!closestTarget) {
                 this.game.player.builders.forEach(builder => {
                     const distance = Math.abs(sentinel.x - builder.currentX) + Math.abs(sentinel.y - builder.currentY);
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestTarget = { type: 'builder', data: builder, distance: distance };
+                    if (distance <= sentinel.moveRange + sentinel.range) {
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestTarget = { type: 'builder', data: builder, distance: distance };
+                        }
                     }
                 });
+            }
 
+            if (!closestTarget) {
                 const playerBuildingTypes = ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'observatory'];
 
                 this.planet.structures.forEach(building => {
                     if (playerBuildingTypes.includes(building.type) && !building.isFrame) {
                         const distance = Math.abs(sentinel.x - building.x) + Math.abs(sentinel.y - building.y);
-                        if (distance < closestDistance) {
-                            closestDistance = distance;
-                            closestTarget = { type: 'building', data: building, distance: distance };
+                        if (distance <= sentinel.moveRange + sentinel.range) {
+                            if (distance < closestDistance) {
+                                closestDistance = distance;
+                                closestTarget = { type: 'building', data: building, distance: distance };
+                            }
                         }
                     }
                 });
