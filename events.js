@@ -46,14 +46,22 @@ class EventSystem {
 
         if (!this.eruption75Triggered && this.coreStability <= 75) {
             this.eruption75Triggered = true;
-            this.triggerVolcanicEvent();
+            this.damageAllBuildings(20);
+            this.causeEruption();
             this.game.log('CRITICAL: Core instability at 75% - Major eruption triggered!');
+            if (this.game.screenShake) {
+                this.game.screenShake(3000, 15);
+            }
         }
 
         if (!this.eruption35Triggered && this.coreStability <= 35) {
             this.eruption35Triggered = true;
-            this.triggerVolcanicEvent();
+            this.damageAllBuildings(40);
+            this.causeEruption();
             this.game.log('CATASTROPHIC: Core collapse imminent at 35% - Massive eruption!');
+            if (this.game.screenShake) {
+                this.game.screenShake(5000, 25);
+            }
         }
 
         if (this.turn >= this.nextEruptionTurn) {
@@ -66,6 +74,44 @@ class EventSystem {
         }
 
         return { gameOver: false };
+    }
+
+    damageAllBuildings(damage) {
+        let buildingsDamaged = 0;
+
+        this.planet.structures.forEach(building => {
+            if (building.type !== 'ruins' && !building.isFrame) {
+                building.health -= damage;
+                buildingsDamaged++;
+
+                if (building.health <= 0) {
+                    const oldType = building.type;
+                    this.player.removeBuilding(building);
+
+                    const ruins = {
+                        x: building.x,
+                        y: building.y,
+                        type: 'ruins',
+                        health: 0,
+                        maxHealth: 0,
+                        originalType: oldType
+                    };
+
+                    const tile = this.planet.tiles[building.y][building.x];
+                    tile.building = ruins;
+                    this.planet.structures = this.planet.structures.filter(s => s !== building);
+                    this.planet.structures.push(ruins);
+
+                    if (this.game) {
+                        this.game.log(`${oldType} destroyed by catastrophic eruption!`);
+                    }
+                }
+            }
+        });
+
+        if (buildingsDamaged > 0 && this.game) {
+            this.game.log(`Planetary shockwave damages ${buildingsDamaged} buildings for ${damage} HP!`);
+        }
     }
 
     triggerVolcanicEvent() {
