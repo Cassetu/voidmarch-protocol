@@ -208,6 +208,15 @@ class ConquestSystem {
         return true;
     }
 
+    getPlayerBuildingTypes() {
+        return ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple',
+                'forge', 'market', 'castle', 'library', 'university', 'observatory',
+                'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument',
+                'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena',
+                'hospital', 'academy', 'theater', 'mansion', 'spaceport', 'laboratory',
+                'megafactory'];
+    }
+
     hireUnit(armyType, x, y) {
         const costs = {
             assault: 80,
@@ -229,7 +238,7 @@ class ConquestSystem {
             return false;
         }
 
-        const playerBuildingTypes = ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'observatory'];
+        const playerBuildingTypes = this.getPlayerBuildingTypes();
 
         const nearBuilding = this.planet.structures.some(building => {
             if (!playerBuildingTypes.includes(building.type)) return false;
@@ -596,7 +605,7 @@ class ConquestSystem {
             }
 
             if (!closestTarget) {
-                const playerBuildingTypes = ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'observatory'];
+                const playerBuildingTypes = this.getPlayerBuildingTypes();
 
                 this.planet.structures.forEach(building => {
                     if (playerBuildingTypes.includes(building.type) && !building.isFrame) {

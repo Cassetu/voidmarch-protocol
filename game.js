@@ -507,6 +507,9 @@ class Game {
 
         this.player.techTree.techs['exodusProtocol'].researched = true;
 
+        this.player.age = 'space';
+        this.player.ageLevel = 5;
+
         this.player.techTree.techs['mining'].unlocks.forEach(unlock => {
             this.player.techTree.applyBonus(this.player.techTree.techs['mining'].bonus);
         });
@@ -521,6 +524,7 @@ class Game {
         document.getElementById('galaxy-map-btn').style.display = 'block';
 
         this.log('Unlocked galaxy travel! Resources, science, food, and population boosted!');
+        this.log('Advanced to SPACE AGE! All buildings unlocked!');
         this.log('Click Galaxy Map to travel to the second planet.');
 
         setTimeout(() => {
