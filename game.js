@@ -293,8 +293,6 @@ class Game {
         menu.style.display = 'none';
         sidePanel.style.display = 'flex';
         consoleEl.style.display = 'block';
-
-        this.player.selectedBuilding = null;
     }
 
     populateBuildingsMenu() {
