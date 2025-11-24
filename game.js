@@ -651,7 +651,7 @@ class Game {
                 const centerWorldY = (centerGridX + centerGridY) * unitY;
 
                 const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
-                const targetY = ((this.height - 160 - 75) / 2) / this.renderer.zoom + this.cameraY;
+                const targetY = ((this.height - 220 - 75) / 2) / this.renderer.zoom + this.cameraY;
 
                 const translateX = targetX - centerWorldX;
                 const translateY = targetY - centerWorldY;
@@ -1249,7 +1249,7 @@ class Game {
         const centerWorldY = (centerGridX + centerGridY) * unitY;
 
         const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
-        const targetY = ((this.height - 160 - 75) / 2) / this.renderer.zoom + this.cameraY;
+        const targetY = ((this.height - 220 - 75) / 2) / this.renderer.zoom + this.cameraY;
 
         const translateX = targetX - centerWorldX;
         const translateY = targetY - centerWorldY;
@@ -1300,23 +1300,19 @@ class Game {
         const minY = 0;
         const maxY = (w + h - 2) * halfH;
 
-        const padding = 200;
+        const padding = 400;
 
         const viewW = this.width / this.renderer.zoom;
         const viewH = (this.height - 220 - 75) / this.renderer.zoom;
 
-        // map center in world coords
         const centerX = (minX + maxX) / 2;
         const centerY = (minY + maxY) / 2;
 
-        // number of tiles outward from center (round up)
         const tilesOut = Math.ceil(Math.max(w, h) / 2);
 
-        // convert tilesOut to world units. tileWidth = halfW * 2, tileHeight = halfH * 2
         const extentX = tilesOut * (halfW * 2);
         const extentY = tilesOut * (halfH * 2);
 
-        // horizontal clamp based on tiles-out extent + padding
         const minCameraX = centerX - extentX - padding;
         const maxCameraX = centerX + extentX - viewW + padding;
 
