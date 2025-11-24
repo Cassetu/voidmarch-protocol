@@ -74,6 +74,30 @@ class Game {
             });
         }
 
+        document.getElementById('open-buildings-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openBuildingsMenu();
+        });
+
+        document.getElementById('buildings-back-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.closeBuildingsMenu();
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('buildings-menu').style.display === 'block') {
+                    this.closeBuildingsMenu();
+                }
+                if (this.unitActionSystem.actionMode) {
+                    this.unitActionSystem.actionMode = null;
+                    this.unitActionSystem.selectedUnit = null;
+                    this.selectedUnit = null;
+                    this.log('Action cancelled');
+                }
+            }
+        });
+
         const deployTankBtn = document.getElementById('deploy-tank-btn');
         if (deployTankBtn) {
             deployTankBtn.addEventListener('click', (e) => {
@@ -247,6 +271,99 @@ class Game {
                 this.conquestSystem = null;
             }
         }
+    }
+
+    openBuildingsMenu() {
+        const menu = document.getElementById('buildings-menu');
+        const sidePanel = document.getElementById('side-panel');
+        const consoleEl = document.getElementById('console');
+
+        menu.style.display = 'block';
+        sidePanel.style.display = 'none';
+        consoleEl.style.display = 'none';
+
+        this.populateBuildingsMenu();
+    }
+
+    closeBuildingsMenu() {
+        const menu = document.getElementById('buildings-menu');
+        const sidePanel = document.getElementById('side-panel');
+        const consoleEl = document.getElementById('console');
+
+        menu.style.display = 'none';
+        sidePanel.style.display = 'flex';
+        consoleEl.style.display = 'block';
+
+        this.player.selectedBuilding = null;
+    }
+
+    populateBuildingsMenu() {
+        const grid = document.getElementById('buildings-grid');
+        grid.innerHTML = '';
+
+        const buildingInfo = {
+            settlement: { name: 'Settlement', desc: 'Houses population and generates resources', age: 'Stone' },
+            farm: { name: 'Farm', desc: 'Produces food from volcanic soil', age: 'Stone' },
+            warehouse: { name: 'Warehouse', desc: 'Stores resources and materials', age: 'Stone' },
+            observatory: { name: 'Observatory', desc: 'Generates science points', age: 'Stone' },
+            barracks: { name: 'Barracks', desc: 'Trains military units', age: 'Bronze' },
+            temple: { name: 'Temple', desc: 'Cultural and spiritual center', age: 'Iron' },
+            forge: { name: 'Forge', desc: 'Crafts tools and weapons', age: 'Iron' },
+            market: { name: 'Market', desc: 'Trade hub for resources', age: 'Medieval' },
+            castle: { name: 'Castle', desc: 'Defensive stronghold', age: 'Medieval' },
+            library: { name: 'Library', desc: 'Stores knowledge', age: 'Renaissance' },
+            university: { name: 'University', desc: 'Advanced research center', age: 'Space' }
+        };
+
+        const availableBuildings = this.player.getAvailableBuildings();
+        const allBuildings = ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university'];
+
+        allBuildings.forEach(buildingType => {
+            const info = buildingInfo[buildingType];
+            const isAvailable = availableBuildings.includes(buildingType);
+
+            const card = document.createElement('div');
+            card.className = 'building-card' + (isAvailable ? '' : ' locked');
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 50;
+            canvas.height = 50;
+            canvas.style.margin = '0 auto 4px';
+            canvas.style.display = 'block';
+
+            card.innerHTML = `
+                <div class="building-icon">
+                    <span class="building-age-badge">${info.age}</span>
+                </div>
+                <div class="building-name">${info.name}</div>
+                <div class="building-cost">Cost: Varies by distance</div>
+                <div class="building-desc">${info.desc}</div>
+                <button class="building-build-btn" ${isAvailable ? '' : 'disabled'}>
+                    ${isAvailable ? 'Select to Build' : 'Locked'}
+                </button>
+            `;
+
+            const iconDiv = card.querySelector('.building-icon');
+            iconDiv.innerHTML = '<span class="building-age-badge">' + info.age + '</span>';
+            iconDiv.appendChild(canvas);
+
+            this.renderer.drawBuildingToCanvas(buildingType, canvas);
+
+            if (isAvailable) {
+                const btn = card.querySelector('.building-build-btn');
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.player.selectedBuilding = buildingType;
+                    this.closeBuildingsMenu();
+                    this.log(`Selected: ${info.name} - Click on the map to place`);
+                    if (typeof AudioManager !== 'undefined') {
+                        AudioManager.playSFX('sfx-success', 0.3);
+                    }
+                };
+            }
+
+            grid.appendChild(card);
+        });
     }
 
     screenShake(duration, intensity) {
@@ -508,7 +625,7 @@ class Game {
     handleInput() {
         const moveSpeed = 8;
         const canvasTop = 75;
-        const canvasBottom = window.innerHeight - 160;
+        const canvasBottom = window.innerHeight - 220;
         const unitX = this.renderer.tileWidth / 2;
         const unitY = this.renderer.tileHeight / 2;
 
@@ -1188,7 +1305,7 @@ class Game {
         const padding = 200;
 
         const viewW = this.width / this.renderer.zoom;
-        const viewH = (this.height - 160 - 75) / this.renderer.zoom;
+        const viewH = (this.height - 220 - 75) / this.renderer.zoom;
 
         // map center in world coords
         const centerX = (minX + maxX) / 2;
@@ -1250,7 +1367,8 @@ class Game {
         const centerScreenY = (centerGridX + centerGridY) * (this.renderer.tileHeight / 2);
 
         const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
-        const targetY = ((this.height - topBarHeight - 160) / 2) / this.renderer.zoom + this.cameraY;
+        const targetY = ((this.height - topBarHeight - 220) / 2) / this.renderer.zoom + this.cameraY;
+
 
         this.ctx.translate(
             targetX - centerScreenX,
@@ -1381,8 +1499,6 @@ class Game {
             document.getElementById('deploy-tank-btn').textContent = 'Hire Tank (120)';
             document.getElementById('deploy-hacker-btn').textContent = 'Hire Hacker (100)';
         }
-
-        document.getElementById('buildings-list').style.display = 'block';
 
         if (isConquest) {
             document.getElementById('conquest-info').style.display = 'block';

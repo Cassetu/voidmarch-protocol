@@ -209,7 +209,7 @@ body {
     right: 0;
     background: rgba(26, 31, 46, 0.98);
     border-top: 1px solid #3a4454;
-    height: 160px;
+    height: 220px;
     pointer-events: auto;
     display: flex;
     gap: 0;
@@ -219,7 +219,7 @@ body {
     flex: 1;
     font-size: 11px;
     font-family: 'Courier New', monospace;
-    height: 160px;
+    height: 220px;
     overflow-y: auto;
     color: #8fa3c8;
     border-right: 1px solid #3a4454;
@@ -247,7 +247,7 @@ body {
 
 #side-panel {
     width: 240px;
-    height: 160px;
+    height: 220px;
     overflow-y: auto;
     background: rgba(10, 12, 20, 0.5);
     display: flex;
@@ -496,6 +496,219 @@ body {
 #deploy-tank-btn:hover,
 #deploy-hacker-btn:hover {
     background: #3a4a6a;
+    border-color: #6a8aaa;
+}
+
+#buildings-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 220px;
+    background: rgba(10, 12, 20, 0.98);
+    border-top: 1px solid #3a4454;
+    z-index: 1001;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
+}
+
+#buildings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    padding: 0 15px 15px 15px;
+    overflow-y: auto;
+    flex: 1;
+    pointer-events: auto;
+    max-height: calc(220px - 40px);
+}
+
+#buildings-menu h2 {
+    text-align: center;
+    color: #8fa3c8;
+    margin: 5px 0 5px 0;
+    font-size: 14px;
+}
+
+#buildings-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+#buildings-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#buildings-grid::-webkit-scrollbar-thumb {
+    background: #5a6478;
+    border-radius: 3px;
+}
+
+.building-card {
+    background: linear-gradient(135deg, #2a3344 0%, #1a2334 100%);
+    border: 2px solid #3a4454;
+    border-radius: 6px;
+    padding: 6px;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.building-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 4px;
+    background: linear-gradient(135deg, #3a4a5a 0%, #2a3a4a 100%);
+    border: 2px solid #4a5a6a;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.building-card:hover {
+    border-color: #5a7a8a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(90, 122, 138, 0.3);
+}
+
+.building-card.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.building-card.locked:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.building-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.building-name {
+    font-size: 10px;
+    font-weight: 600;
+    color: #a8b8d8;
+    margin-bottom: 2px;
+}
+
+.building-cost {
+    font-size: 8px;
+    color: #8fa3c8;
+    margin-bottom: 3px;
+}
+
+.building-desc {
+    font-size: 7px;
+    color: #7a8a9a;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    min-height: 20px;
+    flex: 1;
+}
+
+.building-build-btn {
+    width: 100%;
+    padding: 4px;
+    background: #3a5a4a;
+    border: 1px solid #5a7a6a;
+    color: #a8d888;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+    pointer-events: auto;
+    margin-top: auto;
+}
+
+.building-age-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(255, 170, 0, 0.9);
+    color: #1a1f2e;
+    font-size: 6px;
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: 2px;
+    text-transform: uppercase;
+}
+
+.building-build-btn:hover:not(:disabled) {
+    background: #4a6a5a;
+    border-color: #7a9a8a;
+}
+
+.building-build-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#buildings-back-btn {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    padding: 6px 12px;
+    background: #3a4a5a;
+    border: 1px solid #5a6a7a;
+    color: #a8b8d8;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 10;
+    transition: all 0.2s;
+    pointer-events: auto;
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+#ui-overlay > * {
+    pointer-events: auto;
+}
+
+#buildings-back-btn:hover {
+    background: #4a5a6a;
+    border-color: #7a8a9a;
+}
+
+#open-buildings-btn {
+    width: 100%;
+    padding: 8px;
+    background: #2a4a5a;
+    border: 1px solid #4a6a8a;
+    color: #a8b8d8;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    margin-bottom: 6px;
+}
+
+#open-buildings-btn:hover {
+    background: #3a5a6a;
     border-color: #6a8aaa;
 }
 
