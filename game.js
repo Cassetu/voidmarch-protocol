@@ -54,25 +54,15 @@ class Game {
             this.endTurn();
         });
 
-        const deployAssaultBtn = document.getElementById('deploy-assault-btn');
-        if (deployAssaultBtn) {
-            deployAssaultBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.player.selectedBuilding = null;
-                this.hiringMode = 'assault';
-                this.log('Click adjacent to your buildings to hire Assault unit');
-            });
-        }
+        document.getElementById('open-military-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openMilitaryMenu();
+        });
 
-        const deployRangerBtn = document.getElementById('deploy-ranger-btn');
-        if (deployRangerBtn) {
-            deployRangerBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.player.selectedBuilding = null;
-                this.hiringMode = 'ranger';
-                this.log('Click adjacent to your buildings to hire Ranger unit');
-            });
-        }
+        document.getElementById('military-back-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.closeMilitaryMenu();
+        });
 
         document.getElementById('open-buildings-btn').addEventListener('click', (e) => {
             e.stopPropagation();
@@ -97,26 +87,6 @@ class Game {
                 }
             }
         });
-
-        const deployTankBtn = document.getElementById('deploy-tank-btn');
-        if (deployTankBtn) {
-            deployTankBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.player.selectedBuilding = null;
-                this.hiringMode = 'tank';
-                this.log('Click adjacent to your buildings to hire Tank unit');
-            });
-        }
-
-        const deployHackerBtn = document.getElementById('deploy-hacker-btn');
-        if (deployHackerBtn) {
-            deployHackerBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.player.selectedBuilding = null;
-                this.hiringMode = 'hacker';
-                this.log('Click adjacent to your buildings to hire Hacker unit');
-            });
-        }
 
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -293,6 +263,75 @@ class Game {
         menu.style.display = 'none';
         sidePanel.style.display = 'flex';
         consoleEl.style.display = 'block';
+    }
+
+    openMilitaryMenu() {
+        const menu = document.getElementById('military-menu');
+        const sidePanel = document.getElementById('side-panel');
+        const consoleEl = document.getElementById('console');
+
+        menu.style.display = 'block';
+        sidePanel.style.display = 'none';
+        consoleEl.style.display = 'none';
+
+        this.populateMilitaryMenu();
+    }
+
+    closeMilitaryMenu() {
+        const menu = document.getElementById('military-menu');
+        const sidePanel = document.getElementById('side-panel');
+        const consoleEl = document.getElementById('console');
+
+        menu.style.display = 'none';
+        sidePanel.style.display = 'flex';
+        consoleEl.style.display = 'block';
+    }
+
+    populateMilitaryMenu() {
+        const grid = document.getElementById('military-grid');
+        grid.innerHTML = '';
+
+        const units = [
+            { type: 'assault', name: 'Assault Unit', cost: 80, icon: '⚔️', hp: 100, dmg: 25, range: 1, move: 4, desc: 'Fast melee with charge' },
+            { type: 'ranger', name: 'Ranger Unit', cost: 70, icon: '🏹', hp: 60, dmg: 20, range: 4, move: 3, desc: 'Long-range overwatch' },
+            { type: 'tank', name: 'Tank Unit', cost: 120, icon: '🛡️', hp: 200, dmg: 15, range: 1, move: 2, desc: 'Heavy tank with taunt' },
+            { type: 'hacker', name: 'Hacker Unit', cost: 100, icon: '💻', hp: 50, dmg: 10, range: 2, move: 4, desc: 'Hacks nodes & EMP' }
+        ];
+
+        units.forEach(unit => {
+            const canAfford = this.player.resources >= unit.cost;
+
+            const card = document.createElement('div');
+            card.className = 'unit-card';
+
+            const btn = document.createElement('button');
+            btn.className = 'unit-deploy-btn';
+            btn.textContent = canAfford ? 'Deploy Unit' : 'Not Enough Resources';
+            btn.disabled = !canAfford;
+
+            if (canAfford) {
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.hiringMode = unit.type;
+                    this.log(`Click adjacent to your buildings to deploy ${unit.name}`);
+                    if (typeof AudioManager !== 'undefined') {
+                        AudioManager.playSFX('sfx-success', 0.3);
+                    }
+                };
+            }
+
+            card.innerHTML = `
+                <div class="unit-icon">${unit.icon}</div>
+                <div class="unit-name">${unit.name}</div>
+                <div class="unit-cost">Cost: ${unit.cost} Resources</div>
+                <div class="unit-stats">HP: ${unit.hp} | DMG: ${unit.dmg} | Range: ${unit.range} | Move: ${unit.move}</div>
+            `;
+
+            card.appendChild(btn);
+            grid.appendChild(card);
+        });
+
+        console.log('Military menu populated with', units.length, 'units');
     }
 
     populateBuildingsMenu() {
@@ -1516,18 +1555,7 @@ class Game {
         document.getElementById('core-stability').textContent = Math.floor(this.eventSystem.coreStability) + '%';
 
         const isConquest = this.gameMode === 'conquest' && this.conquestSystem;
-
-        document.getElementById('deploy-assault-btn').style.display = isConquest ? 'block' : 'none';
-        document.getElementById('deploy-ranger-btn').style.display = isConquest ? 'block' : 'none';
-        document.getElementById('deploy-tank-btn').style.display = isConquest ? 'block' : 'none';
-        document.getElementById('deploy-hacker-btn').style.display = isConquest ? 'block' : 'none';
-
-        if (isConquest) {
-            document.getElementById('deploy-assault-btn').textContent = 'Hire Assault (80)';
-            document.getElementById('deploy-ranger-btn').textContent = 'Hire Ranger (70)';
-            document.getElementById('deploy-tank-btn').textContent = 'Hire Tank (120)';
-            document.getElementById('deploy-hacker-btn').textContent = 'Hire Hacker (100)';
-        }
+        document.getElementById('open-military-btn').style.display = isConquest ? 'block' : 'none';
 
         if (isConquest) {
             document.getElementById('conquest-info').style.display = 'block';
