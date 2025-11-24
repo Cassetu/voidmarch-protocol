@@ -52,6 +52,9 @@ class EventSystem {
             if (this.game.screenShake) {
                 this.game.screenShake(3000, 15);
             }
+            if (typeof AudioManager !== 'undefined') {
+                AudioManager.playSFX('sfx-eruption-major', 0.7);
+            }
         }
 
         if (!this.eruption35Triggered && this.coreStability <= 35) {
@@ -61,6 +64,9 @@ class EventSystem {
             this.game.log('CATASTROPHIC: Core collapse imminent at 35% - Massive eruption!');
             if (this.game.screenShake) {
                 this.game.screenShake(5000, 25);
+            }
+            if (typeof AudioManager !== 'undefined') {
+                AudioManager.playSFX('sfx-eruption-catastrophic', 0.8);
             }
         }
 
@@ -111,6 +117,9 @@ class EventSystem {
 
         if (buildingsDamaged > 0 && this.game) {
             this.game.log(`Planetary shockwave damages ${buildingsDamaged} buildings for ${damage} HP!`);
+            if (typeof AudioManager !== 'undefined') {
+                AudioManager.playSFX('sfx-building-damage', 0.6);
+            }
         }
     }
 
