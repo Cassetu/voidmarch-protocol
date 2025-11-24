@@ -95,13 +95,14 @@ class Player {
 
     getAvailableBuildings() {
         const buildingsPerAge = {
-            stone: ['settlement', 'farm', 'warehouse', 'observatory'],
-            bronze: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple'],
-            iron: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market'],
-            medieval: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library'],
-            renaissance: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university']
+            stone: ['settlement', 'farm', 'warehouse', 'observatory', 'campfire', 'tent', 'woodpile'],
+            bronze: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument'],
+            iron: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower'],
+            medieval: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital'],
+            renaissance: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion'],
+            space: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'spaceport', 'laboratory', 'megafactory']
         };
-        return buildingsPerAge[this.age] || [];
+        return buildingsPerAge[this.age] || buildingsPerAge.stone;
     }
 
     canResearch(tech) {

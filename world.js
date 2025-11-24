@@ -136,6 +136,66 @@ class Planet {
         return canBuildOver && tile.type !== 'water' && tile.type !== 'lava' && tile.type !== 'void';
     }
 
+    getBuildingSize(buildingType) {
+        const sizes = {
+            settlement: { w: 1, h: 1 },
+            farm: { w: 1, h: 1 },
+            warehouse: { w: 1, h: 1 },
+            observatory: { w: 1, h: 1 },
+            barracks: { w: 1, h: 1 },
+            temple: { w: 1, h: 1 },
+            forge: { w: 1, h: 1 },
+            market: { w: 1, h: 1 },
+            castle: { w: 2, h: 2 },
+            library: { w: 1, h: 1 },
+            university: { w: 2, h: 1 },
+            campfire: { w: 1, h: 1 },
+            tent: { w: 1, h: 1 },
+            woodpile: { w: 1, h: 1 },
+            granary: { w: 2, h: 1 },
+            quarry: { w: 2, h: 2 },
+            monument: { w: 1, h: 2 },
+            workshop: { w: 1, h: 1 },
+            aqueduct: { w: 3, h: 1 },
+            watchtower: { w: 1, h: 1 },
+            cathedral: { w: 2, h: 2 },
+            townhall: { w: 2, h: 2 },
+            arena: { w: 3, h: 2 },
+            hospital: { w: 2, h: 1 },
+            academy: { w: 2, h: 1 },
+            theater: { w: 2, h: 1 },
+            mansion: { w: 2, h: 2 },
+            spaceport: { w: 3, h: 3 },
+            laboratory: { w: 2, h: 1 },
+            megafactory: { w: 3, h: 2 }
+        };
+        return sizes[buildingType] || { w: 1, h: 1 };
+    }
+
+    canPlaceBuildingOfSize(gridX, gridY, width, height) {
+        for (let dy = 0; dy < height; dy++) {
+            for (let dx = 0; dx < width; dx++) {
+                const checkX = gridX + dx;
+                const checkY = gridY + dy;
+
+                if (checkX < 0 || checkX >= this.width || checkY < 0 || checkY >= this.height) {
+                    return false;
+                }
+
+                const tile = this.tiles[checkY][checkX];
+
+                if (tile.building && tile.building.type !== 'ruins') {
+                    return false;
+                }
+
+                if (tile.type === 'water' || tile.type === 'lava' || tile.type === 'void') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     placeBuilding(gridX, gridY, buildingType, player) {
         if (!this.canPlaceBuilding(gridX, gridY)) return false;
 

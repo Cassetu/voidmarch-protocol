@@ -239,6 +239,296 @@ class Renderer {
                 ctx.fill();
                 break;
 
+            case 'campfire':
+                ctx.fillStyle = '#ff6600';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffaa00';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 8, 4, 0, Math.PI * 2);
+                ctx.fill();
+                break;
+
+            case 'tent':
+                ctx.fillStyle = '#8b7355';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 12);
+                ctx.lineTo(screenX - 10, screenY + 4);
+                ctx.lineTo(screenX + 10, screenY + 4);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'woodpile':
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(screenX - 8, screenY - 4, 16, 8);
+                ctx.strokeStyle = '#4a3a1a';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(screenX - 8, screenY - 4, 16, 8);
+                break;
+
+            case 'granary':
+                ctx.fillStyle = '#d2b48c';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 15);
+                ctx.lineTo(screenX + 15, screenY - 8);
+                ctx.lineTo(screenX + 15, screenY + 4);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#c19a6b';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 15);
+                ctx.lineTo(screenX - 15, screenY - 8);
+                ctx.lineTo(screenX - 15, screenY + 4);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'quarry':
+                ctx.fillStyle = '#696969';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 12);
+                ctx.lineTo(screenX + 14, screenY - 6);
+                ctx.lineTo(screenX + 14, screenY + 8);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#808080';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 12);
+                ctx.lineTo(screenX - 14, screenY - 6);
+                ctx.lineTo(screenX - 14, screenY + 8);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'monument':
+                ctx.fillStyle = '#a0a0a0';
+                ctx.fillRect(screenX - 6, screenY - 18, 12, 24);
+                ctx.fillStyle = '#c0c0c0';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 22);
+                ctx.lineTo(screenX - 8, screenY - 18);
+                ctx.lineTo(screenX + 8, screenY - 18);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'workshop':
+                ctx.fillStyle = '#8b4513';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 13);
+                ctx.lineTo(screenX + 12, screenY - 7);
+                ctx.lineTo(screenX + 12, screenY + 5);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#a0522d';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 13);
+                ctx.lineTo(screenX - 12, screenY - 7);
+                ctx.lineTo(screenX - 12, screenY + 5);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'aqueduct':
+                ctx.strokeStyle = '#4682b4';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(screenX - 18, screenY);
+                ctx.lineTo(screenX + 18, screenY);
+                ctx.stroke();
+
+                for (let i = -15; i <= 15; i += 10) {
+                    ctx.fillStyle = '#708090';
+                    ctx.fillRect(screenX + i - 2, screenY, 4, 12);
+                }
+                break;
+
+            case 'watchtower':
+                ctx.fillStyle = '#8b7355';
+                ctx.fillRect(screenX - 5, screenY - 20, 10, 28);
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(screenX - 8, screenY - 24, 16, 5);
+                break;
+
+            case 'cathedral':
+                ctx.fillStyle = '#6a5a8a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 22);
+                ctx.lineTo(screenX + 14, screenY - 14);
+                ctx.lineTo(screenX + 14, screenY + 4);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#7a6a9a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 22);
+                ctx.lineTo(screenX - 14, screenY - 14);
+                ctx.lineTo(screenX - 14, screenY + 4);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillRect(screenX - 3, screenY - 28, 6, 10);
+                break;
+
+            case 'townhall':
+                ctx.fillStyle = '#b8860b';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 20);
+                ctx.lineTo(screenX + 15, screenY - 13);
+                ctx.lineTo(screenX + 15, screenY + 4);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#daa520';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 20);
+                ctx.lineTo(screenX - 15, screenY - 13);
+                ctx.lineTo(screenX - 15, screenY + 4);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'arena':
+                ctx.strokeStyle = '#cd853f';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.ellipse(screenX, screenY, 20, 12, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = '#deb887';
+                ctx.fill();
+                break;
+
+            case 'hospital':
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 14);
+                ctx.lineTo(screenX + 13, screenY - 8);
+                ctx.lineTo(screenX + 13, screenY + 5);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(screenX - 6, screenY - 4, 12, 3);
+                ctx.fillRect(screenX - 1.5, screenY - 8, 3, 12);
+                break;
+
+            case 'academy':
+                ctx.fillStyle = '#4169e1';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 15);
+                ctx.lineTo(screenX + 13, screenY - 9);
+                ctx.lineTo(screenX + 13, screenY + 4);
+                ctx.lineTo(screenX, screenY + 9);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#6495ed';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 15);
+                ctx.lineTo(screenX - 13, screenY - 9);
+                ctx.lineTo(screenX - 13, screenY + 4);
+                ctx.lineTo(screenX, screenY + 9);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'theater':
+                ctx.fillStyle = '#8b008b';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 14);
+                ctx.lineTo(screenX + 14, screenY - 8);
+                ctx.lineTo(screenX + 14, screenY + 5);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#9932cc';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 14);
+                ctx.lineTo(screenX - 14, screenY - 8);
+                ctx.lineTo(screenX - 14, screenY + 5);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'mansion':
+                ctx.fillStyle = '#ffd700';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 18);
+                ctx.lineTo(screenX + 14, screenY - 12);
+                ctx.lineTo(screenX + 14, screenY + 3);
+                ctx.lineTo(screenX, screenY + 9);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#ffec8b';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 18);
+                ctx.lineTo(screenX - 14, screenY - 12);
+                ctx.lineTo(screenX - 14, screenY + 3);
+                ctx.lineTo(screenX, screenY + 9);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'spaceport':
+                ctx.fillStyle = '#4a5a6a';
+                ctx.fillRect(screenX - 18, screenY - 10, 36, 20);
+                ctx.fillStyle = '#6a7a8a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 22);
+                ctx.lineTo(screenX - 8, screenY - 10);
+                ctx.lineTo(screenX + 8, screenY - 10);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'laboratory':
+                ctx.fillStyle = '#00ced1';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 14);
+                ctx.lineTo(screenX + 13, screenY - 8);
+                ctx.lineTo(screenX + 13, screenY + 5);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#20b2aa';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 14);
+                ctx.lineTo(screenX - 13, screenY - 8);
+                ctx.lineTo(screenX - 13, screenY + 5);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+                break;
+
+            case 'megafactory':
+                ctx.fillStyle = '#2f4f4f';
+                ctx.fillRect(screenX - 20, screenY - 12, 40, 24);
+                ctx.fillStyle = '#708090';
+                ctx.fillRect(screenX - 4, screenY - 20, 8, 10);
+                ctx.fillRect(screenX + 8, screenY - 18, 6, 8);
+                ctx.fillRect(screenX - 14, screenY - 18, 6, 8);
+                break;
+
             case 'observatory':
                 ctx.fillStyle = '#4a5a6a';
                 ctx.beginPath();

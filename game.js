@@ -308,13 +308,32 @@ class Game {
             temple: { name: 'Temple', desc: 'Cultural and spiritual center', age: 'Iron' },
             forge: { name: 'Forge', desc: 'Crafts tools and weapons', age: 'Iron' },
             market: { name: 'Market', desc: 'Trade hub for resources', age: 'Medieval' },
-            castle: { name: 'Castle', desc: 'Defensive stronghold', age: 'Medieval' },
+            castle: { name: 'Castle', desc: 'Defensive stronghold (2x2)', age: 'Medieval' },
             library: { name: 'Library', desc: 'Stores knowledge', age: 'Renaissance' },
-            university: { name: 'University', desc: 'Advanced research center', age: 'Space' }
+            university: { name: 'University', desc: 'Advanced research center (2x1)', age: 'Space' },
+            campfire: { name: 'Campfire', desc: 'Basic warmth and light', age: 'Stone' },
+            tent: { name: 'Tent', desc: 'Temporary shelter', age: 'Stone' },
+            woodpile: { name: 'Wood Pile', desc: 'Stores fuel', age: 'Stone' },
+            granary: { name: 'Granary', desc: 'Large food storage (2x1)', age: 'Bronze' },
+            quarry: { name: 'Quarry', desc: 'Stone extraction site (2x2)', age: 'Bronze' },
+            monument: { name: 'Monument', desc: 'Tall cultural marker (1x2)', age: 'Bronze' },
+            workshop: { name: 'Workshop', desc: 'Crafting station', age: 'Iron' },
+            aqueduct: { name: 'Aqueduct', desc: 'Water transport system (3x1)', age: 'Iron' },
+            watchtower: { name: 'Watchtower', desc: 'Early warning system', age: 'Iron' },
+            cathedral: { name: 'Cathedral', desc: 'Grand religious structure (2x2)', age: 'Medieval' },
+            townhall: { name: 'Town Hall', desc: 'Administrative center (2x2)', age: 'Medieval' },
+            arena: { name: 'Arena', desc: 'Entertainment complex (3x2)', age: 'Medieval' },
+            hospital: { name: 'Hospital', desc: 'Medical facility (2x1)', age: 'Medieval' },
+            academy: { name: 'Academy', desc: 'Learning institution (2x1)', age: 'Renaissance' },
+            theater: { name: 'Theater', desc: 'Performance hall (2x1)', age: 'Renaissance' },
+            mansion: { name: 'Mansion', desc: 'Luxury housing (2x2)', age: 'Renaissance' },
+            spaceport: { name: 'Spaceport', desc: 'Launch facility (3x3)', age: 'Space' },
+            laboratory: { name: 'Laboratory', desc: 'Research facility (2x1)', age: 'Space' },
+            megafactory: { name: 'Mega Factory', desc: 'Mass production (3x2)', age: 'Space' }
         };
 
         const availableBuildings = this.player.getAvailableBuildings();
-        const allBuildings = ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university'];
+        const allBuildings = ['settlement', 'farm', 'warehouse', 'observatory', 'campfire', 'tent', 'woodpile', 'barracks', 'granary', 'quarry', 'monument', 'temple', 'forge', 'workshop', 'aqueduct', 'watchtower', 'market', 'castle', 'cathedral', 'townhall', 'arena', 'hospital', 'library', 'academy', 'theater', 'mansion', 'university', 'spaceport', 'laboratory', 'megafactory'];
 
         allBuildings.forEach(buildingType => {
             const info = buildingInfo[buildingType];
@@ -725,48 +744,53 @@ class Game {
                         if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
                     }
                 } else if (this.gameMode === 'building' && this.player.selectedBuilding) {
-                      const settlement = this.selectNearestSettlement(gridX, gridY);
-                      if (!settlement) {
-                          this.log('No settlement nearby to send builders from!');
-                          return;
-                      }
+                   const size = this.currentPlanet.getBuildingSize(this.player.selectedBuilding);
+                   const canPlace = this.currentPlanet.canPlaceBuildingOfSize(gridX, gridY, size.w, size.h);
 
-                      const distance = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
-                      const builderId = this.player.builders.length;
+                   if (!canPlace) {
+                       this.log('Cannot place building here - check terrain and space!');
+                       return;
+                   }
 
-                      const builder = new Builder(
-                          builderId,
-                          settlement.x,
-                          settlement.y,
-                          gridX,
-                          gridY,
-                          this.player.selectedBuilding,
-                          distance
-                      );
+                   const settlement = this.selectNearestSettlement(gridX, gridY);
+                   if (!settlement) {
+                       this.log('No settlement nearby to send builders from!');
+                       return;
+                   }
 
-                      this.player.builders.push(builder);
-                      this.player.buildingQueue.push({
-                          x: gridX,
-                          y: gridY,
-                          type: this.player.selectedBuilding,
-                          builderId: builderId,
-                          hasEnemy: false
-                      });
+                   const distance = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
+                   const builderId = this.player.builders.length;
 
-                      const tile = this.currentPlanet.tiles[gridY][gridX];
-                      if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
-                          const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
-                          tempBuilding.isFrame = true;
-                          tempBuilding.buildProgress = 0;
-                          tile.building = tempBuilding;
-                          this.currentPlanet.structures.push(tempBuilding);
-                          console.log('Frame created on planet 2:', tempBuilding);
-                      }
+                   const builder = new Builder(
+                       builderId,
+                       settlement.x,
+                       settlement.y,
+                       gridX,
+                       gridY,
+                       this.player.selectedBuilding,
+                       distance
+                   );
 
-                      this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
-                      this.player.selectedBuilding = null;
-                      const buildingsList = document.getElementById('buildings-list');
-                      if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
+                   this.player.builders.push(builder);
+                   this.player.buildingQueue.push({
+                       x: gridX,
+                       y: gridY,
+                       type: this.player.selectedBuilding,
+                       builderId: builderId,
+                       hasEnemy: false
+                   });
+
+                   const tile = this.currentPlanet.tiles[gridY][gridX];
+                   if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
+                       const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
+                       tempBuilding.isFrame = true;
+                       tempBuilding.buildProgress = 0;
+                       tile.building = tempBuilding;
+                       this.currentPlanet.structures.push(tempBuilding);
+                   }
+
+                   this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
+                   this.player.selectedBuilding = null;
                 }
 
                 if (this.gameMode === 'conquest' && this.hiringMode) {
@@ -1259,30 +1283,42 @@ class Game {
         const gridX = Math.round((worldX / unitX + worldY / unitY) / 2);
         const gridY = Math.round((worldY / unitY - worldX / unitX) / 2);
 
-        const tileWorldX = (gridX - gridY) * unitX;
-        const tileWorldY = (gridX + gridY) * unitY;
-
-        const sx = (tileWorldX + translateX) * this.renderer.zoom;
-        const sy = (tileWorldY + translateY) * this.renderer.zoom + canvasTop;
-
-        const sxOffset = unitX * this.renderer.zoom;
-        const syOffset = unitY * this.renderer.zoom;
+        const size = this.currentPlanet.getBuildingSize(this.player.selectedBuilding);
+        const canPlace = this.currentPlanet.canPlaceBuildingOfSize(gridX, gridY, size.w, size.h);
 
         this.ctx.save();
-        this.ctx.globalAlpha = 0.3;
-        this.ctx.fillStyle = 'rgba(0, 150, 255, 0.6)';
-        this.ctx.beginPath();
-        this.ctx.moveTo(sx, sy - syOffset);
-        this.ctx.lineTo(sx - sxOffset, sy);
-        this.ctx.lineTo(sx, sy + syOffset);
-        this.ctx.lineTo(sx + sxOffset, sy);
-        this.ctx.closePath();
-        this.ctx.fill();
+        this.ctx.globalAlpha = 0.5;
 
-        this.ctx.globalAlpha = 1;
-        this.ctx.strokeStyle = 'rgba(100, 200, 255, 1)';
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
+        for (let dy = 0; dy < size.h; dy++) {
+            for (let dx = 0; dx < size.w; dx++) {
+                const tileGridX = gridX + dx;
+                const tileGridY = gridY + dy;
+
+                const tileWorldX = (tileGridX - tileGridY) * unitX;
+                const tileWorldY = (tileGridX + tileGridY) * unitY;
+
+                const sx = (tileWorldX + translateX) * this.renderer.zoom;
+                const sy = (tileWorldY + translateY) * this.renderer.zoom + canvasTop;
+
+                const sxOffset = unitX * this.renderer.zoom;
+                const syOffset = unitY * this.renderer.zoom;
+
+                this.ctx.fillStyle = canPlace ? 'rgba(0, 255, 0, 0.4)' : 'rgba(255, 0, 0, 0.4)';
+                this.ctx.beginPath();
+                this.ctx.moveTo(sx, sy - syOffset);
+                this.ctx.lineTo(sx - sxOffset, sy);
+                this.ctx.lineTo(sx, sy + syOffset);
+                this.ctx.lineTo(sx + sxOffset, sy);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.globalAlpha = 1;
+                this.ctx.strokeStyle = canPlace ? 'rgba(100, 255, 100, 1)' : 'rgba(255, 100, 100, 1)';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+                this.ctx.globalAlpha = 0.5;
+            }
+        }
 
         this.ctx.restore();
     }
