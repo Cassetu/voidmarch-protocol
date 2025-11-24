@@ -352,7 +352,6 @@ class Game {
                 btn.onclick = (e) => {
                     e.stopPropagation();
                     this.player.selectedBuilding = buildingType;
-                    this.closeBuildingsMenu();
                     this.log(`Selected: ${info.name} - Click on the map to place`);
                     if (typeof AudioManager !== 'undefined') {
                         AudioManager.playSFX('sfx-success', 0.3);
