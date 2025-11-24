@@ -1577,6 +1577,29 @@ class Game {
     }
 
     updateBuildingUI() {
+        const researchBtn = document.getElementById('research-btn');
+        if (researchBtn) {
+            const researchInfo = this.player.techTree.getResearchInfo();
+            const availableTechs = this.player.techTree.getAvailableTechs();
+
+            researchBtn.onclick = null;
+
+            if (researchInfo) {
+                researchBtn.textContent = `${researchInfo.name} (${Math.floor(researchInfo.progress)}/${researchInfo.totalTurns}, ~${researchInfo.turnsRemaining} turns)`;
+                researchBtn.disabled = true;
+            } else if (availableTechs.length > 0) {
+                researchBtn.textContent = 'Choose Research';
+                researchBtn.disabled = false;
+                researchBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.showTechTreeUI();
+                };
+            } else {
+                researchBtn.textContent = 'No Available Research';
+                researchBtn.disabled = true;
+            }
+        }
+
         const buildingsList = document.getElementById('buildings-list');
         if (!buildingsList) return;
 
@@ -1595,17 +1618,14 @@ class Game {
                 btn.dataset.type = buildingType;
                 btn.style.pointerEvents = 'auto';
 
-                // changed: only toggle selection here; DO NOT place immediately on button click
                 const handler = (e) => {
                     e.stopPropagation();
-                    console.log('building button clicked:', buildingType);
 
                     const wasSelected = this.player.selectedBuilding === buildingType;
                     this.player.selectedBuilding = wasSelected ? null : buildingType;
 
                     const msg = this.player.selectedBuilding ? `Selected: ${buildingType}` : 'Deselected building';
                     this.log(msg);
-                    console.log(msg);
 
                     this._lastSelectedBuilding = this.player.selectedBuilding;
                     this._updateBuildingButtonsActive(buildingsList);
@@ -1622,39 +1642,12 @@ class Game {
         }
 
         this._updateBuildingButtonsActive(buildingsList);
-
-        const researchBtn = document.getElementById('research-btn');
-        if (!researchBtn) return;
-
-        const availableTechs = this.player.techTree.getAvailableTechs();
-
-        if (availableTechs.length > 0) {
-            const researchInfo = this.player.techTree.getResearchInfo();
-
-            if (researchInfo) {
-                researchBtn.textContent = `${researchInfo.name} (${Math.floor(researchInfo.progress)}/${researchInfo.totalTurns}, ~${researchInfo.turnsRemaining} turns)`;
-                researchBtn.disabled = true;
-            } else {
-                researchBtn.textContent = 'Choose Research';
-                researchBtn.disabled = false;
-                researchBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    this.showTechTreeUI();
-                };
-            }
-        } else {
-            const researchInfo = this.player.techTree.getResearchInfo();
-            if (researchInfo) {
-                researchBtn.textContent = `${researchInfo.name} (${Math.floor(researchInfo.progress)}/${researchInfo.totalTurns}, ~${researchInfo.turnsRemaining} turns)`;
-                researchBtn.disabled = true;
-            } else {
-                researchBtn.textContent = 'No Available Research';
-                researchBtn.disabled = true;
-            }
-        }
     }
 
     showTechTreeUI() {
+        console.log('showTechTreeUI called');
+        console.log('Player techTree:', this.player.techTree);
+
         const modal = document.createElement('div');
         modal.id = 'tech-modal';
         modal.innerHTML = `
@@ -1668,6 +1661,9 @@ class Game {
 
         const techList = document.getElementById('tech-list');
         const availableTechs = this.player.techTree.getAvailableTechs();
+
+        console.log('Available techs:', availableTechs);
+        console.log('Tech list element:', techList);
 
         availableTechs.forEach(techId => {
             const tech = this.player.techTree.techs[techId];
@@ -1734,5 +1730,7 @@ class Game {
 
 }
 
-const game = new Game();
-game.start();
+window.addEventListener('DOMContentLoaded', () => {
+    const game = new Game();
+    game.start();
+});
