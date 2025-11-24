@@ -2182,6 +2182,659 @@ class Renderer {
                 }
                 break;
 
+            case 'campfire':
+                this.ctx.fillStyle = '#654321';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY + 5, 8, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ff6600';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX - 6, screenY + 2);
+                this.ctx.lineTo(screenX - 2, screenY + 2);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ffaa00';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX + 2, screenY + 2);
+                this.ctx.lineTo(screenX + 6, screenY + 2);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ff3300';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 6, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+                break;
+
+            case 'tent':
+                this.ctx.fillStyle = '#8b7355';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 15);
+                this.ctx.lineTo(screenX + 12, screenY - 8);
+                this.ctx.lineTo(screenX + 12, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#a0826d';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 15);
+                this.ctx.lineTo(screenX - 12, screenY - 8);
+                this.ctx.lineTo(screenX - 12, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#654321';
+                this.ctx.fillRect(screenX - 2, screenY - 3, 4, 10);
+                break;
+
+            case 'woodpile':
+                this.ctx.fillStyle = '#654321';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 10);
+                this.ctx.lineTo(screenX + 10, screenY - 5);
+                this.ctx.lineTo(screenX + 10, screenY + 3);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8b6914';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 10);
+                this.ctx.lineTo(screenX - 10, screenY - 5);
+                this.ctx.lineTo(screenX - 10, screenY + 3);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#4a3a1a';
+                this.ctx.lineWidth = 2;
+                for (let i = -8; i <= 8; i += 4) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX + i, screenY - 8);
+                    this.ctx.lineTo(screenX + i, screenY + 6);
+                    this.ctx.stroke();
+                }
+                break;
+
+            case 'granary':
+                this.ctx.fillStyle = '#d2b48c';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 16, screenY - 10);
+                this.ctx.lineTo(screenX + 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#c19a6b';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 16, screenY - 10);
+                this.ctx.lineTo(screenX - 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#daa520';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 16, screenY - 10);
+                this.ctx.lineTo(screenX, screenY - 2);
+                this.ctx.lineTo(screenX + 16, screenY - 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8b7355';
+                this.ctx.fillRect(screenX - 4, screenY, 8, 10);
+                break;
+
+            case 'quarry':
+                this.ctx.fillStyle = '#696969';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 18, screenY - 8);
+                this.ctx.lineTo(screenX + 18, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#808080';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 18, screenY - 8);
+                this.ctx.lineTo(screenX - 18, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#a9a9a9';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 18, screenY - 8);
+                this.ctx.lineTo(screenX, screenY);
+                this.ctx.lineTo(screenX + 18, screenY - 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#556b2f';
+                this.ctx.fillRect(screenX - 6, screenY + 6, 12, 8);
+                break;
+
+            case 'monument':
+                this.ctx.fillStyle = '#a0a0a0';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 25);
+                this.ctx.lineTo(screenX + 8, screenY - 20);
+                this.ctx.lineTo(screenX + 8, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#c0c0c0';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 25);
+                this.ctx.lineTo(screenX - 8, screenY - 20);
+                this.ctx.lineTo(screenX - 8, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#d3d3d3';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 25);
+                this.ctx.lineTo(screenX - 8, screenY - 20);
+                this.ctx.lineTo(screenX, screenY - 15);
+                this.ctx.lineTo(screenX + 8, screenY - 20);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#708090';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 30);
+                this.ctx.lineTo(screenX - 10, screenY - 25);
+                this.ctx.lineTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 10, screenY - 25);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            case 'workshop':
+                this.ctx.fillStyle = '#8b4513';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 14, screenY - 9);
+                this.ctx.lineTo(screenX + 14, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#a0522d';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 14, screenY - 9);
+                this.ctx.lineTo(screenX - 14, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#cd853f';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 14, screenY - 9);
+                this.ctx.lineTo(screenX, screenY - 2);
+                this.ctx.lineTo(screenX + 14, screenY - 9);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#696969';
+                this.ctx.fillRect(screenX + 4, screenY - 4, 6, 8);
+                this.ctx.fillRect(screenX - 10, screenY + 2, 6, 6);
+                break;
+
+            case 'aqueduct':
+                this.ctx.fillStyle = '#708090';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 20, screenY - 2);
+                this.ctx.lineTo(screenX + 20, screenY - 2);
+                this.ctx.lineTo(screenX + 20, screenY + 4);
+                this.ctx.lineTo(screenX - 20, screenY + 4);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                for (let i = -18; i <= 18; i += 12) {
+                    this.ctx.fillStyle = '#a9a9a9';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX + i, screenY + 4);
+                    this.ctx.lineTo(screenX + i + 4, screenY + 6);
+                    this.ctx.lineTo(screenX + i + 4, screenY + 14);
+                    this.ctx.lineTo(screenX + i, screenY + 16);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    this.ctx.fillStyle = '#778899';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX + i, screenY + 4);
+                    this.ctx.lineTo(screenX + i - 4, screenY + 6);
+                    this.ctx.lineTo(screenX + i - 4, screenY + 14);
+                    this.ctx.lineTo(screenX + i, screenY + 16);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                }
+
+                this.ctx.fillStyle = '#4682b4';
+                this.ctx.globalAlpha = 0.6;
+                this.ctx.fillRect(screenX - 20, screenY - 4, 40, 4);
+                this.ctx.globalAlpha = 1;
+                break;
+
+            case 'watchtower':
+                this.ctx.fillStyle = '#8b7355';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 28);
+                this.ctx.lineTo(screenX + 6, screenY - 25);
+                this.ctx.lineTo(screenX + 6, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#a0826d';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 28);
+                this.ctx.lineTo(screenX - 6, screenY - 25);
+                this.ctx.lineTo(screenX - 6, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#654321';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 32);
+                this.ctx.lineTo(screenX - 10, screenY - 28);
+                this.ctx.lineTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX + 10, screenY - 28);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8b4513';
+                this.ctx.fillRect(screenX - 3, screenY - 10, 6, 4);
+                break;
+
+            case 'cathedral':
+                this.ctx.fillStyle = '#6a5a8a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 26);
+                this.ctx.lineTo(screenX + 16, screenY - 18);
+                this.ctx.lineTo(screenX + 16, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a6a9a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 26);
+                this.ctx.lineTo(screenX - 16, screenY - 18);
+                this.ctx.lineTo(screenX - 16, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a7aaa';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 26);
+                this.ctx.lineTo(screenX - 16, screenY - 18);
+                this.ctx.lineTo(screenX, screenY - 10);
+                this.ctx.lineTo(screenX + 16, screenY - 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a3a6a';
+                this.ctx.fillRect(screenX - 4, screenY - 36, 8, 12);
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 38, 3, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4169e1';
+                this.ctx.fillRect(screenX - 4, screenY - 8, 8, 10);
+                break;
+
+            case 'townhall':
+                this.ctx.fillStyle = '#b8860b';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX + 17, screenY - 16);
+                this.ctx.lineTo(screenX + 17, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#daa520';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX - 17, screenY - 16);
+                this.ctx.lineTo(screenX - 17, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX - 17, screenY - 16);
+                this.ctx.lineTo(screenX, screenY - 8);
+                this.ctx.lineTo(screenX + 17, screenY - 16);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8b4513';
+                this.ctx.fillRect(screenX - 6, screenY - 2, 12, 10);
+
+                this.ctx.fillStyle = '#4682b4';
+                this.ctx.fillRect(screenX - 10, screenY - 12, 6, 6);
+                this.ctx.fillRect(screenX + 4, screenY - 12, 6, 6);
+                break;
+
+            case 'arena':
+                this.ctx.fillStyle = '#cd853f';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 14);
+                this.ctx.lineTo(screenX + 22, screenY - 6);
+                this.ctx.lineTo(screenX + 22, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#deb887';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 14);
+                this.ctx.lineTo(screenX - 22, screenY - 6);
+                this.ctx.lineTo(screenX - 22, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#f5deb3';
+                this.ctx.beginPath();
+                this.ctx.ellipse(screenX, screenY + 4, 18, 10, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#8b6914';
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.ellipse(screenX, screenY + 4, 18, 10, 0, 0, Math.PI * 2);
+                this.ctx.stroke();
+                break;
+
+            case 'hospital':
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 17);
+                this.ctx.lineTo(screenX + 15, screenY - 10);
+                this.ctx.lineTo(screenX + 15, screenY + 5);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#f0f0f0';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 17);
+                this.ctx.lineTo(screenX - 15, screenY - 10);
+                this.ctx.lineTo(screenX - 15, screenY + 5);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.fillRect(screenX - 8, screenY - 6, 16, 4);
+                this.ctx.fillRect(screenX - 2, screenY - 12, 4, 16);
+
+                this.ctx.fillStyle = '#4682b4';
+                this.ctx.fillRect(screenX - 10, screenY, 6, 6);
+                this.ctx.fillRect(screenX + 4, screenY, 6, 6);
+                break;
+
+            case 'academy':
+                this.ctx.fillStyle = '#4169e1';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 15, screenY - 11);
+                this.ctx.lineTo(screenX + 15, screenY + 5);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6495ed';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 15, screenY - 11);
+                this.ctx.lineTo(screenX - 15, screenY + 5);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#87ceeb';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 15, screenY - 11);
+                this.ctx.lineTo(screenX, screenY - 4);
+                this.ctx.lineTo(screenX + 15, screenY - 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                for(let i = -12; i <= 12; i += 6) {
+                    this.ctx.fillStyle = '#ffd700';
+                    this.ctx.fillRect(screenX + i - 2, screenY - 2, 4, 8);
+                }
+                break;
+
+            case 'theater':
+                this.ctx.fillStyle = '#8b008b';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 17);
+                this.ctx.lineTo(screenX + 16, screenY - 10);
+                this.ctx.lineTo(screenX + 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#9932cc';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 17);
+                this.ctx.lineTo(screenX - 16, screenY - 10);
+                this.ctx.lineTo(screenX - 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ba55d3';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 17);
+                this.ctx.lineTo(screenX - 16, screenY - 10);
+                this.ctx.lineTo(screenX, screenY - 3);
+                this.ctx.lineTo(screenX + 16, screenY - 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX - 6, screenY - 4, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.arc(screenX + 6, screenY - 4, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+                break;
+
+            case 'mansion':
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX + 16, screenY - 14);
+                this.ctx.lineTo(screenX + 16, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ffec8b';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX - 16, screenY - 14);
+                this.ctx.lineTo(screenX - 16, screenY + 4);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#fff68f';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX - 16, screenY - 14);
+                this.ctx.lineTo(screenX, screenY - 6);
+                this.ctx.lineTo(screenX + 16, screenY - 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8b4513';
+                this.ctx.fillRect(screenX - 4, screenY, 8, 10);
+
+                for(let i = -12; i <= 12; i += 8) {
+                    this.ctx.fillStyle = '#4169e1';
+                    this.ctx.fillRect(screenX + i - 2, screenY - 8, 4, 6);
+                }
+                break;
+
+            case 'spaceport':
+                this.ctx.fillStyle = '#4a5a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 24, screenY - 10);
+                this.ctx.lineTo(screenX + 24, screenY + 14);
+                this.ctx.lineTo(screenX, screenY + 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a7a8a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 24, screenY - 10);
+                this.ctx.lineTo(screenX - 24, screenY + 14);
+                this.ctx.lineTo(screenX, screenY + 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a9aaa';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 24, screenY - 10);
+                this.ctx.lineTo(screenX, screenY);
+                this.ctx.lineTo(screenX + 24, screenY - 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a3a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 30);
+                this.ctx.lineTo(screenX - 8, screenY - 26);
+                this.ctx.lineTo(screenX - 8, screenY - 10);
+                this.ctx.lineTo(screenX, screenY - 6);
+                this.ctx.lineTo(screenX + 8, screenY - 10);
+                this.ctx.lineTo(screenX + 8, screenY - 26);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ff6600';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 6);
+                this.ctx.lineTo(screenX - 6, screenY - 2);
+                this.ctx.lineTo(screenX, screenY + 4);
+                this.ctx.lineTo(screenX + 6, screenY - 2);
+                this.ctx.closePath();
+                this.ctx.fill();
+                break;
+
+            case 'laboratory':
+                this.ctx.fillStyle = '#00ced1';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 17);
+                this.ctx.lineTo(screenX + 15, screenY - 10);
+                this.ctx.lineTo(screenX + 15, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#20b2aa';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 17);
+                this.ctx.lineTo(screenX - 15, screenY - 10);
+                this.ctx.lineTo(screenX - 15, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#48d1cc';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 17);
+                this.ctx.lineTo(screenX - 15, screenY - 10);
+                this.ctx.lineTo(screenX, screenY - 3);
+                this.ctx.lineTo(screenX + 15, screenY - 10);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#00ffff';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX - 6, screenY - 2, 3, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.arc(screenX + 6, screenY - 2, 3, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY + 4, 3, 0, Math.PI * 2);
+                this.ctx.fill();
+                break;
+
+            case 'megafactory':
+                this.ctx.fillStyle = '#2f4f4f';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 24, screenY - 6);
+                this.ctx.lineTo(screenX + 24, screenY + 12);
+                this.ctx.lineTo(screenX, screenY + 22);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a5f5f';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 24, screenY - 6);
+                this.ctx.lineTo(screenX - 24, screenY + 12);
+                this.ctx.lineTo(screenX, screenY + 22);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#708090';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 24, screenY - 6);
+                this.ctx.lineTo(screenX, screenY + 4);
+                this.ctx.lineTo(screenX + 24, screenY - 6);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#1a1a1a';
+                this.ctx.fillRect(screenX - 6, screenY - 24, 5, 10);
+                this.ctx.fillRect(screenX + 10, screenY - 20, 4, 8);
+                this.ctx.fillRect(screenX - 14, screenY - 20, 4, 8);
+
+                this.ctx.fillStyle = '#ff6600';
+                this.ctx.fillRect(screenX - 4, screenY - 26, 2, 4);
+                this.ctx.fillRect(screenX + 11, screenY - 22, 2, 4);
+                this.ctx.fillRect(screenX - 12, screenY - 22, 2, 4);
+                break;
+
             case 'observatory':
                 this.ctx.fillStyle = '#4a5a6a';
                 this.ctx.beginPath();
@@ -2290,6 +2943,8 @@ class Renderer {
                 this.ctx.fillRect(screenX - 6, screenY + 2, 4, 4);
                 this.ctx.fillRect(screenX + 2, screenY + 4, 4, 3);
                 break;
+
+
 
             case 'defense_node':
                 break;
