@@ -5,6 +5,7 @@ class Player {
         this.population = 50;
         this.planetsControlled = 1;
         this.age = 'stone';
+        this.ageLevel = 0;
         this.selectedBuilding = null;
         this.buildings = [];
         this.sciencePerTurn = 0;
@@ -29,13 +30,31 @@ class Player {
         this.coreStable = false;
         this.builders = [];
         this.buildingQueue = [];
-        this.techs = {
-            stone: { level: 1, cost: 0, name: 'Stone Age' },
-            bronze: { level: 0, cost: 200, name: 'Bronze Working' },
-            iron: { level: 0, cost: 400, name: 'Iron Working' },
-            medieval: { level: 0, cost: 600, name: 'Medieval' },
-            renaissance: { level: 0, cost: 800, name: 'Renaissance' }
+    }
+
+    advanceAge(newAge) {
+        const ages = ['stone', 'bronze', 'iron', 'medieval', 'renaissance', 'space'];
+        const oldIndex = ages.indexOf(this.age);
+        const newIndex = ages.indexOf(newAge);
+
+        if (newIndex > oldIndex) {
+            this.age = newAge;
+            this.ageLevel = newIndex;
+            return true;
+        }
+        return false;
+    }
+
+    getAvailableBuildings() {
+        const buildingsPerAge = {
+            stone: ['settlement', 'farm', 'warehouse'],
+            bronze: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks'],
+            iron: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge'],
+            medieval: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle'],
+            renaissance: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library'],
+            space: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university']
         };
+        return buildingsPerAge[this.age] || buildingsPerAge.stone;
     }
 
     addProduction(amount) {

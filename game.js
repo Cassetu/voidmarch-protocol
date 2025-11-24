@@ -183,14 +183,25 @@ class Game {
         const researchResult = this.player.techTree.progressResearch();
 
         if (researchResult && researchResult.completed) {
-            this.log(`RESEARCH COMPLETE: ${this.player.techTree.techs[researchResult.completed].name}`);
+            const techName = this.player.techTree.techs[researchResult.completed].name;
+
+            if (researchResult.ageAdvanced) {
+                this.log(`🎉 CIVILIZATION ADVANCED! Welcome to the ${researchResult.newAge.toUpperCase()} AGE!`);
+                this.log(`Research complete: ${techName}`);
+                if (typeof AudioManager !== 'undefined') {
+                    AudioManager.playSFX('sfx-success', 0.8);
+                }
+            } else {
+                this.log(`RESEARCH COMPLETE: ${techName}`);
+                if (typeof AudioManager !== 'undefined') {
+                    AudioManager.playSFX('sfx-success', 0.5);
+                }
+            }
 
             if (researchResult.victory) {
                 const victoryTech = this.player.techTree.techs[researchResult.completed];
                 this.log(`VICTORY! ${victoryTech.name} - Galaxy unlocked!`);
-
                 document.getElementById('galaxy-map-btn').style.display = 'block';
-
                 this.showGalaxyMap();
                 return;
             }
@@ -267,6 +278,9 @@ class Game {
                     if (!result.resisted) {
                         this.screenShake(10000, 25);
                         this.log(`Eruption at (${result.x}, ${result.y}) - ${result.destroyedBuildings} buildings destroyed!`);
+                    }
+                    if (typeof AudioManager !== 'undefined') {
+                        AudioManager.playSFX('sfx-eruption-major', 0.7);
                     }
                     this.eruptionSequence = [];
                     return;
@@ -1338,7 +1352,17 @@ class Game {
         document.getElementById('resource-count').textContent = Math.floor(this.player.resources);
         document.getElementById('food-count').textContent = Math.floor(this.player.food);
         document.getElementById('population-count').textContent = Math.floor(this.player.population);
-        document.getElementById('age-display').textContent = this.player.age.charAt(0).toUpperCase() + this.player.age.slice(1);
+
+        const ageNames = {
+            stone: 'Stone Age',
+            bronze: 'Bronze Age',
+            iron: 'Iron Age',
+            medieval: 'Medieval Era',
+            renaissance: 'Renaissance',
+            space: 'Space Age'
+        };
+        document.getElementById('age-display').textContent = ageNames[this.player.age] || this.player.age;
+
         document.getElementById('science-count').textContent = `+${Math.floor(this.player.sciencePerTurn)}`;
         document.getElementById('production-count').textContent = Math.floor(this.player.production);
         document.getElementById('turn-count').textContent = this.player.turn;

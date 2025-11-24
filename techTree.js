@@ -20,6 +20,61 @@ class TechTree {
                 description: 'Extract resources from volcanic rock',
                 planets: ['volcanic']
             },
+            bronzeAge: {
+                name: 'Bronze Working',
+                cost: 50,
+                type: 'age',
+                researched: false,
+                prerequisites: ['mining', 'shelter'],
+                unlocks: ['ironAge', 'barracks'],
+                bonus: { age: 'bronze' },
+                description: 'Advance to Bronze Age - Unlock military buildings',
+                planets: ['volcanic']
+            },
+            ironAge: {
+                name: 'Iron Working',
+                cost: 150,
+                type: 'age',
+                researched: false,
+                prerequisites: ['bronzeAge', 'deepMining'],
+                unlocks: ['medievalAge', 'forge', 'temple'],
+                bonus: { age: 'iron' },
+                description: 'Advance to Iron Age - Unlock forges and temples',
+                planets: ['volcanic']
+            },
+            medievalAge: {
+                name: 'Medieval Era',
+                cost: 300,
+                type: 'age',
+                researched: false,
+                prerequisites: ['ironAge', 'reinforcedStructures'],
+                unlocks: ['renaissanceAge', 'market', 'castle'],
+                bonus: { age: 'medieval' },
+                description: 'Advance to Medieval Era - Unlock markets and castles',
+                planets: ['volcanic']
+            },
+            renaissanceAge: {
+                name: 'Renaissance',
+                cost: 500,
+                type: 'age',
+                researched: false,
+                prerequisites: ['medievalAge', 'volcanology'],
+                unlocks: ['spaceAge', 'library'],
+                bonus: { age: 'renaissance' },
+                description: 'Advance to Renaissance - Unlock libraries',
+                planets: ['volcanic']
+            },
+            spaceAge: {
+                name: 'Space Age',
+                cost: 800,
+                type: 'age',
+                researched: false,
+                prerequisites: ['renaissanceAge', 'rocketry'],
+                unlocks: ['university', 'exodusProtocol'],
+                bonus: { age: 'space' },
+                description: 'Advance to Space Age - Unlock universities and space travel',
+                planets: ['volcanic']
+            },
             shelter: {
                 name: 'Emergency Shelter',
                 cost: 25,
@@ -644,6 +699,10 @@ class TechTree {
         this.currentResearch = null;
         this.researchProgress = 0;
 
+        if (tech.type === 'age') {
+            return { completed: completedTech, ageAdvanced: true, newAge: tech.bonus.age };
+        }
+
         if (tech.type === 'victory') {
             return { completed: completedTech, victory: true, victoryType: techId };
         }
@@ -696,6 +755,15 @@ class TechTree {
         }
         if (bonus.core_stable) {
             this.player.coreStable = true;
+        }
+        if (bonus.age) {
+            const advanced = this.player.advanceAge(bonus.age);
+            if (advanced && this.player.game) {
+                this.player.game.log(`CIVILIZATION ADVANCED TO ${bonus.age.toUpperCase()} AGE!`);
+                if (typeof AudioManager !== 'undefined') {
+                    AudioManager.playSFX('sfx-success', 0.6);
+                }
+            }
         }
     }
 
