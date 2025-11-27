@@ -93,6 +93,8 @@ class Settlement {
         this.foodPerTurn = this.calculateFoodProduction(planet);
         this.foodConsumption = this.population * 2;
 
+        console.log(`Settlement ${this.name}: food/turn=${this.foodPerTurn}, consumption=${this.foodConsumption}`);
+
         const netFood = this.foodPerTurn - this.foodConsumption;
         this.food += netFood;
 

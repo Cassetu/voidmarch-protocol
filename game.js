@@ -133,6 +133,7 @@ class Game {
         this.player.addBuilding(settlement);
 
         const newSettlement = this.player.addSettlement(startX, startY);
+        newSettlement.addBuilding('farm');
         this.log(`Starting settlement "${newSettlement.name}" established`);
 
         this.currentPlanet.structures.push(farm);
@@ -1129,6 +1130,12 @@ class Game {
                     tile.building.isFrame = false;
                     tile.building.buildProgress = 100;
                     this.player.addBuilding(tile.building);
+
+                    const nearestSettlement = this.player.findNearestSettlement(builder.targetX, builder.targetY);
+                    if (nearestSettlement && nearestSettlement.isWithinClaim(builder.targetX, builder.targetY)) {
+                        nearestSettlement.addBuilding(builder.buildingType);
+                    }
+
                     this.log(`Building complete: ${builder.buildingType} at (${builder.targetX}, ${builder.targetY})`);
                 } else if (tile && !tile.building) {
                     const completedBuilding = new Building(builder.targetX, builder.targetY, builder.buildingType);
