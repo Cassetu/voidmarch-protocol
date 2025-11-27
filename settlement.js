@@ -4,7 +4,6 @@ class Settlement {
         this.y = y;
         this.id = id;
         this.name = this.generateSettlementName();
-        this.population = 5;
         this.citizens = [];
         this.children = [];
         this.food = 20;
@@ -30,6 +29,10 @@ class Settlement {
         }
 
         this.tryCreateFamilies();
+    }
+
+    getPopulation() {
+        return this.citizens.length + this.children.length;
     }
 
     getMaxPopulation() {
@@ -320,7 +323,8 @@ class Settlement {
 
         this.foodPerTurn = this.calculateFoodProduction(planet);
 
-        const adultConsumption = this.population * 2;
+        const currentPop = this.getPopulation();
+        const adultConsumption = currentPop * 2;
         const childConsumption = this.children.length * 1;
         this.foodConsumption = adultConsumption + childConsumption;
 
@@ -341,7 +345,6 @@ class Settlement {
                     this.children.pop();
                 } else {
                     this.citizens.pop();
-                    this.population--;
                 }
             }
         }
@@ -354,7 +357,6 @@ class Settlement {
             if (this.growthProgress >= this.growthRequired) {
                 this.growthProgress = 0;
                 this.growthRequired = Math.floor(this.growthRequired * 1.2);
-                this.population++;
                 this.citizens.push(this.generateCitizen());
             }
         } else if (netFood < 0) {

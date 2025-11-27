@@ -1226,7 +1226,7 @@ class Game {
             panel.style.display = 'block';
 
             document.getElementById('settlement-title').textContent = settlement.name;
-            document.getElementById('settlement-population').textContent = settlement.population;
+            document.getElementById('settlement-population').textContent = settlement.getPopulation();
             document.getElementById('settlement-food').textContent = Math.floor(settlement.food);
 
             const foodRate = settlement.foodPerTurn - settlement.foodConsumption;
@@ -1664,7 +1664,8 @@ class Game {
     updateUI() {
         document.getElementById('resource-count').textContent = Math.floor(this.player.resources);
         document.getElementById('food-count').textContent = Math.floor(this.player.food);
-        document.getElementById('population-count').textContent = Math.floor(this.player.population);
+        const totalPop = this.player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+        document.getElementById('population-count').textContent = totalPop;
 
         const ageNames = {
             stone: 'Stone Age',
