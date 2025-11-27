@@ -91,11 +91,42 @@ class Settlement {
     }
 
     generateCitizen() {
-        const firstNames = ['Aria', 'Bjorn', 'Chen', 'Dara', 'Erik', 'Fiona', 'Gavin', 'Hana', 'Ivan', 'Jana',
-                           'Kael', 'Luna', 'Marcus', 'Nora', 'Oscar', 'Petra', 'Quinn', 'Ravi', 'Sara', 'Tomas',
-                           'Uma', 'Victor', 'Wren', 'Xander', 'Yuki', 'Zara', 'Aiden', 'Bella', 'Caleb', 'Diana'];
-        const lastNames = ['Ashborn', 'Firewalker', 'Stonehand', 'Ironforge', 'Emberhart', 'Rockwell', 'Flameheart',
-                          'Cinder', 'Magma', 'Lavaflow', 'Obsidian', 'Crater', 'Basalt', 'Pyroclast', 'Scorch'];
+        let firstNames, lastNames;
+
+        const planetType = window.game && window.game.currentPlanet ? window.game.currentPlanet.type : 'volcanic';
+
+        if (planetType === 'volcanic') {
+            firstNames = ['Aria', 'Bjorn', 'Chen', 'Dara', 'Erik', 'Fiona', 'Gavin', 'Hana', 'Ivan', 'Jana',
+                         'Kael', 'Luna', 'Marcus', 'Nora', 'Oscar', 'Petra', 'Quinn', 'Ravi', 'Sara', 'Tomas',
+                         'Uma', 'Victor', 'Wren', 'Xander', 'Yuki', 'Zara', 'Aiden', 'Bella', 'Caleb', 'Diana'];
+            lastNames = ['Ashborn', 'Firewalker', 'Stonehand', 'Ironforge', 'Emberhart', 'Rockwell', 'Flameheart',
+                        'Cinder', 'Magma', 'Lavaflow', 'Obsidian', 'Crater', 'Basalt', 'Pyroclast', 'Scorch'];
+        } else if (planetType === 'ice') {
+            firstNames = ['Freya', 'Bjorn', 'Astrid', 'Erik', 'Ingrid', 'Lars', 'Saga', 'Thor', 'Ylva', 'Odin',
+                         'Skadi', 'Frost', 'Winter', 'Neve', 'Boreas', 'Glacie', 'Crystal', 'Eira', 'Nivis', 'Yuki'];
+            lastNames = ['Frostborne', 'Icewalker', 'Snowfall', 'Coldheart', 'Wintermane', 'Glacierheart', 'Frostblade',
+                        'Icicle', 'Blizzard', 'Whitefang', 'Northwind', 'Chillfrost', 'Deepfreeze', 'Permafrost', 'Snowdrift'];
+        } else if (planetType === 'desert') {
+            firstNames = ['Amara', 'Nasir', 'Zara', 'Malik', 'Sahara', 'Tariq', 'Layla', 'Rashid', 'Nadia', 'Omar',
+                         'Yasmin', 'Zahir', 'Samira', 'Khalid', 'Amira', 'Jamal', 'Soraya', 'Aziz', 'Fatima', 'Rami'];
+            lastNames = ['Sandwalker', 'Dunestrider', 'Sunborn', 'Desertstorm', 'Mirageseeker', 'Oasisheart', 'Scorchblade',
+                        'Sandseer', 'Nomad', 'Heatwave', 'Drysand', 'Sunscale', 'Dustwind', 'Goldensun', 'Sirocco'];
+        } else if (planetType === 'ocean') {
+            firstNames = ['Marina', 'Kai', 'Coral', 'Dylan', 'Pearl', 'Morgan', 'River', 'Wade', 'Brooke', 'Finn',
+                         'Isla', 'Drake', 'Misty', 'Cove', 'Azure', 'Tide', 'Bay', 'Shore', 'Deep', 'Reef'];
+            lastNames = ['Waveborn', 'Seawalker', 'Tideheart', 'Deepwater', 'Coralforge', 'Saltwind', 'Reefdancer',
+                        'Oceanborn', 'Seafarer', 'Stormcrest', 'Bluescale', 'Currentrider', 'Depthseeker', 'Mariner', 'Saltborn'];
+        } else if (planetType === 'jungle') {
+            firstNames = ['Maya', 'Ravi', 'Jade', 'Zuri', 'Kato', 'Liana', 'Koda', 'Asha', 'Tego', 'Nala',
+                         'Banyan', 'Fern', 'Moss', 'Vine', 'Reed', 'Sage', 'Willow', 'Maple', 'Cedar', 'Ivy'];
+            lastNames = ['Leafwhisper', 'Vinewalker', 'Greenhart', 'Wildborn', 'Jungleheart', 'Rootseeker', 'Canopyblade',
+                        'Thornweaver', 'Mossborn', 'Forestsong', 'Tanglefoot', 'Wildrunner', 'Greenvein', 'Natureheart', 'Lifespring'];
+        } else {
+            firstNames = ['Nova', 'Orion', 'Stella', 'Cosmo', 'Luna', 'Atlas', 'Vega', 'Sirius', 'Lyra', 'Phoenix',
+                         'Astro', 'Celeste', 'Nebula', 'Solar', 'Comet', 'Stardust', 'Galaxy', 'Meteor', 'Pulsar', 'Quasar'];
+            lastNames = ['Starborn', 'Voidwalker', 'Cosmicheart', 'Nebulaforge', 'Stellarheart', 'Galaxyseeker', 'Starblade',
+                        'Voidborn', 'Spacefarer', 'Darkstar', 'Lightyear', 'Stardrift', 'Cosmosoul', 'Astralwind', 'Celestial'];
+        }
 
         const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
         const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
@@ -106,6 +137,29 @@ class Settlement {
             age: Math.floor(Math.random() * 50) + 18,
             job: 'Citizen'
         };
+    }
+
+    ageUp() {
+        this.citizens.forEach(citizen => {
+            citizen.age++;
+
+            if (citizen.age >= 65) {
+                citizen.job = 'Elder';
+            } else if (citizen.age >= 40) {
+                citizen.job = 'Artisan';
+            } else if (citizen.age >= 25) {
+                citizen.job = 'Worker';
+            } else {
+                citizen.job = 'Apprentice';
+            }
+        });
+
+        this.citizens = this.citizens.filter(citizen => {
+            if (citizen.age > 80 && Math.random() < 0.15) {
+                return false;
+            }
+            return true;
+        });
     }
 
     isWithinClaim(x, y) {
@@ -141,10 +195,36 @@ class Settlement {
         production += farmCount * 3;
         production += aqueductCount * 2;
 
+        const productionModifier = this.getProductionModifier();
+        production = Math.floor(production * productionModifier);
+
         return production;
     }
 
+    getProductionModifier() {
+        let totalModifier = 0;
+        let citizenCount = 0;
+
+        this.citizens.forEach(citizen => {
+            citizenCount++;
+
+            if (citizen.age < 25) {
+                totalModifier += 1.05;
+            } else if (citizen.age >= 25 && citizen.age < 40) {
+                totalModifier += 1.10;
+            } else if (citizen.age >= 40 && citizen.age < 65) {
+                totalModifier += 1.20;
+            } else {
+                totalModifier += 0.90;
+            }
+        });
+
+        return citizenCount > 0 ? totalModifier / citizenCount : 1.0;
+    }
+
     processTurn(planet) {
+        this.ageUp();
+
         this.foodPerTurn = this.calculateFoodProduction(planet);
         this.foodConsumption = this.population * 2;
 

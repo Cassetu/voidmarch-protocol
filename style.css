@@ -188,12 +188,12 @@ body {
 #settlement-panel {
     position: absolute;
     right: 240px;
-    top: 75px;
-    width: 280px;
-    max-height: calc(100vh - 295px);
+    top: 0px;
+    width: 400px;
+    max-height: 220px;
     background: rgba(20, 25, 36, 0.98);
     border: 2px solid #4a6a8a;
-    border-radius: 8px;
+    border-radius: 0px;
     padding: 15px;
     overflow-y: auto;
     pointer-events: auto;

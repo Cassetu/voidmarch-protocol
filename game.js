@@ -227,6 +227,18 @@ class Game {
             this.log(`Turn ${this.player.turn} complete.`);
         }
 
+        const settlementPanel = document.getElementById('settlement-panel');
+        if (settlementPanel && settlementPanel.style.display === 'block') {
+            const title = document.getElementById('settlement-title');
+            if (title) {
+                const settlementName = title.textContent;
+                const settlement = this.player.settlements.find(s => s.name === settlementName);
+                if (settlement) {
+                    this.showSettlementPanel(settlement.x, settlement.y);
+                }
+            }
+        }
+
         if (this.gameMode === 'conquest') {
             this.unitActionSystem.onTurnEnd();
             const result = this.conquestSystem.endPlayerTurn();
