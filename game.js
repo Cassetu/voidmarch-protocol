@@ -936,6 +936,9 @@ class Game {
                         gridY >= 0 && gridY < this.currentPlanet.height) {
                         const tile = this.currentPlanet.tiles[gridY][gridX];
                         if (tile) {
+                            if (tile.building && tile.building.type === 'settlement' && !tile.building.isFrame) {
+                                this.showSettlementPanel(gridX, gridY);
+                            }
                             this.showTileInfo(tile, gridX, gridY);
                         }
                     }

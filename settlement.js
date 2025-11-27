@@ -30,9 +30,64 @@ class Settlement {
     }
 
     generateSettlementName() {
-        const prefixes = ['New', 'Old', 'Port', 'Fort', 'Mount', 'Lake', 'Stone', 'Iron', 'Ash', 'Fire'];
-        const suffixes = ['haven', 'burg', 'ville', 'ton', 'dale', 'field', 'ridge', 'crest', 'point', 'rock'];
-        return `${prefixes[Math.floor(Math.random() * prefixes.length)]}${suffixes[Math.floor(Math.random() * suffixes.length)]}`;
+        const terrainCounts = {
+            lava: 0,
+            water: 0,
+            sand: 0,
+            rock: 0,
+            darksoil: 0,
+            ice: 0,
+            tundra: 0,
+            ash: 0,
+            floating: 0,
+            forest: 0,
+            jungle: 0
+        };
+
+        for (let dy = -2; dy <= 2; dy++) {
+            for (let dx = -2; dx <= 2; dx++) {
+                const checkX = this.x + dx;
+                const checkY = this.y + dy;
+
+                if (window.game && window.game.currentPlanet) {
+                    const planet = window.game.currentPlanet;
+                    if (checkX >= 0 && checkX < planet.width && checkY >= 0 && checkY < planet.height) {
+                        const tile = planet.tiles[checkY][checkX];
+                        if (terrainCounts[tile.type] !== undefined) {
+                            terrainCounts[tile.type]++;
+                        }
+                    }
+                }
+            }
+        }
+
+        const dominantTerrain = Object.keys(terrainCounts).reduce((a, b) =>
+            terrainCounts[a] > terrainCounts[b] ? a : b
+        );
+
+        const terrainPrefixes = {
+            lava: ['Ember', 'Flame', 'Magma', 'Fire', 'Scorch', 'Inferno'],
+            water: ['River', 'Lake', 'Sea', 'Bay', 'Port', 'Harbor'],
+            sand: ['Dune', 'Desert', 'Sand', 'Oasis', 'Mesa'],
+            rock: ['Stone', 'Boulder', 'Crag', 'Cliff', 'Peak'],
+            darksoil: ['Dark', 'Shadow', 'Black', 'Obsidian', 'Onyx'],
+            ice: ['Frost', 'Ice', 'Snow', 'Frozen', 'Winter', 'Crystal'],
+            tundra: ['Cold', 'North', 'Pale', 'Bitter', 'White'],
+            ash: ['Ash', 'Cinder', 'Soot', 'Gray', 'Smoke'],
+            floating: ['Sky', 'Cloud', 'Drift', 'Float', 'High'],
+            forest: ['Green', 'Wood', 'Tree', 'Grove', 'Forest'],
+            jungle: ['Wild', 'Vine', 'Deep', 'Tangle', 'Green']
+        };
+
+        const suffixes = ['haven', 'burg', 'ville', 'ton', 'dale', 'field', 'ridge',
+                          'crest', 'point', 'rock', 'hold', 'rest', 'watch', 'keep',
+                          'fall', 'springs', 'hollow', 'vale', 'mount', 'shore'];
+
+        const prefixes = terrainPrefixes[dominantTerrain] || ['New', 'Old'];
+        const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+        const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+
+        return `${prefix}${suffix}`;
     }
 
     generateCitizen() {
