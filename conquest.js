@@ -554,6 +554,98 @@ class ConquestSystem {
             if (sentinel.isGuardian) return;
             if (sentinel.empStunned) return;
 
+            if (sentinel.assaulting) {
+                if (!this.spaceship) {
+                    sentinel.assaulting = false;
+                    return;
+                }
+
+                const targetX = this.spaceship.x;
+                const targetY = this.spaceship.y;
+                const distToSpaceship = Math.abs(sentinel.x - targetX) + Math.abs(sentinel.y - targetY);
+
+                let closestTarget = null;
+                let closestDistance = Infinity;
+
+                this.armies.forEach(army => {
+                    const distance = Math.abs(sentinel.x - army.x) + Math.abs(sentinel.y - army.y);
+                    if (distance <= sentinel.moveRange + sentinel.range && distance < closestDistance) {
+                        closestDistance = distance;
+                        closestTarget = { type: 'unit', data: army, distance: distance };
+                    }
+                });
+
+                this.game.player.builders.forEach(builder => {
+                    const distance = Math.abs(sentinel.x - builder.currentX) + Math.abs(sentinel.y - builder.currentY);
+                    if (distance <= sentinel.moveRange + sentinel.range && distance < closestDistance) {
+                        closestDistance = distance;
+                        closestTarget = { type: 'builder', data: builder, distance: distance };
+                    }
+                });
+
+                const playerBuildingTypes = this.getPlayerBuildingTypes();
+                this.planet.structures.forEach(building => {
+                    if (playerBuildingTypes.includes(building.type) && !building.isFrame) {
+                        const distance = Math.abs(sentinel.x - building.x) + Math.abs(sentinel.y - building.y);
+                        if (distance <= sentinel.moveRange + sentinel.range && distance < closestDistance) {
+                            closestDistance = distance;
+                            closestTarget = { type: 'building', data: building, distance: distance };
+                        }
+                    }
+                });
+
+                if (closestTarget && closestTarget.distance <= sentinel.range) {
+                    const target = closestTarget.data;
+                    target.health -= sentinel.damage;
+
+                    if (closestTarget.type === 'unit' && target.health <= 0) {
+                        this.armies = this.armies.filter(a => a.id !== target.id);
+                        this.game.log(`Your ${target.type} was destroyed by assaulting sentinel!`);
+                    } else if (closestTarget.type === 'builder') {
+                        this.game.log(`Builder destroyed by assaulting sentinel!`);
+                        const builderId = closestTarget.data.id;
+                        this.game.player.builders = this.game.player.builders.filter(b => b.id !== builderId);
+
+                        const queueItem = this.game.player.buildingQueue.find(bq => bq.builderId === builderId);
+                        if (queueItem) {
+                            const tile = this.planet.tiles[queueItem.y][queueItem.x];
+                            if (tile && tile.building && tile.building.isFrame) {
+                                this.planet.structures = this.planet.structures.filter(s => s !== tile.building);
+                                tile.building = null;
+                            }
+                        }
+                        this.game.player.buildingQueue = this.game.player.buildingQueue.filter(bq => bq.builderId !== builderId);
+                    } else if (closestTarget.type === 'building') {
+                        this.game.log(`${target.type} took ${sentinel.damage} damage from assault!`);
+
+                        if (target.health <= 0) {
+                            if (target.type === 'spaceship') {
+                                this.game.log(`Spaceship destroyed! DEFEAT!`);
+                                return { defeat: true };
+                            } else {
+                                this.game.log(`${target.type} destroyed by assault!`);
+                                const ruins = {
+                                    x: target.x,
+                                    y: target.y,
+                                    type: 'ruins',
+                                    health: 0,
+                                    maxHealth: 0,
+                                    originalType: target.type
+                                };
+                                this.planet.structures = this.planet.structures.filter(s => s !== target);
+                                this.planet.structures.push(ruins);
+                                this.planet.tiles[target.y][target.x].building = ruins;
+                            }
+                        }
+                    }
+                    sentinel.attacked = true;
+                } else {
+                    this.moveSentinelToward(sentinel, targetX, targetY, targetX, targetY, 1000);
+                }
+
+                return;
+            }
+
             const homeX = sentinel.homeX !== undefined ? sentinel.homeX : this.defenseNodes.find(n => n.id === sentinel.belongsToNode)?.x || sentinel.x;
             const homeY = sentinel.homeY !== undefined ? sentinel.homeY : this.defenseNodes.find(n => n.id === sentinel.belongsToNode)?.y || sentinel.y;
 
@@ -697,6 +789,10 @@ class ConquestSystem {
             }
         });
 
+        if (this.shouldLaunchAssault()) {
+            this.launchAssault();
+        }
+
         return { continue: true };
     }
 
@@ -838,6 +934,43 @@ class ConquestSystem {
 
         this.sentinels.push(this.guardian);
         this.game.log(`⚠️ GUARDIAN ${guardianName} HAS AWAKENED! ⚠️`);
+    }
+
+    shouldLaunchAssault() {
+        const hasPlayerNearNodes = this.defenseNodes.some(node => {
+            if (node.hacked) return false;
+
+            return this.armies.some(army => {
+                const dist = Math.abs(army.x - node.x) + Math.abs(army.y - node.y);
+                return dist <= 3;
+            });
+        });
+
+        if (hasPlayerNearNodes) return false;
+
+        const sentinelCount = this.sentinels.filter(s => !s.isGuardian && !s.defeated).length;
+        if (sentinelCount < 3) return false;
+
+        return Math.random() < 0.3;
+    }
+
+    launchAssault() {
+        if (!this.spaceship) return;
+
+        this.sentinels.forEach(sentinel => {
+            if (sentinel.isGuardian || sentinel.defeated) return;
+
+            sentinel.assaulting = true;
+            sentinel.assaultTarget = { x: this.spaceship.x, y: this.spaceship.y };
+
+            delete sentinel.homeX;
+            delete sentinel.homeY;
+        });
+
+        this.game.log('⚠️ SENTINEL ASSAULT LAUNCHED! All sentinels converging on your spaceship!');
+        if (typeof AudioManager !== 'undefined') {
+            AudioManager.playSFX('sfx-eruption-major', 0.5);
+        }
     }
 
     endPlayerTurn() {
