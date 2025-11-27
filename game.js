@@ -130,9 +130,12 @@ class Game {
         this.currentPlanet.tiles[startY + 1][startX + 1].building = farm;
 
         this.currentPlanet.structures.push(settlement);
-        this.currentPlanet.structures.push(farm);
-
         this.player.addBuilding(settlement);
+
+        const newSettlement = this.player.addSettlement(startX, startY);
+        this.log(`Starting settlement "${newSettlement.name}" established`);
+
+        this.currentPlanet.structures.push(farm);
         this.player.addBuilding(farm);
 
         this.log('Starting settlement and farm placed');
@@ -140,6 +143,7 @@ class Game {
 
     endTurn() {
         this.player.nextTurn();
+        this.player.processTurnForSettlements(this.currentPlanet);
         this.updateBuilders();
 
         let totalFood = 0;
@@ -741,6 +745,17 @@ class Game {
                             return;
                         }
 
+                        const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
+                        if (!nearestSettlement || !nearestSettlement.isWithinClaim(gridX, gridY)) {
+                            this.log('Must build within settlement claim area!');
+                            return;
+                        }
+
+                        if (!nearestSettlement.canBuildStructure(this.player.selectedBuilding)) {
+                            this.log(`Settlement already has maximum ${this.player.selectedBuilding}s!`);
+                            return;
+                        }
+
                         const settlement = this.selectNearestSettlement(gridX, gridY);
                         if (!settlement) {
                             this.log('No settlement or spaceship nearby to send builders from!');
@@ -771,17 +786,16 @@ class Game {
                         });
 
                         const tile = this.currentPlanet.tiles[gridY][gridX];
-                        console.log('Creating frame at', gridX, gridY, 'buildingType:', buildingType);
                         if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
-                            const tempBuilding = new Building(gridX, gridY, buildingType);
+                            const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
                             tempBuilding.isFrame = true;
                             tempBuilding.buildProgress = 0;
                             tile.building = tempBuilding;
                             this.currentPlanet.structures.push(tempBuilding);
-                            console.log('Frame created on planet 2:', tempBuilding);
+                            nearestSettlement.addBuilding(this.player.selectedBuilding);
                         }
 
-                        this.log(`Sending builders from ${settlement.type} to construct ${buildingType}`);
+                        this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
                         this.player.selectedBuilding = null;
                         const buildingsList = document.getElementById('buildings-list');
                         if (buildingsList) this._updateBuildingButtonsActive(buildingsList);
@@ -824,12 +838,14 @@ class Game {
                    });
 
                    const tile = this.currentPlanet.tiles[gridY][gridX];
+                   const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
                    if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
                        const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
                        tempBuilding.isFrame = true;
                        tempBuilding.buildProgress = 0;
                        tile.building = tempBuilding;
                        this.currentPlanet.structures.push(tempBuilding);
+                       nearestSettlement.addBuilding(this.player.selectedBuilding);
                    }
 
                    this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
@@ -1169,13 +1185,71 @@ class Game {
                 <p style="font-size: 9px; color: #ff6666;">Status: ${building.hacked ? 'HACKED' : 'ACTIVE'}</p>
                 <p style="font-size: 9px; color: #ff6666;">Spawns: ${building.armyType}</p>
             `;
-        } else {
-            infoPanel.innerHTML = `
-                <p style="font-size: 10px; color: #a8b8d8;"><strong>${building.type}</strong></p>
-                <p style="font-size: 9px; color: #8fa3c8;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
-            `;
+            if (building.type === 'settlement') {
+                this.showSettlementPanel(building.x, building.y);
+            } else {
+                infoPanel.innerHTML = `
+                    <p style="font-size: 10px; color: #a8b8d8;"><strong>${building.type}</strong></p>
+                    <p style="font-size: 9px; color: #8fa3c8;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
+                `;
+            }
         }
     }
+
+    showSettlementPanel(x, y) {
+            const settlement = this.player.getSettlementAt(x, y);
+            if (!settlement) return;
+
+            const panel = document.getElementById('settlement-panel');
+            panel.style.display = 'block';
+
+            document.getElementById('settlement-title').textContent = settlement.name;
+            document.getElementById('settlement-population').textContent = settlement.population;
+            document.getElementById('settlement-food').textContent = Math.floor(settlement.food);
+
+            const foodRate = settlement.foodPerTurn - settlement.foodConsumption;
+            const rateEl = document.getElementById('settlement-food-rate');
+            rateEl.textContent = `(${foodRate >= 0 ? '+' : ''}${foodRate}/turn)`;
+            rateEl.style.color = foodRate >= 0 ? '#88cc88' : '#cc8888';
+
+            const growthPercent = Math.floor((settlement.growthProgress / settlement.growthRequired) * 100);
+            document.getElementById('settlement-growth').textContent = `${growthPercent}%`;
+
+            const storage = settlement.getStorageCapacity();
+            document.getElementById('settlement-storage').textContent = `${Math.floor(settlement.food)}/${storage}`;
+
+            const buildingsList = document.getElementById('settlement-buildings-list');
+            buildingsList.innerHTML = '';
+
+            Object.entries(settlement.buildingLimits).forEach(([type, limit]) => {
+                const current = settlement.buildings.get(type) || 0;
+                const item = document.createElement('div');
+                item.className = 'building-limit-item' + (current >= limit ? ' at-limit' : '');
+                item.innerHTML = `
+                    <span>${type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                    <span>${current}/${limit}</span>
+                `;
+                buildingsList.appendChild(item);
+            });
+
+            const citizensList = document.getElementById('settlement-citizens-list');
+            citizensList.innerHTML = '';
+
+            settlement.citizens.forEach(citizen => {
+                const item = document.createElement('div');
+                item.className = 'citizen-item';
+                item.innerHTML = `
+                    <div class="citizen-name">${citizen.name}</div>
+                    <div class="citizen-details">Age: ${citizen.age} | ${citizen.job}</div>
+                `;
+                citizensList.appendChild(item);
+            });
+
+            document.getElementById('settlement-close-btn').onclick = (e) => {
+                e.stopPropagation();
+                panel.style.display = 'none';
+            };
+        }
 
     showHackingMiniGame() {
         if (!this.conquestSystem.hackingMiniGame) return;

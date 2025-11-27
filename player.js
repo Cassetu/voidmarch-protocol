@@ -3,6 +3,8 @@ class Player {
         this.resources = 15000;
         this.food = 100;
         this.population = 50;
+        this.settlements = [];
+        this.nextSettlementId = 0;
         this.planetsControlled = 1;
         this.age = 'stone';
         this.ageLevel = 0;
@@ -43,6 +45,37 @@ class Player {
             return true;
         }
         return false;
+    }
+
+    addSettlement(x, y) {
+        const settlement = new Settlement(x, y, this.nextSettlementId++);
+        this.settlements.push(settlement);
+        return settlement;
+    }
+
+    findNearestSettlement(x, y) {
+        let nearest = null;
+        let minDist = Infinity;
+
+        this.settlements.forEach(settlement => {
+            const dist = Math.abs(settlement.x - x) + Math.abs(settlement.y - y);
+            if (dist < minDist) {
+                minDist = dist;
+                nearest = settlement;
+            }
+        });
+
+        return nearest;
+    }
+
+    getSettlementAt(x, y) {
+        return this.settlements.find(s => s.x === x && s.y === y);
+    }
+
+    processTurnForSettlements(planet) {
+        this.settlements.forEach(settlement => {
+            settlement.processTurn(planet);
+        });
     }
 
     getAvailableBuildings() {
