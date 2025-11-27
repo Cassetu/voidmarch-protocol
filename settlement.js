@@ -6,6 +6,7 @@ class Settlement {
         this.name = this.generateSettlementName();
         this.population = 5;
         this.citizens = [];
+        this.children = [];
         this.food = 20;
         this.foodPerTurn = 0;
         this.foodConsumption = 0;
@@ -26,6 +27,97 @@ class Settlement {
 
         for (let i = 0; i < this.population; i++) {
             this.citizens.push(this.generateCitizen());
+        }
+
+        this.tryCreateFamilies();
+    }
+
+    getMaxPopulation() {
+        let capacity = 10;
+
+        this.buildings.forEach((count, type) => {
+            switch(type) {
+                case 'tent':
+                    capacity += count * 3;
+                    break;
+                case 'farm':
+                    capacity += count * 1;
+                    break;
+                case 'warehouse':
+                    capacity += count * 2;
+                    break;
+                case 'settlement':
+                    capacity += count * 5;
+                    break;
+                case 'barracks':
+                    capacity += count * 4;
+                    break;
+                case 'granary':
+                    capacity += count * 3;
+                    break;
+                default:
+                    capacity += count * 1;
+                    break;
+            }
+        });
+
+        return capacity;
+    }
+
+    tryCreateFamilies() {
+        const eligibleAdults = this.citizens.filter(c => c.age >= 20 && c.age <= 50);
+
+        eligibleAdults.forEach(citizen => {
+            if (citizen.hasChildren) return;
+
+            if (Math.random() < 0.3) {
+                const numChildren = Math.random() < 0.5 ? 2 : 3;
+                const maxPop = this.getMaxPopulation();
+                const totalPop = this.citizens.length + this.children.length;
+
+                const actualChildren = Math.min(numChildren, maxPop - totalPop);
+
+                for (let i = 0; i < actualChildren; i++) {
+                    const child = this.generateChild(citizen);
+                    this.children.push(child);
+                }
+
+                if (actualChildren > 0) {
+                    citizen.hasChildren = true;
+                    citizen.childrenCount = actualChildren;
+                }
+            }
+        });
+    }
+
+    generateChild(parent) {
+        const firstNames = ['Alex', 'Sam', 'Jordan', 'Riley', 'Casey', 'Morgan', 'Taylor', 'Avery', 'Quinn', 'Reese'];
+        const lastName = parent.name.split(' ')[1];
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+
+        return {
+            id: `${Date.now()}-${Math.random()}`,
+            name: `${firstName} ${lastName}`,
+            age: Math.floor(Math.random() * 13) + 5,
+            job: 'Child',
+            isChild: true
+        };
+    }
+
+    ageUpChildren() {
+        for (let i = this.children.length - 1; i >= 0; i--) {
+            const child = this.children[i];
+            child.age++;
+
+            if (child.age >= 18) {
+                child.job = 'Apprentice';
+                child.isChild = false;
+                delete child.isChild;
+
+                this.citizens.push(child);
+                this.children.splice(i, 1);
+                this.population++;
+            }
         }
     }
 
@@ -224,11 +316,13 @@ class Settlement {
 
     processTurn(planet) {
         this.ageUp();
+        this.ageUpChildren();
 
         this.foodPerTurn = this.calculateFoodProduction(planet);
-        this.foodConsumption = this.population * 2;
 
-        console.log(`Settlement ${this.name}: food/turn=${this.foodPerTurn}, consumption=${this.foodConsumption}`);
+        const adultConsumption = this.population * 2;
+        const childConsumption = this.children.length * 1;
+        this.foodConsumption = adultConsumption + childConsumption;
 
         const netFood = this.foodPerTurn - this.foodConsumption;
         this.food += netFood;
@@ -243,12 +337,19 @@ class Settlement {
         if (this.food < 0) {
             this.food = 0;
             if (this.population > 1 && Math.random() < 0.3) {
-                this.citizens.pop();
-                this.population--;
+                if (this.children.length > 0 && Math.random() < 0.5) {
+                    this.children.pop();
+                } else {
+                    this.citizens.pop();
+                    this.population--;
+                }
             }
         }
 
-        if (netFood > 0) {
+        const maxPop = this.getMaxPopulation();
+        const totalPop = this.citizens.length + this.children.length;
+
+        if (netFood > 0 && totalPop < maxPop) {
             this.growthProgress += netFood;
             if (this.growthProgress >= this.growthRequired) {
                 this.growthProgress = 0;
@@ -258,6 +359,10 @@ class Settlement {
             }
         } else if (netFood < 0) {
             this.growthProgress = Math.max(0, this.growthProgress + netFood);
+        }
+
+        if (Math.random() < 0.1 && totalPop < maxPop) {
+            this.tryCreateFamilies();
         }
     }
 

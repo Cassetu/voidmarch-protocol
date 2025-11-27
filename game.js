@@ -1257,15 +1257,42 @@ class Game {
             const citizensList = document.getElementById('settlement-citizens-list');
             citizensList.innerHTML = '';
 
+            const maxPop = settlement.getMaxPopulation();
+            const totalPop = settlement.citizens.length + settlement.children.length;
+
+            const capacityDiv = document.createElement('div');
+            capacityDiv.style.cssText = 'margin-bottom: 8px; padding: 4px; background: rgba(74, 90, 106, 0.3); border-radius: 3px;';
+            capacityDiv.innerHTML = `<strong>Population: ${totalPop}/${maxPop}</strong>`;
+            citizensList.appendChild(capacityDiv);
+
             settlement.citizens.forEach(citizen => {
                 const item = document.createElement('div');
                 item.className = 'citizen-item';
+                const childrenInfo = citizen.hasChildren ? ` | ${citizen.childrenCount} children` : '';
                 item.innerHTML = `
                     <div class="citizen-name">${citizen.name}</div>
-                    <div class="citizen-details">Age: ${citizen.age} | ${citizen.job}</div>
+                    <div class="citizen-details">Age: ${citizen.age} | ${citizen.job}${childrenInfo}</div>
                 `;
                 citizensList.appendChild(item);
             });
+
+            if (settlement.children.length > 0) {
+                const childHeader = document.createElement('div');
+                childHeader.style.cssText = 'margin-top: 8px; margin-bottom: 4px; font-weight: 600; color: #8fa3c8; font-size: 10px;';
+                childHeader.textContent = 'CHILDREN:';
+                citizensList.appendChild(childHeader);
+
+                settlement.children.forEach(child => {
+                    const item = document.createElement('div');
+                    item.className = 'citizen-item';
+                    item.style.background = 'rgba(90, 120, 150, 0.2)';
+                    item.innerHTML = `
+                        <div class="citizen-name">${child.name}</div>
+                        <div class="citizen-details">Age: ${child.age} | ${child.job}</div>
+                    `;
+                    citizensList.appendChild(item);
+                });
+            }
 
             document.getElementById('settlement-close-btn').onclick = (e) => {
                 e.stopPropagation();
