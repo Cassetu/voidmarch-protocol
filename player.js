@@ -1,7 +1,6 @@
 class Player {
     constructor() {
         this.resources = 15000;
-        this.food = 100;
         this.population = 50;
         this.settlements = [];
         this.nextSettlementId = 0;
@@ -108,18 +107,6 @@ class Player {
             return true;
         }
         return false;
-    }
-
-    addFood(amount) {
-        this.food = Math.min(this.food + amount, this.population * 5);
-    }
-
-    consumeFood(amount) {
-        this.food -= amount;
-        if (this.food < 0) {
-            this.population += Math.floor(this.food / 10);
-            this.food = 0;
-        }
     }
 
     addPopulation(amount) {

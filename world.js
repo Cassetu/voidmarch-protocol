@@ -262,17 +262,6 @@ class Planet {
         this.structures.forEach(building => {
             building.update(deltaTime, player);
         });
-
-        if (this.time > 2) {
-            const foodProduced = this.structures.filter(b => b.type === 'farm').length * 5;
-            player.addFood(foodProduced);
-            player.consumeFood(Math.ceil(player.population * 0.5));
-
-            const resourcesProduced = this.structures.filter(b => b.type === 'warehouse').length * 3;
-            player.addResources(resourcesProduced);
-
-            this.time = 0;
-        }
     }
 }
 

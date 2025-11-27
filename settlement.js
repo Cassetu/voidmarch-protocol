@@ -250,7 +250,13 @@ class Settlement {
         });
 
         this.citizens = this.citizens.filter(citizen => {
-            if (citizen.age > 80 && Math.random() < 0.15) {
+            const foodPerPerson = this.food / Math.max(1, this.getPopulation());
+            const wellFed = foodPerPerson >= 10;
+
+            let deathAge = wellFed ? 80 : 70;
+            let deathChance = wellFed ? 0.15 : 0.25;
+
+            if (citizen.age > deathAge && Math.random() < deathChance) {
                 return false;
             }
             return true;
@@ -324,7 +330,7 @@ class Settlement {
         this.foodPerTurn = this.calculateFoodProduction(planet);
 
         const currentPop = this.getPopulation();
-        const adultConsumption = currentPop * 2;
+        const adultConsumption = this.citizens.length * 2;
         const childConsumption = this.children.length * 1;
         this.foodConsumption = adultConsumption + childConsumption;
 
@@ -339,20 +345,18 @@ class Settlement {
         }
 
         if (this.food < 0) {
-            this.food = 0;
-            if (this.population > 1 && Math.random() < 0.3) {
-                if (this.children.length > 0 && Math.random() < 0.5) {
-                    this.children.pop();
-                } else {
-                    this.citizens.pop();
-                }
-            }
+            this.handleStarvation();
+        } else if (this.food < this.foodConsumption * 2) {
+            this.handleMalnutrition();
         }
 
         const maxPop = this.getMaxPopulation();
         const totalPop = this.citizens.length + this.children.length;
 
-        if (netFood > 0 && totalPop < maxPop) {
+        const foodPerPerson = this.food / Math.max(1, totalPop);
+        const wellFed = foodPerPerson >= 10;
+
+        if (wellFed && netFood >= this.foodConsumption * 0.5 && totalPop < maxPop) {
             this.growthProgress += netFood;
             if (this.growthProgress >= this.growthRequired) {
                 this.growthProgress = 0;
@@ -360,12 +364,56 @@ class Settlement {
                 this.citizens.push(this.generateCitizen());
             }
         } else if (netFood < 0) {
-            this.growthProgress = Math.max(0, this.growthProgress + netFood);
+            this.growthProgress = Math.max(0, this.growthProgress + netFood * 2);
+        } else {
+            this.growthProgress = Math.max(0, this.growthProgress - 5);
         }
 
-        if (Math.random() < 0.1 && totalPop < maxPop) {
+        if (wellFed && Math.random() < 0.15 && totalPop < maxPop) {
+            this.tryCreateFamilies();
+        } else if (!wellFed && Math.random() < 0.05) {
             this.tryCreateFamilies();
         }
+    }
+
+    handleStarvation() {
+        this.food = 0;
+
+        const starvationChance = 0.4;
+
+        if (this.children.length > 0 && Math.random() < starvationChance) {
+            this.children.pop();
+            if (window.game) {
+                window.game.log(`${this.name}: A child died from starvation`);
+            }
+        } else if (this.citizens.length > 1 && Math.random() < starvationChance * 0.7) {
+            const elderIndex = this.citizens.findIndex(c => c.age >= 60);
+            if (elderIndex !== -1) {
+                this.citizens.splice(elderIndex, 1);
+                if (window.game) {
+                    window.game.log(`${this.name}: An elder died from starvation`);
+                }
+            } else {
+                this.citizens.pop();
+                if (window.game) {
+                    window.game.log(`${this.name}: A citizen died from starvation`);
+                }
+            }
+        }
+    }
+
+    handleMalnutrition() {
+        this.citizens.forEach(citizen => {
+            if (citizen.age >= 50 && Math.random() < 0.05) {
+                const index = this.citizens.indexOf(citizen);
+                if (index !== -1) {
+                    this.citizens.splice(index, 1);
+                    if (window.game) {
+                        window.game.log(`${this.name}: ${citizen.name} died from malnutrition`);
+                    }
+                }
+            }
+        });
     }
 
     getStorageCapacity() {

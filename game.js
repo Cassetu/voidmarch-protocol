@@ -176,7 +176,6 @@ class Game {
 
         this.player.sciencePerTurn = totalScience;
 
-        this.player.addFood(totalFood);
         this.player.addProduction(totalProduction);
 
         const researchResult = this.player.techTree.progressResearch();
@@ -1663,7 +1662,8 @@ class Game {
 
     updateUI() {
         document.getElementById('resource-count').textContent = Math.floor(this.player.resources);
-        document.getElementById('food-count').textContent = Math.floor(this.player.food);
+        const totalFood = this.player.settlements.reduce((sum, s) => sum + s.food, 0);
+        document.getElementById('food-count').textContent = Math.floor(totalFood);
         const totalPop = this.player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
         document.getElementById('population-count').textContent = totalPop;
 
