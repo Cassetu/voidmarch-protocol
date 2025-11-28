@@ -147,6 +147,22 @@ class Game {
         this.player.processTurnForSettlements(this.currentPlanet);
         this.updateBuilders();
 
+        const totalPopulation = this.player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+        const hasSettlements = this.player.settlements.length > 0;
+        const hasSpaceship = this.conquestSystem && this.conquestSystem.spaceship;
+
+        if (totalPopulation === 0 || (!hasSettlements && !hasSpaceship)) {
+            if (totalPopulation === 0) {
+                this.log('All citizens have perished...');
+            } else {
+                this.log('No settlements remaining...');
+            }
+            setTimeout(() => {
+                this.showGameOver();
+            }, 1000);
+            return;
+        }
+
         let totalFood = 0;
         let totalProduction = 0;
         let totalScience = 0;
@@ -762,12 +778,12 @@ class Game {
                                 this.log('Cannot build settlement within another settlement\'s claim!');
                                 return;
                             }
-                        }
-
-                        const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
-                        if (!nearestSettlement || !nearestSettlement.isWithinClaim(gridX, gridY)) {
-                            this.log('Must build within settlement claim area!');
-                            return;
+                        } else {
+                            const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
+                            if (!nearestSettlement || !nearestSettlement.isWithinClaim(gridX, gridY)) {
+                                this.log('Must build within settlement claim area!');
+                                return;
+                            }
                         }
 
                         if (!nearestSettlement.canBuildStructure(this.player.selectedBuilding)) {
@@ -865,6 +881,11 @@ class Game {
                        tile.building = tempBuilding;
                        this.currentPlanet.structures.push(tempBuilding);
                        nearestSettlement.addBuilding(this.player.selectedBuilding);
+
+                       if (this.player.selectedBuilding === 'settlement') {
+                           const newSettlement = this.player.addSettlement(gridX, gridY);
+                           this.log(`New settlement "${newSettlement.name}" established`);
+                       }
                    }
 
                    this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
@@ -963,6 +984,92 @@ class Game {
                 }
             }
         }
+    }
+
+    showGameOver() {
+        this.running = false;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'game-over-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0);
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background 3s ease;
+            pointer-events: auto;
+        `;
+
+        const gameOverText = document.createElement('h1');
+        gameOverText.textContent = 'GAME OVER';
+        gameOverText.style.cssText = `
+            font-size: 120px;
+            font-weight: 900;
+            background: linear-gradient(180deg, #ff8800 0%, #ff0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transition: opacity 2s ease 1s;
+            text-shadow: 0 0 30px rgba(255, 100, 0, 0.5);
+            margin-bottom: 40px;
+            letter-spacing: 8px;
+        `;
+
+        const message = document.createElement('p');
+        message.textContent = 'Your civilization has fallen...';
+        message.style.cssText = `
+            font-size: 24px;
+            color: #ff8888;
+            opacity: 0;
+            transition: opacity 2s ease 2s;
+            margin-bottom: 40px;
+        `;
+
+        const restartBtn = document.createElement('button');
+        restartBtn.textContent = 'Restart Game';
+        restartBtn.style.cssText = `
+            padding: 12px 30px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #3a4a5a;
+            border: 2px solid #5a6a7a;
+            color: #c0d0e8;
+            cursor: pointer;
+            border-radius: 4px;
+            opacity: 0;
+            transition: all 0.2s ease, opacity 2s ease 3s;
+        `;
+        restartBtn.onmouseenter = () => {
+            restartBtn.style.background = '#4a5a6a';
+            restartBtn.style.borderColor = '#7a8a9a';
+        };
+        restartBtn.onmouseleave = () => {
+            restartBtn.style.background = '#3a4a5a';
+            restartBtn.style.borderColor = '#5a6a7a';
+        };
+        restartBtn.onclick = () => {
+            location.reload();
+        };
+
+        overlay.appendChild(gameOverText);
+        overlay.appendChild(message);
+        overlay.appendChild(restartBtn);
+        document.body.appendChild(overlay);
+
+        setTimeout(() => {
+            overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+            gameOverText.style.opacity = '1';
+            message.style.opacity = '1';
+            restartBtn.style.opacity = '1';
+        }, 100);
     }
 
     showTileInfo(tile, x, y) {
