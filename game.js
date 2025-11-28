@@ -35,6 +35,8 @@ class Game {
         this.cameraX = 0;
         this.cameraY = 0;
         this.shakeIntensity = 0;
+        this.gameStarted = false;
+        document.getElementById('game-container').style.display = 'none';
 
         window.addEventListener('resize', () => this.handleResize());
         window.addEventListener('wheel', (e) => this.handleZoom(e));
@@ -44,6 +46,14 @@ class Game {
         document.addEventListener('pointerdown', (e) => {
             console.log('GLOBAL pointerdown target:', e.target && e.target.id ? e.target.id : e.target);
         }, true);
+
+        document.getElementById('start-game-btn').addEventListener('click', () => {
+            this.startGame();
+        });
+
+        document.getElementById('how-to-play-btn').addEventListener('click', () => {
+            this.showHowToPlay();
+        });
 
         document.addEventListener('click', (e) => {
             console.log('GLOBAL click target:', e.target && e.target.id ? e.target.id : e.target);
@@ -140,6 +150,67 @@ class Game {
         this.player.addBuilding(farm);
 
         this.log('Starting settlement and farm placed');
+    }
+
+    startGame() {
+        this.gameStarted = true;
+        document.getElementById('start-menu').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
+        if (!this.running) {
+            this.start();
+        }
+    }
+
+    showHowToPlay() {
+        const modal = document.createElement('div');
+        modal.id = 'how-to-play-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 20001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        `;
+
+        modal.innerHTML = `
+            <div style="background: #1a1f2e; border: 2px solid #5a6478; border-radius: 8px; padding: 30px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                <h2 style="color: #8fa3c8; margin-bottom: 20px;">How to Play</h2>
+                <div style="color: #a8b8d8; font-size: 14px; line-height: 1.6;">
+                    <p><strong>Goal:</strong> Survive on a volatile volcanic planet and escape before the core collapses!</p>
+                    <br>
+                    <p><strong>Controls:</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>WASD / Arrow Keys - Pan camera</li>
+                        <li>Click tiles - View info</li>
+                        <li>Click buildings - Select to build</li>
+                        <li>End Turn - Progress game</li>
+                    </ul>
+                    <br>
+                    <p><strong>Survival Tips:</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>Monitor Core Stability - it decreases each turn</li>
+                        <li>Build settlements to house population</li>
+                        <li>Farms produce food to grow your civilization</li>
+                        <li>Research technologies to unlock new buildings</li>
+                        <li>Watch for eruptions - they destroy buildings!</li>
+                    </ul>
+                </div>
+                <button id="close-how-to-play" style="width: 100%; padding: 10px; margin-top: 20px; background: #3a4a5a; border: 1px solid #5a6a7a; color: #c0d0e8; cursor: pointer; border-radius: 4px;">
+                    Close
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        document.getElementById('close-how-to-play').onclick = () => {
+            document.body.removeChild(modal);
+        };
     }
 
     endTurn() {
@@ -1997,5 +2068,4 @@ class Game {
 
 window.addEventListener('DOMContentLoaded', () => {
     const game = new Game();
-    game.start();
 });

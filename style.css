@@ -201,6 +201,76 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
+#start-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #0a0f1e 0%, #1a2a3a 50%, #2a1a2a 100%);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+.start-menu-content {
+    text-align: center;
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.game-title {
+    font-size: 64px;
+    font-weight: 900;
+    background: linear-gradient(180deg, #ff8800 0%, #ff4400 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px rgba(255, 100, 0, 0.5);
+}
+
+.game-subtitle {
+    font-size: 18px;
+    color: #8fa3c8;
+    margin-bottom: 50px;
+    letter-spacing: 2px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.menu-btn {
+    padding: 15px 50px;
+    background: #3a4a5a;
+    border: 2px solid #5a6a7a;
+    color: #c0d0e8;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    min-width: 250px;
+}
+
+.menu-btn:hover {
+    background: #4a5a6a;
+    border-color: #7a8a9a;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(90, 106, 122, 0.4);
+}
+
 #settlement-close-btn {
     position: absolute;
     top: 10px;
