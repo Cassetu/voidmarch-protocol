@@ -36,6 +36,11 @@ class Game {
         this.cameraY = 0;
         this.shakeIntensity = 0;
         this.gameStarted = false;
+        const menuMusic = document.getElementById('menu-music');
+        if (menuMusic) {
+            menuMusic.volume = 0.3;
+            menuMusic.play().catch(e => console.log('Music autoplay blocked by browser'));
+        }
         document.getElementById('game-container').style.display = 'none';
 
         window.addEventListener('resize', () => this.handleResize());
@@ -156,9 +161,14 @@ class Game {
         this.gameStarted = true;
         document.getElementById('start-menu').style.display = 'none';
         document.getElementById('game-container').style.display = 'flex';
-        if (!this.running) {
-            this.start();
+
+        const menuMusic = document.getElementById('menu-music');
+        if (menuMusic) {
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
         }
+
+        this.start();
     }
 
     showHowToPlay() {
