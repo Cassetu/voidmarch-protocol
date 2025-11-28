@@ -240,7 +240,7 @@ class Game {
             }
             setTimeout(() => {
                 this.showGameOver();
-            }, 1000);
+            }, 100);
             return;
         }
 

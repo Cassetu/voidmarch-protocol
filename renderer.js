@@ -1786,50 +1786,49 @@ class Renderer {
                 break;
 
             case 'warehouse':
-                this.ctx.fillStyle = '#4a4a3a';
+                this.ctx.fillStyle = '#555545';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX, screenY - 18);
-                this.ctx.lineTo(screenX + 16, screenY - 10);
-                this.ctx.lineTo(screenX + 16, screenY + 6);
-                this.ctx.lineTo(screenX, screenY + 14);
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 18, screenY - 10);
+                this.ctx.lineTo(screenX + 18, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
                 this.ctx.closePath();
                 this.ctx.fill();
 
-                this.ctx.fillStyle = '#5a5a4a';
+                this.ctx.fillStyle = '#626253';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX, screenY - 18);
-                this.ctx.lineTo(screenX - 16, screenY - 10);
-                this.ctx.lineTo(screenX - 16, screenY + 6);
-                this.ctx.lineTo(screenX, screenY + 14);
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 18, screenY - 10);
+                this.ctx.lineTo(screenX - 18, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
                 this.ctx.closePath();
                 this.ctx.fill();
 
-                this.ctx.fillStyle = '#6a6a5a';
+                this.ctx.fillStyle = '#777767';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX, screenY - 18);
-                this.ctx.lineTo(screenX - 16, screenY - 10);
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX - 18, screenY - 10);
                 this.ctx.lineTo(screenX, screenY - 2);
-                this.ctx.lineTo(screenX + 16, screenY - 10);
+                this.ctx.lineTo(screenX + 18, screenY - 10);
                 this.ctx.closePath();
                 this.ctx.fill();
 
-                this.ctx.strokeStyle = '#3a3a2a';
-                this.ctx.lineWidth = 1;
+                this.ctx.fillStyle = '#2f2f22';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX + 8, screenY - 2);
-                this.ctx.lineTo(screenX + 11, screenY - 3.5);
-                this.ctx.lineTo(screenX + 11, screenY + 0.5);
-                this.ctx.lineTo(screenX + 8, screenY + 2);
+                this.ctx.moveTo(screenX + 6, screenY + 4);
+                this.ctx.lineTo(screenX + 12, screenY + 2);
+                this.ctx.lineTo(screenX + 12, screenY + 12);
+                this.ctx.lineTo(screenX + 6, screenY + 14);
                 this.ctx.closePath();
-                this.ctx.stroke();
+                this.ctx.fill();
 
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX - 8, screenY - 2);
-                this.ctx.lineTo(screenX - 11, screenY - 3.5);
-                this.ctx.lineTo(screenX - 11, screenY + 0.5);
-                this.ctx.lineTo(screenX - 8, screenY + 2);
+                this.ctx.moveTo(screenX - 6, screenY + 4);
+                this.ctx.lineTo(screenX - 12, screenY + 2);
+                this.ctx.lineTo(screenX - 12, screenY + 12);
+                this.ctx.lineTo(screenX - 6, screenY + 14);
                 this.ctx.closePath();
-                this.ctx.stroke();
+                this.ctx.fill();
                 break;
 
             case 'barracks':
@@ -2869,45 +2868,48 @@ class Renderer {
                 break;
 
             case 'observatory':
-                this.ctx.fillStyle = '#4a5a6a';
+                this.ctx.fillStyle = '#425161';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX, screenY - 16);
-                this.ctx.lineTo(screenX + 12, screenY - 10);
-                this.ctx.lineTo(screenX + 12, screenY + 4);
-                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.moveTo(screenX, screenY - 12);
+                this.ctx.lineTo(screenX + 14, screenY - 4);
+                this.ctx.lineTo(screenX + 14, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 16);
                 this.ctx.closePath();
                 this.ctx.fill();
 
-                this.ctx.fillStyle = '#5a6a7a';
+                this.ctx.fillStyle = '#505f70';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX, screenY - 16);
-                this.ctx.lineTo(screenX - 12, screenY - 10);
-                this.ctx.lineTo(screenX - 12, screenY + 4);
-                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.moveTo(screenX, screenY - 12);
+                this.ctx.lineTo(screenX - 14, screenY - 4);
+                this.ctx.lineTo(screenX - 14, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 16);
                 this.ctx.closePath();
                 this.ctx.fill();
 
-                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.fillStyle = '#2d3b49';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX - 10, screenY - 20);
-                this.ctx.bezierCurveTo(screenX - 10, screenY - 26, screenX + 10, screenY - 26, screenX + 10, screenY - 20);
-                this.ctx.lineTo(screenX, screenY - 14);
+                this.ctx.ellipse(screenX, screenY - 18, 14, 7, 0, Math.PI, 0, true);
+                this.ctx.lineTo(screenX - 14, screenY - 12);
+                this.ctx.lineTo(screenX + 14, screenY - 12);
                 this.ctx.closePath();
                 this.ctx.fill();
 
-                this.ctx.fillStyle = '#6a7a8a';
+                this.ctx.fillStyle = '#7c8ea4';
                 this.ctx.beginPath();
-                this.ctx.ellipse(screenX, screenY - 20, 10, 3, 0, 0, Math.PI * 2);
+                this.ctx.ellipse(screenX, screenY - 20, 14, 10, 0, 0, Math.PI * 2);
                 this.ctx.fill();
 
-                this.ctx.fillStyle = '#2a3a4a';
+                this.ctx.fillStyle = '#95a7c0';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX + 6, screenY - 22);
-                this.ctx.lineTo(screenX + 9, screenY - 23.5);
-                this.ctx.lineTo(screenX + 9, screenY - 21.5);
+                this.ctx.ellipse(screenX - 4, screenY - 23, 6, 4, -0.3, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2b3744';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 4, screenY - 22);
+                this.ctx.lineTo(screenX + 12, screenY - 28);
+                this.ctx.lineTo(screenX + 13, screenY - 25);
                 this.ctx.lineTo(screenX + 6, screenY - 20);
-                this.ctx.lineTo(screenX + 4, screenY - 21);
-                this.ctx.lineTo(screenX + 4, screenY - 23);
                 this.ctx.closePath();
                 this.ctx.fill();
                 break;
