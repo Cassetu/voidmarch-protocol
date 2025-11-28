@@ -113,6 +113,13 @@ class Player {
         this.population += amount;
     }
 
+    canPlaceSettlementAt(x, y) {
+        return !this.settlements.some(settlement => {
+            const distance = Math.abs(settlement.x - x) + Math.abs(settlement.y - y);
+            return distance <= settlement.claimRadius;
+        });
+    }
+
     getAvailableBuildings() {
         const buildingsPerAge = {
             stone: ['settlement', 'farm', 'warehouse', 'observatory', 'campfire', 'tent', 'woodpile'],

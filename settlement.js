@@ -24,7 +24,7 @@ class Settlement {
             market: 1
         };
 
-        for (let i = 0; i < this.population; i++) {
+        for (let i = 0; i < 5; i++) {
             this.citizens.push(this.generateCitizen());
         }
 
@@ -68,13 +68,11 @@ class Settlement {
     }
 
     tryCreateFamilies() {
-        const eligibleAdults = this.citizens.filter(c => c.age >= 20 && c.age <= 50);
+        const eligibleAdults = this.citizens.filter(c => c.age >= 20 && c.age <= 50 && !c.hasChildren);
 
         eligibleAdults.forEach(citizen => {
-            if (citizen.hasChildren) return;
-
             if (Math.random() < 0.3) {
-                const numChildren = Math.random() < 0.5 ? 2 : 3;
+                const numChildren = Math.floor(Math.random() * 2) + 1;
                 const maxPop = this.getMaxPopulation();
                 const totalPop = this.citizens.length + this.children.length;
 
@@ -358,11 +356,6 @@ class Settlement {
 
         if (wellFed && netFood >= this.foodConsumption * 0.5 && totalPop < maxPop) {
             this.growthProgress += netFood;
-            if (this.growthProgress >= this.growthRequired) {
-                this.growthProgress = 0;
-                this.growthRequired = Math.floor(this.growthRequired * 1.2);
-                this.citizens.push(this.generateCitizen());
-            }
         } else if (netFood < 0) {
             this.growthProgress = Math.max(0, this.growthProgress + netFood * 2);
         } else {

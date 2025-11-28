@@ -838,6 +838,39 @@ class Renderer {
         this.ctx.restore();
     }
 
+    drawSettlementClaim(settlement, cameraX, cameraY) {
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.2;
+
+        const radius = settlement.claimRadius;
+
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const tileX = settlement.x + dx;
+                const tileY = settlement.y + dy;
+
+                const screenX = (tileX - tileY) * (this.tileWidth / 2);
+                const screenY = (tileX + tileY) * (this.tileHeight / 2);
+
+                this.ctx.fillStyle = 'rgba(100, 200, 100, 0.3)';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - this.tileHeight / 2);
+                this.ctx.lineTo(screenX + this.tileWidth / 2, screenY);
+                this.ctx.lineTo(screenX, screenY + this.tileHeight / 2);
+                this.ctx.lineTo(screenX - this.tileWidth / 2, screenY);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = 'rgba(150, 255, 150, 0.5)';
+                this.ctx.lineWidth = 4;
+                this.ctx.stroke();
+            }
+        }
+
+        this.ctx.globalAlpha = 1;
+        this.ctx.restore();
+    }
+
     drawSentinel(screenX, screenY, sentinel) {
         const baseY = screenY - 5;
 

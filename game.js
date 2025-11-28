@@ -757,6 +757,13 @@ class Game {
                             return;
                         }
 
+                        if (this.player.selectedBuilding === 'settlement') {
+                            if (!this.player.canPlaceSettlementAt(gridX, gridY)) {
+                                this.log('Cannot build settlement within another settlement\'s claim!');
+                                return;
+                            }
+                        }
+
                         const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
                         if (!nearestSettlement || !nearestSettlement.isWithinClaim(gridX, gridY)) {
                             this.log('Must build within settlement claim area!');
@@ -1586,6 +1593,18 @@ class Game {
         }
 
         this.renderer.updateLavaSparks();
+
+        const settlementPanel = document.getElementById('settlement-panel');
+        if (settlementPanel && settlementPanel.style.display === 'block') {
+            const title = document.getElementById('settlement-title');
+            if (title) {
+                const settlementName = title.textContent;
+                const settlement = this.player.settlements.find(s => s.name === settlementName);
+                if (settlement) {
+                    this.renderer.drawSettlementClaim(settlement, this.cameraX, this.cameraY);
+                }
+            }
+        }
 
         this.currentPlanet.structures.forEach(building => {
             this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
