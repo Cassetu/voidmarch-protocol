@@ -262,8 +262,9 @@ class Settlement {
     }
 
     isWithinClaim(x, y) {
-        const distance = Math.abs(this.x - x) + Math.abs(this.y - y);
-        return distance <= this.claimRadius;
+        const dx = Math.abs(this.x - x);
+        const dy = Math.abs(this.y - y);
+        return dx <= this.claimRadius && dy <= this.claimRadius;
     }
 
     canBuildStructure(buildingType) {

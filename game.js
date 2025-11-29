@@ -21,6 +21,7 @@ class Game {
         this.world = new World(this.player);
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
+        window.game = this;
         this.galaxy = new Galaxy(this);
         this.currentPlanet = this.galaxy.planetInstances.get(0);
         this.eventSystem = new EventSystem(this.currentPlanet, this.player, this);
@@ -44,7 +45,7 @@ class Game {
         document.getElementById('game-container').style.display = 'none';
 
         window.addEventListener('resize', () => this.handleResize());
-        window.addEventListener('wheel', (e) => this.handleZoom(e));
+        this.canvas.addEventListener('wheel', (e) => this.handleZoom(e));
         window.addEventListener('keypress', (e) => this.handleCheatCode(e));
         this.log('Voidmarch Protocol initialized');
 
@@ -63,6 +64,10 @@ class Game {
 
         document.getElementById('how-to-play-btn').addEventListener('click', () => {
             this.showHowToPlay();
+        });
+
+        document.getElementById('credits-btn').addEventListener('click', () => {
+            this.showCredits();
         });
 
         document.addEventListener('click', (e) => {
@@ -103,6 +108,7 @@ class Game {
                     this.closeMilitaryMenu();
                 }
                 if (this.unitActionSystem.actionMode) {
+                    this.unitActionSystem.hideActionMenu();
                     this.unitActionSystem.actionMode = null;
                     this.unitActionSystem.selectedUnit = null;
                     this.selectedUnit = null;
@@ -110,6 +116,48 @@ class Game {
                 }
             }
         });
+    }
+
+    showCredits() {
+        const modal = document.createElement('div');
+        modal.id = 'credits-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 20001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        `;
+
+        modal.innerHTML = `
+            <div style="background: #1a1f2e; border: 2px solid #5a6478; border-radius: 8px; padding: 30px; max-width: 500px; text-align: center;">
+                <h2 style="color: #8fa3c8; margin-bottom: 20px;">Credits</h2>
+                <div style="color: #a8b8d8; font-size: 14px; line-height: 1.8;">
+                    <p><strong style="color: #c0d0e8;">Game Design & Development</strong></p>
+                    <p>Cassetu</p>
+                    <br>
+                    <p><strong style="color: #c0d0e8;">Music</strong></p>
+                    <p>Sean Garland & John Leonard French</p>
+                    <br>
+                    <p><strong style="color: #c0d0e8;">Special Thanks</strong></p>
+                    <p>Community & Playtesters</p>
+                </div>
+                <button id="close-credits" style="width: 100%; padding: 10px; margin-top: 20px; background: #3a4a5a; border: 1px solid #5a6a7a; color: #c0d0e8; cursor: pointer; border-radius: 4px;">
+                    Close
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        document.getElementById('close-credits').onclick = () => {
+            this.closeModal('credits-modal');
+        };
     }
 
     initializeStartingBuildings() {
@@ -789,24 +837,22 @@ class Game {
 
 
     handleZoom(e) {
-//
-//        const zoomSpeed = 0.1;
-//
-//        const viewCenterWorldX = this.cameraX + (this.width / 2) / this.renderer.zoom;
-//        const viewCenterWorldY = this.cameraY + ((this.height - 160 - 75) / 2) / this.renderer.zoom;
-//
-//        if (e.deltaY > 0) {
-//            this.renderer.zoom = Math.max(0.5, this.renderer.zoom - zoomSpeed);
-//        } else {
-//            this.renderer.zoom = Math.min(3, this.renderer.zoom + zoomSpeed);
-//        }
-//
-//        this.cameraX = viewCenterWorldX - (this.width / 2) / this.renderer.zoom;
-//        this.cameraY = viewCenterWorldY - ((this.height - 160 - 75) / 2) / this.renderer.zoom;
-//
-//        console.log(`Zoom level: ${this.renderer.zoom.toFixed(2)}`);
-//
-//        this.updateCamera();
+        e.preventDefault();
+
+        const zoomSpeed = 0.1;
+        const oldZoom = this.renderer.zoom;
+
+        if (e.deltaY > 0) {
+            this.renderer.zoom = Math.max(0.5, this.renderer.zoom - zoomSpeed);
+        } else {
+            this.renderer.zoom = Math.min(3, this.renderer.zoom + zoomSpeed);
+        }
+
+        const zoomRatio = this.renderer.zoom / oldZoom;
+        this.cameraX *= zoomRatio;
+        this.cameraY *= zoomRatio;
+
+        this.updateCamera();
     }
 
 
@@ -890,8 +936,9 @@ class Game {
 
                         if (this.player.selectedBuilding === 'settlement') {
                             const inAnyClaim = this.player.settlements.some(settlement => {
-                                const distance = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
-                                return distance <= settlement.claimRadius;
+                                const dx = Math.abs(settlement.x - gridX);
+                                const dy = Math.abs(settlement.y - gridY);
+                                return dx <= settlement.claimRadius && dy <= settlement.claimRadius;
                             });
 
                             if (inAnyClaim) {
@@ -921,21 +968,15 @@ class Game {
                     }
 
                     if (this.player.selectedBuilding === 'settlement') {
-                        for (let dy = 0; dy < size.h; dy++) {
-                            for (let dx = 0; dx < size.w; dx++) {
-                                const checkX = gridX + dx;
-                                const checkY = gridY + dy;
+                        const inAnyClaim = this.player.settlements.some(settlement => {
+                            const dx = Math.abs(settlement.x - gridX);
+                            const dy = Math.abs(settlement.y - gridY);
+                            return dx <= settlement.claimRadius && dy <= settlement.claimRadius;
+                        });
 
-                                const inAnyClaim = this.player.settlements.some(settlement => {
-                                    const distance = Math.abs(settlement.x - checkX) + Math.abs(settlement.y - checkY);
-                                    return distance <= settlement.claimRadius;
-                                });
-
-                                if (inAnyClaim) {
-                                    this.log('Cannot build settlement within another settlement\'s claim!');
-                                    return;
-                                }
-                            }
+                        if (inAnyClaim) {
+                            this.log('Cannot build settlement within another settlement\'s claim!');
+                            return;
                         }
                     } else {
                         const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
@@ -1035,7 +1076,14 @@ class Game {
                                 unit.chargeDamage = null;
                                 this.log(`${unit.type} attacked sentinel for ${damage} damage!`);
 
+
+
                                 if (sentinel.health <= 0) {
+                                    this.sentinels.forEach(s => {
+                                        if (s.aggroTarget === sentinel.id) {
+                                            delete s.aggroTarget;
+                                        }
+                                    });
                                     this.conquestSystem.sentinels = this.conquestSystem.sentinels.filter(s => s.id !== sentinel.id);
                                     this.log('Sentinel destroyed!');
                                 }
@@ -1337,6 +1385,10 @@ class Game {
                 builder.path = builder.findPath(this.currentPlanet);
                 if (!builder.path) {
                     this.log(`Cannot reach building site at (${builder.targetX}, ${builder.targetY}) - blocked by lava!`);
+                    const nearestSettlement = this.player.findNearestSettlement(builder.targetX, builder.targetY);
+                    if (nearestSettlement) {
+                        nearestSettlement.removeBuilding(this.player.selectedBuilding);
+                    }
                     this.player.builders.splice(i, 1);
                     this.player.buildingQueue = this.player.buildingQueue.filter(b => b.builderId !== builder.id);
 
@@ -1684,8 +1736,9 @@ class Game {
         if (canPlace) {
             if (this.player.selectedBuilding === 'settlement') {
                 const inAnyClaim = this.player.settlements.some(settlement => {
-                    const distance = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
-                    return distance <= settlement.claimRadius;
+                    const dx = Math.abs(settlement.x - gridX);
+                    const dy = Math.abs(settlement.y - gridY);
+                    return dx <= settlement.claimRadius && dy <= settlement.claimRadius;
                 });
 
                 if (inAnyClaim) {
@@ -1750,36 +1803,18 @@ class Game {
         const minY = 0;
         const maxY = (w + h - 2) * halfH;
 
-        const padding = 400;
-
         const viewW = this.width / this.renderer.zoom;
         const viewH = (this.height - 220 - 75) / this.renderer.zoom;
 
-        const centerX = (minX + maxX) / 2;
-        const centerY = (minY + maxY) / 2;
+        const padding = 400;
 
-        const tilesOut = Math.ceil(Math.max(w, h) / 2);
+        const minCameraX = minX - viewW - padding;
+        const maxCameraX = maxX + padding;
+        const minCameraY = minY - viewH - padding;
+        const maxCameraY = maxY + padding;
 
-        const extentX = tilesOut * (halfW * 2);
-        const extentY = tilesOut * (halfH * 2);
-
-        const minCameraX = centerX - extentX - padding;
-        const maxCameraX = centerX + extentX - viewW + padding;
-
-        if (viewW >= (extentX * 2) + (padding * 2)) {
-            this.cameraX = centerX - viewW / 2;
-        } else {
-            this.cameraX = Math.max(minCameraX, Math.min(this.cameraX, maxCameraX));
-        }
-
-        const minCameraY = centerY - extentY - padding;
-        const maxCameraY = centerY + extentY - viewH + padding;
-
-        if (viewH >= (extentY * 2) + (padding * 2)) {
-            this.cameraY = centerY - viewH / 2;
-        } else {
-            this.cameraY = Math.max(minCameraY, Math.min(this.cameraY, maxCameraY));
-        }
+        this.cameraX = Math.max(minCameraX, Math.min(this.cameraX, maxCameraX));
+        this.cameraY = Math.max(minCameraY, Math.min(this.cameraY, maxCameraY));
     }
 
     render() {

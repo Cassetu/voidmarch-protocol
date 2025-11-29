@@ -115,8 +115,9 @@ class Player {
 
     canPlaceSettlementAt(x, y) {
         return !this.settlements.some(settlement => {
-            const distance = Math.abs(settlement.x - x) + Math.abs(settlement.y - y);
-            return distance <= settlement.claimRadius;
+            const dx = Math.abs(settlement.x - x);
+            const dy = Math.abs(settlement.y - y);
+            return dx <= settlement.claimRadius + 1 && dy <= settlement.claimRadius + 1;
         });
     }
 
