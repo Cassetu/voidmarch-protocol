@@ -36,11 +36,11 @@ class Game {
         this.cameraY = 0;
         this.shakeIntensity = 0;
         this.gameStarted = false;
-        const menuMusic = document.getElementById('menu-music');
-        if (menuMusic) {
-            menuMusic.volume = 0.3;
-            menuMusic.play().catch(e => console.log('Music autoplay blocked by browser'));
-        }
+        const menuPlaylist = [
+            'sounds/titles.mp3'
+        ];
+        AudioManager.init(menuPlaylist);
+        AudioManager.playBGM();
         document.getElementById('game-container').style.display = 'none';
 
         window.addEventListener('resize', () => this.handleResize());
@@ -162,11 +162,15 @@ class Game {
         document.getElementById('start-menu').style.display = 'none';
         document.getElementById('game-container').style.display = 'flex';
 
-        const menuMusic = document.getElementById('menu-music');
-        if (menuMusic) {
-            menuMusic.pause();
-            menuMusic.currentTime = 0;
-        }
+        AudioManager.stopBGM();
+        const gamePlaylist = [
+            'sounds/bithero.mp3',
+            'sounds/plateau.mp3',
+            'sounds/wilds.mp3',
+            'sounds/skullmountain.mp3'
+        ];
+        AudioManager.init(gamePlaylist);
+        AudioManager.playBGM();
 
         this.start();
     }
