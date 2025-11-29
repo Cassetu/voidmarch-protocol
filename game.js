@@ -566,7 +566,36 @@ class Game {
         const buildingInfo = {
             hut: { name: 'Hut', desc: 'Basic shelter (Pop: 5, Food: +1)', age: 'Stone' },
             settlement: { name: 'Settlement', desc: 'Small community (Pop: 15, Food: +3)', age: 'Bronze' },
+            campfire: { name: 'Campfire', desc: 'Basic warmth and light (+1 Science)', age: 'Stone' },
+            tent: { name: 'Tent', desc: 'Temporary shelter (+2 Science)', age: 'Stone' },
+            woodpile: { name: 'Woodpile', desc: 'Stored fuel and materials', age: 'Stone' },
+            farm: { name: 'Farm', desc: 'Grows food (+3 Food)', age: 'Stone' },
+            warehouse: { name: 'Warehouse', desc: 'Stores resources safely', age: 'Stone' },
             township: { name: 'Township', desc: 'Growing town (Pop: 25, Food: +5)', age: 'Iron' },
+            barracks: { name: 'Barracks', desc: 'Train military units', age: 'Bronze' },
+            granary: { name: 'Granary', desc: 'Stores extra food', age: 'Bronze' },
+            quarry: { name: 'Quarry', desc: 'Extract stone and minerals', age: 'Bronze' },
+            monument: { name: 'Monument', desc: 'Cultural landmark', age: 'Bronze' },
+            temple: { name: 'Temple', desc: 'Spiritual center (+5 Science)', age: 'Iron' },
+            forge: { name: 'Forge', desc: 'Craft tools and weapons', age: 'Iron' },
+            workshop: { name: 'Workshop', desc: 'Advanced crafting', age: 'Iron' },
+            aqueduct: { name: 'Aqueduct', desc: 'Water distribution system', age: 'Iron' },
+            watchtower: { name: 'Watchtower', desc: 'Early warning system', age: 'Iron' },
+            market: { name: 'Market', desc: 'Trade center', age: 'Medieval' },
+            castle: { name: 'Castle', desc: 'Fortified stronghold', age: 'Medieval' },
+            cathedral: { name: 'Cathedral', desc: 'Grand religious structure', age: 'Medieval' },
+            townhall: { name: 'Town Hall', desc: 'Administrative center', age: 'Medieval' },
+            arena: { name: 'Arena', desc: 'Entertainment venue', age: 'Medieval' },
+            hospital: { name: 'Hospital', desc: 'Medical facility', age: 'Medieval' },
+            library: { name: 'Library', desc: 'Knowledge repository (+8 Science)', age: 'Renaissance' },
+            academy: { name: 'Academy', desc: 'Educational institution', age: 'Renaissance' },
+            theater: { name: 'Theater', desc: 'Cultural performance hall', age: 'Renaissance' },
+            mansion: { name: 'Mansion', desc: 'Luxurious housing', age: 'Renaissance' },
+            university: { name: 'University', desc: 'Advanced research (+12 Science)', age: 'Space' },
+            spaceport: { name: 'Spaceport', desc: 'Launch facility', age: 'Space' },
+            laboratory: { name: 'Laboratory', desc: 'Scientific research', age: 'Space' },
+            megafactory: { name: 'Megafactory', desc: 'Mass production facility', age: 'Space' },
+            observatory: { name: 'Observatory', desc: 'Study the stars (+25 Science)', age: 'Space' },
             feudaltown: { name: 'Feudal Town', desc: 'Medieval center (Pop: 40, Food: +8)', age: 'Medieval' },
             citystate: { name: 'City-State', desc: 'Independent city (Pop: 60, Food: +12)', age: 'Renaissance' },
             factorytown: { name: 'Factory Town', desc: 'Industrial hub (Pop: 80, Food: +15)', age: 'Industrial' },
@@ -600,7 +629,7 @@ class Game {
             colonyship: { name: 'Colony Ship', desc: 'Mobile civilization', age: 'Multi-World' },
             dysonswarm: { name: 'Dyson Swarm', desc: 'Star energy harvesting', age: 'Zenith' },
             matrixcore: { name: 'Matrix Core', desc: 'Reality simulation', age: 'Zenith' },
-            ascensiongate: { name: 'Ascension Gate', desc: 'Transcendence portal', age: 'Zenith' },
+            ascensiongate: { name: 'Ascension Gate', desc: 'Transcendence portal', age: 'Zenith' }
         };
 
         const availableBuildings = this.player.getAvailableBuildings();
@@ -669,6 +698,7 @@ class Game {
                 };
             }
 
+            console.log('Adding card for:', buildingType, 'info:', info);
             grid.appendChild(card);
         });
     }
@@ -773,13 +803,10 @@ class Game {
 
         this.player.techTree.techs['exodusProtocol'].researched = true;
 
-        this.player.age = 'space';
-        this.player.ageLevel = 5;
+        this.player.advanceAge('space');
+        console.log('Current age:', this.player.age);
+        console.log('Available buildings:', this.player.getAvailableBuildings());
 
-        this.player.techTree.techs['mining'].unlocks.forEach(unlock => {
-            this.player.techTree.applyBonus(this.player.techTree.techs['mining'].bonus);
-        });
-        this.player.techTree.applyBonus(this.player.techTree.techs['mining'].bonus);
         this.player.techTree.applyBonus(this.player.techTree.techs['shelter'].bonus);
         this.player.techTree.applyBonus(this.player.techTree.techs['farming'].bonus);
         this.player.techTree.applyBonus(this.player.techTree.techs['deepMining'].bonus);
@@ -2054,7 +2081,7 @@ class Game {
                 this.renderer.drawAttackRange(this.unitActionSystem.selectedUnit, this.cameraX, this.cameraY);
             }
 
-            if (this.gameMode === 'conquest') {
+            if (this.gameMode === 'conquest' && this.conquestSystem) {
                 this.conquestSystem.sentinels.forEach(sentinel => {
                     this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
                 });

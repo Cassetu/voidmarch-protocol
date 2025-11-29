@@ -640,9 +640,7 @@ class ConquestSystem {
                         if (target.health <= 0) {
                             if (target.type === 'spaceship') {
                                 this.game.log(`Spaceship destroyed! DEFEAT!`);
-                                setTimeout(() => {
-                                    this.game.showGameOver();
-                                }, 100);
+                                this.game.showGameOver();
                                 return { defeat: true };
                             } else {
                                 this.game.log(`${target.type} destroyed by assault!`);

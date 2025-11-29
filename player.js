@@ -131,18 +131,6 @@ class Player {
         });
     }
 
-    getAvailableBuildings() {
-        const buildingsPerAge = {
-            stone: ['settlement', 'farm', 'warehouse', 'campfire', 'tent', 'woodpile'],
-            bronze: ['settlement', 'farm', 'warehouse', 'barracks', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument'],
-            iron: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower'],
-            medieval: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital'],
-            renaissance: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion'],
-            space: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'spaceport', 'laboratory', 'megafactory']
-        };
-        return buildingsPerAge[this.age] || buildingsPerAge.stone;
-    }
-
     canResearch(tech) {
         return this.resources >= this.techs[tech].cost && this.techs[tech].level === 0;
     }
