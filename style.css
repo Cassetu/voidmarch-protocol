@@ -271,6 +271,17 @@ body {
     box-shadow: 0 5px 15px rgba(90, 106, 122, 0.4);
 }
 
+@keyframes blink-red {
+    0%, 100% {
+        background: #aa0000;
+        border-color: #ff0000;
+    }
+    50% {
+        background: #ff4444;
+        border-color: #ff6666;
+    }
+}
+
 #settlement-close-btn {
     position: absolute;
     top: 10px;

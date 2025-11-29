@@ -29,6 +29,9 @@ class Player {
         this.canBuildAnywhere = false;
         this.canEscape = false;
         this.coreStable = false;
+        this.selfSufficient = false;
+        this.energy = 0;
+        this.eruptionChanceModifier = 0;
         this.builders = [];
         this.buildingQueue = [];
     }
@@ -153,5 +156,15 @@ class Player {
 
     removeBuilding(building) {
         this.buildings = this.buildings.filter(b => b !== building);
+
+        if (building.settlementIds && building.settlementIds.length > 0) {
+            const shareAmount = 1.0 / building.settlementIds.length;
+            building.settlementIds.forEach(settlementId => {
+                const settlement = this.settlements.find(s => s.id === settlementId);
+                if (settlement) {
+                    settlement.removeBuilding(building.type, shareAmount);
+                }
+            });
+        }
     }
 }

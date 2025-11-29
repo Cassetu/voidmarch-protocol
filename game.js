@@ -619,6 +619,24 @@ class Game {
                 const btn = card.querySelector('.building-build-btn');
                 btn.onclick = (e) => {
                     e.stopPropagation();
+
+                    const canPlaceAnywhere = this.checkIfBuildingCanBePlaced(buildingType);
+
+                    if (!canPlaceAnywhere) {
+                        btn.style.background = '#aa0000';
+                        btn.style.borderColor = '#ff0000';
+                        btn.style.animation = 'blink-red 0.5s';
+
+                        setTimeout(() => {
+                            btn.style.background = '#3a5a4a';
+                            btn.style.borderColor = '#5a7a6a';
+                            btn.style.animation = '';
+                        }, 500);
+
+                        this.log(`Cannot place ${info.name} - all settlements at maximum capacity!`);
+                        return;
+                    }
+
                     this.player.selectedBuilding = buildingType;
                     this.log(`Selected: ${info.name} - Click on the map to place`);
                     if (typeof AudioManager !== 'undefined') {
@@ -629,6 +647,20 @@ class Game {
 
             grid.appendChild(card);
         });
+    }
+
+    checkIfBuildingCanBePlaced(buildingType) {
+        if (buildingType === 'settlement') {
+            return true;
+        }
+
+        for (let settlement of this.player.settlements) {
+            if (settlement.canBuildStructure(buildingType)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     screenShake(duration, intensity) {
@@ -1022,14 +1054,23 @@ class Game {
                             return;
                         }
                     } else {
-                        const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
-                        if (!nearestSettlement || !nearestSettlement.isWithinClaim(gridX, gridY)) {
+                        const possibleSettlements = this.player.settlements.filter(settlement =>
+                            settlement.isWithinClaim(gridX, gridY)
+                        );
+
+                        if (possibleSettlements.length === 0) {
                             this.log('Must build within settlement claim area!');
                             return;
                         }
 
+                        const nearestSettlement = possibleSettlements.reduce((closest, settlement) => {
+                            const distCurrent = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
+                            const distClosest = Math.abs(closest.x - gridX) + Math.abs(closest.y - gridY);
+                            return distCurrent < distClosest ? settlement : closest;
+                        });
+
                         if (!nearestSettlement.canBuildStructure(this.player.selectedBuilding)) {
-                            this.log(`Settlement already has maximum ${this.player.selectedBuilding}s!`);
+                            this.log(`Settlement "${nearestSettlement.name}" already has maximum ${this.player.selectedBuilding}s!`);
                             return;
                         }
                     }
@@ -1063,19 +1104,30 @@ class Game {
                     });
 
                     const tile = this.currentPlanet.tiles[gridY][gridX];
-                    const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
-                    if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
-                    const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
-                    tempBuilding.isFrame = true;
-                    tempBuilding.buildProgress = 0;
-                    tile.building = tempBuilding;
-                    this.currentPlanet.structures.push(tempBuilding);
-                    nearestSettlement.addBuilding(this.player.selectedBuilding);
+                    const possibleSettlements = this.player.settlements.filter(settlement =>
+                        settlement.isWithinClaim(gridX, gridY)
+                    );
 
-                    if (this.player.selectedBuilding === 'settlement') {
-                      const newSettlement = this.player.addSettlement(gridX, gridY);
-                      this.log(`New settlement "${newSettlement.name}" established`);
-                    }
+                    if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
+                        const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
+                        tempBuilding.isFrame = true;
+                        tempBuilding.buildProgress = 0;
+                        tempBuilding.settlementIds = possibleSettlements.map(s => s.id);
+                        tempBuilding.isShared = possibleSettlements.length > 1;
+                        tile.building = tempBuilding;
+                        this.currentPlanet.structures.push(tempBuilding);
+
+                        if (this.player.selectedBuilding !== 'settlement') {
+                            const shareAmount = 1.0 / possibleSettlements.length;
+                            possibleSettlements.forEach(settlement => {
+                                settlement.addBuilding(this.player.selectedBuilding, shareAmount);
+                            });
+                        }
+
+                        if (this.player.selectedBuilding === 'settlement') {
+                            const newSettlement = this.player.addSettlement(gridX, gridY);
+                            this.log(`New settlement "${newSettlement.name}" established`);
+                        }
                     }
 
                     this.log(`Sending builders from ${settlement.type} to construct ${this.player.selectedBuilding}`);
@@ -1185,6 +1237,10 @@ class Game {
 
     showGameOver() {
         this.running = false;
+
+        if (typeof AudioManager !== 'undefined') {
+            AudioManager.stopBGM();
+        }
 
         const overlay = document.createElement('div');
         overlay.id = 'game-over-overlay';
@@ -1466,7 +1522,9 @@ class Game {
 
                     const nearestSettlement = this.player.findNearestSettlement(builder.targetX, builder.targetY);
                     if (nearestSettlement && nearestSettlement.isWithinClaim(builder.targetX, builder.targetY)) {
-                        nearestSettlement.addBuilding(builder.buildingType);
+                        if (builder.buildingType !== 'settlement') {
+                            nearestSettlement.addBuilding(builder.buildingType);
+                        }
                     }
 
                     this.log(`Building complete: ${builder.buildingType} at (${builder.targetX}, ${builder.targetY})`);
@@ -1569,11 +1627,12 @@ class Game {
 
             Object.entries(settlement.buildingLimits).forEach(([type, limit]) => {
                 const current = settlement.buildings.get(type) || 0;
+                const isShared = current % 1 !== 0;
                 const item = document.createElement('div');
                 item.className = 'building-limit-item' + (current >= limit ? ' at-limit' : '');
                 item.innerHTML = `
-                    <span>${type.charAt(0).toUpperCase() + type.slice(1)}</span>
-                    <span>${current}/${limit}</span>
+                    <span>${type.charAt(0).toUpperCase() + type.slice(1)}${isShared ? ' 🔗' : ''}</span>
+                    <span>${isShared ? current.toFixed(1) : Math.floor(current)}/${limit}</span>
                 `;
                 buildingsList.appendChild(item);
             });
@@ -1788,11 +1847,22 @@ class Game {
                     canPlace = false;
                 }
             } else {
-                const nearestSettlement = this.player.findNearestSettlement(gridX, gridY);
-                if (!nearestSettlement || !nearestSettlement.isWithinClaim(gridX, gridY)) {
+                const possibleSettlements = this.player.settlements.filter(settlement =>
+                    settlement.isWithinClaim(gridX, gridY)
+                );
+
+                if (possibleSettlements.length === 0) {
                     canPlace = false;
-                } else if (!nearestSettlement.canBuildStructure(this.player.selectedBuilding)) {
-                    canPlace = false;
+                } else {
+                    const nearestSettlement = possibleSettlements.reduce((closest, settlement) => {
+                        const distCurrent = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
+                        const distClosest = Math.abs(closest.x - gridX) + Math.abs(closest.y - gridY);
+                        return distCurrent < distClosest ? settlement : closest;
+                    });
+
+                    if (!nearestSettlement.canBuildStructure(this.player.selectedBuilding)) {
+                        canPlace = false;
+                    }
                 }
             }
         }

@@ -272,6 +272,7 @@ class Building {
         this.type = type;
         this.isFrame = true;
         this.buildProgress = 0;
+        this.settlementIds = [];
 
         const healthMap = {
             settlement: 150,
@@ -287,9 +288,14 @@ class Building {
             university: 150
         };
 
-        this.health = healthMap[type] || 100;
-        this.maxHealth = this.health;
+        const baseHealth = healthMap[type] || 100;
+        const player = window.game ? window.game.player : null;
+        const hpBonus = player ? (player.buildingHPBonus || 0) : 0;
+
+        this.maxHealth = baseHealth + hpBonus;
+        this.health = this.maxHealth;
         this.production = 0;
+
         this.buildingInfo = {
             settlement: { name: 'Settlement', description: 'Houses population', icon: 'S' },
             farm: { name: 'Farm', description: 'Produces food', icon: 'F' },

@@ -275,15 +275,15 @@ class Settlement {
         return currentCount < limit;
     }
 
-    addBuilding(buildingType) {
+    addBuilding(buildingType, amount = 1.0) {
         const currentCount = this.buildings.get(buildingType) || 0;
-        this.buildings.set(buildingType, currentCount + 1);
+        this.buildings.set(buildingType, currentCount + amount);
     }
 
-    removeBuilding(buildingType) {
+    removeBuilding(buildingType, amount = 1.0) {
         const currentCount = this.buildings.get(buildingType) || 0;
         if (currentCount > 0) {
-            this.buildings.set(buildingType, currentCount - 1);
+            this.buildings.set(buildingType, Math.max(0, currentCount - amount));
         }
     }
 

@@ -726,14 +726,20 @@ class TechTree {
         if (bonus.buildingHP) {
             this.player.buildingHPBonus = (this.player.buildingHPBonus || 0) + bonus.buildingHP;
         }
-        if (bonus.eruption_resistance) {
+        if (bonus.eruption_resistance !== undefined) {
             this.player.eruptionResistance = (this.player.eruptionResistance || 0) + bonus.eruption_resistance;
         }
-        if (bonus.core_stability_slowdown) {
-            this.player.coreStabilityMultiplier = (this.player.coreStabilityMultiplier || 1) - bonus.core_stability_slowdown;
+        if (bonus.core_stability_slowdown !== undefined) {
+            this.player.coreStabilityMultiplier = Math.max(0, (this.player.coreStabilityMultiplier || 1) - bonus.core_stability_slowdown);
         }
-        if (bonus.eruption_warning) {
-            this.player.eruptionWarning = (this.player.eruptionWarning || 0) + bonus.eruption_warning;
+        if (bonus.core_stability_loss !== undefined) {
+            this.player.coreStabilityMultiplier = (this.player.coreStabilityMultiplier || 1) + bonus.core_stability_loss;
+        }
+        if (bonus.eruption_warning !== undefined) {
+            this.player.eruptionWarning = Math.max(0, (this.player.eruptionWarning || 0) + bonus.eruption_warning);
+        }
+        if (bonus.eruption_chance !== undefined) {
+            this.player.eruptionChanceModifier = (this.player.eruptionChanceModifier || 0) + bonus.eruption_chance;
         }
         if (bonus.rocket_capacity) {
             this.player.rocketCapacity = (this.player.rocketCapacity || 0) + bonus.rocket_capacity;
@@ -755,6 +761,12 @@ class TechTree {
         }
         if (bonus.core_stable) {
             this.player.coreStable = true;
+        }
+        if (bonus.self_sufficient !== undefined) {
+            this.player.selfSufficient = bonus.self_sufficient;
+        }
+        if (bonus.energy) {
+            this.player.energy = (this.player.energy || 0) + bonus.energy;
         }
         if (bonus.age) {
             const advanced = this.player.advanceAge(bonus.age);
