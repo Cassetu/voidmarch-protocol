@@ -4,6 +4,8 @@ class Galaxy {
         this.planets = [];
         this.currentPlanetIndex = 0;
         this.unlockedPlanets = 1;
+        this.planetInstances = new Map();
+        this.visitedPlanets = new Set();
         this.generateGalaxy();
     }
 
@@ -19,6 +21,8 @@ class Galaxy {
             resources: 0,
             scienceBonus: 0
         });
+
+        this.planetInstances.set(0, this.game.world.createVolcanicWorld());
 
         const planetTypes = [
             { type: 'ice', biomes: ['frozen', 'tundra'], sentinels: 'Cryo-Sentinels' },
@@ -100,49 +104,63 @@ class Galaxy {
     }
 
     travelToPlanet(planetId) {
-        if (!this.canAccessPlanet(planetId)) return false;
+        if (!this.canAccessPlanet(planetId)) {
+            return { success: false, message: 'Planet not accessible yet' };
+        }
+
+        if (planetId === this.currentPlanetIndex) {
+            return { success: false, message: 'Already on this planet' };
+        }
 
         this.currentPlanetIndex = planetId;
         const planet = this.planets[planetId];
 
+        let planetInstance = this.planetInstances.get(planetId);
+
+        if (!planetInstance) {
+            planetInstance = this.createPlanetInstance(planet);
+            this.planetInstances.set(planetId, planetInstance);
+        }
+
+        const isFirstVisit = !this.visitedPlanets.has(planetId);
+        if (!planet.conquered) {
+            this.visitedPlanets.add(planetId);
+        }
+
         if (planet.conquered) {
-            return this.loadConqueredPlanet(planet);
+            return {
+                success: true,
+                planet: planetInstance,
+                mode: 'building'
+            };
         } else {
-            return this.startPlanetConquest(planet);
+            return {
+                success: true,
+                planet: planetInstance,
+                mode: 'conquest',
+                isFirstVisit: isFirstVisit
+            };
         }
     }
 
-    loadConqueredPlanet(planet) {
+    createPlanetInstance(planetData) {
         let worldPlanet;
 
-        if (planet.type === 'volcanic') {
+        if (planetData.type === 'volcanic') {
             worldPlanet = this.game.world.createVolcanicWorld();
-        } else if (planet.type === 'ice') {
+        } else if (planetData.type === 'ice') {
             worldPlanet = this.createIceWorld();
-        } else if (planet.type === 'desert') {
+        } else if (planetData.type === 'desert') {
             worldPlanet = this.createDesertWorld();
-        } else if (planet.type === 'ocean') {
+        } else if (planetData.type === 'ocean') {
             worldPlanet = this.createOceanWorld();
-        } else if (planet.type === 'jungle') {
+        } else if (planetData.type === 'jungle') {
             worldPlanet = this.createJungleWorld();
         } else {
-            worldPlanet = this.createGenericWorld(planet.type, planet.biome);
+            worldPlanet = this.createGenericWorld(planetData.type, planetData.biome);
         }
 
-        return { success: true, planet: worldPlanet, mode: 'peaceful' };
-    }
-
-    startPlanetConquest(planet) {
-        const worldPlanet = this.createGenericWorld(planet.type, planet.biome);
-
-        return {
-            success: true,
-            planet: worldPlanet,
-            mode: 'conquest',
-            defenseGrid: planet.defenseGrid,
-            sentinelStrength: planet.sentinelStrength,
-            hackingRequired: planet.hackingRequired
-        };
+        return worldPlanet;
     }
 
     createIceWorld() {

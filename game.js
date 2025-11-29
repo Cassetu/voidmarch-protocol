@@ -21,7 +21,8 @@ class Game {
         this.world = new World(this.player);
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
-        this.currentPlanet = this.world.createVolcanicWorld();
+        this.galaxy = new Galaxy(this);
+        this.currentPlanet = this.galaxy.planetInstances.get(0);
         this.eventSystem = new EventSystem(this.currentPlanet, this.player, this);
         this.turnBased = true;
         this.player.techTree = new TechTree(this.player);
@@ -29,7 +30,6 @@ class Game {
         this.renderer.zoom = 0.8;
         this.initializeStartingBuildings();
         this.running = true;
-        this.galaxy = new Galaxy(this);
         this.conquestSystem = null;
         this.gameMode = 'building';
         this.cameraX = 0;
@@ -51,6 +51,11 @@ class Game {
         document.addEventListener('pointerdown', (e) => {
             console.log('GLOBAL pointerdown target:', e.target && e.target.id ? e.target.id : e.target);
         }, true);
+
+        document.getElementById('galaxy-map-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.showGalaxyMap();
+        });
 
         document.getElementById('start-game-btn').addEventListener('click', () => {
             this.startGame();
@@ -94,17 +99,9 @@ class Game {
                 if (document.getElementById('buildings-menu').style.display === 'block') {
                     this.closeBuildingsMenu();
                 }
-                if (this.unitActionSystem.actionMode) {
-                    this.unitActionSystem.actionMode = null;
-                    this.unitActionSystem.selectedUnit = null;
-                    this.selectedUnit = null;
-                    this.log('Action cancelled');
+                if (document.getElementById('military-menu').style.display === 'block') {
+                    this.closeMilitaryMenu();
                 }
-            }
-        });
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
                 if (this.unitActionSystem.actionMode) {
                     this.unitActionSystem.actionMode = null;
                     this.unitActionSystem.selectedUnit = null;
@@ -116,6 +113,11 @@ class Game {
     }
 
     initializeStartingBuildings() {
+        if (!this.currentPlanet || !this.currentPlanet.tiles) {
+            console.error('Cannot initialize buildings - planet not ready');
+            return;
+        }
+
         let startX = 25;
         let startY = 20;
 
@@ -223,7 +225,7 @@ class Game {
 
         document.body.appendChild(modal);
         document.getElementById('close-how-to-play').onclick = () => {
-            document.body.removeChild(modal);
+            this.closeModal('how-to-play-modal');
         };
     }
 
@@ -650,6 +652,10 @@ class Game {
     }
 
     showGalaxyMap() {
+        if (document.getElementById('galaxy-modal')) {
+            return;
+        }
+
         const modal = document.createElement('div');
         modal.id = 'galaxy-modal';
         modal.innerHTML = `
@@ -676,40 +682,64 @@ class Game {
             `;
 
             if (canAccess) {
-                planetDiv.onclick = () => {
-                    const result = this.galaxy.travelToPlanet(planet.id);
-                    if (result.success) {
-                        this.currentPlanet = result.planet;
+                if (planet.id === this.galaxy.currentPlanetIndex) {
+                    planetDiv.style.opacity = '0.6';
+                    planetDiv.style.cursor = 'not-allowed';
+                    const currentLabel = document.createElement('div');
+                    currentLabel.textContent = 'CURRENT LOCATION';
+                    currentLabel.style.cssText = 'color: #88ff88; font-size: 10px; font-weight: 600; margin-top: 4px;';
+                    planetDiv.appendChild(currentLabel);
+                } else {
+                    planetDiv.onclick = () => {
+                        const result = this.galaxy.travelToPlanet(planet.id);
+                        if (result.success) {
+                            const leavingConquestPlanet = this.gameMode === 'conquest' && result.mode !== 'conquest';
+                            const enteringDifferentConquestPlanet = result.mode === 'conquest' &&
+                                this.conquestSystem &&
+                                this.conquestSystem.planet !== result.planet;
 
-                        if (result.mode === 'conquest') {
-                            this.startConquestMode(result);
-                        } else {
-                            this.gameMode = 'building';
-                            this.conquestSystem = null;
+                            if (leavingConquestPlanet || enteringDifferentConquestPlanet) {
+                                this.conquestSystem = null;
+                            }
+
+                            this.currentPlanet = result.planet;
+
+                            if (result.mode === 'conquest') {
+                                if (result.isFirstVisit || !this.conquestSystem || this.conquestSystem.planet !== result.planet) {
+                                    this.startConquestMode(result);
+                                } else {
+                                    this.gameMode = 'conquest';
+                                }
+                            } else {
+                                this.gameMode = 'building';
+                            }
+
+                            this.centerCamera();
+                            this.log(`Traveled to ${planet.name}`);
+                            this.closeModal('galaxy-modal');
                         }
-
-                        this.centerCamera();
-                        this.log(`Traveled to ${planet.name}`);
-                        document.body.removeChild(modal);
-                    }
-                };
+                    };
+                }
             }
 
             planetList.appendChild(planetDiv);
         });
 
         document.getElementById('close-galaxy-modal').onclick = () => {
-            document.body.removeChild(modal);
+            this.closeModal('galaxy-modal');
         };
     }
 
     startConquestMode(conquestData) {
         this.gameMode = 'conquest';
+        const isFirstVisit = conquestData.isFirstVisit !== false;
         this.conquestSystem = new ConquestSystem(
             this,
             this.currentPlanet,
-            this.galaxy.planets[this.galaxy.currentPlanetIndex].difficulty
+            this.galaxy.planets[this.galaxy.currentPlanetIndex].difficulty,
+            isFirstVisit
         );
+        this.conquestSystem.planet = this.currentPlanet;
         this.log('CONQUEST MODE: Hire units, hack nodes, destroy sentinels!');
         this.hiringMode = null;
     }
@@ -1400,14 +1430,20 @@ class Game {
                 <p style="font-size: 9px; color: #ff6666;">Status: ${building.hacked ? 'HACKED' : 'ACTIVE'}</p>
                 <p style="font-size: 9px; color: #ff6666;">Spawns: ${building.armyType}</p>
             `;
-            if (building.type === 'settlement') {
-                this.showSettlementPanel(building.x, building.y);
-            } else {
-                infoPanel.innerHTML = `
-                    <p style="font-size: 10px; color: #a8b8d8;"><strong>${building.type}</strong></p>
-                    <p style="font-size: 9px; color: #8fa3c8;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
-                `;
-            }
+        } else if (building.type === 'settlement') {
+            this.showSettlementPanel(building.x, building.y);
+        } else {
+            infoPanel.innerHTML = `
+                <p style="font-size: 10px; color: #a8b8d8;"><strong>${building.type}</strong></p>
+                <p style="font-size: 9px; color: #8fa3c8;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
+            `;
+        }
+    }
+
+    closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal && modal.parentNode) {
+            document.body.removeChild(modal);
         }
     }
 
@@ -1817,7 +1853,7 @@ class Game {
             this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
         });
 
-        if (this.conquestSystem) {
+        if (this.conquestSystem && this.gameMode === 'conquest') {
             this.conquestSystem.defenseNodes.forEach(node => {
                 this.renderer.drawDefenseNode(node, this.cameraX, this.cameraY);
             });
@@ -1844,14 +1880,16 @@ class Game {
                 this.renderer.drawAttackRange(this.unitActionSystem.selectedUnit, this.cameraX, this.cameraY);
             }
 
-            this.conquestSystem.sentinels.forEach(sentinel => {
-                this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
-            });
+            if (this.gameMode === 'conquest') {
+                this.conquestSystem.sentinels.forEach(sentinel => {
+                    this.renderer.drawUnit(sentinel, this.cameraX, this.cameraY, '#ff0000', false);
+                });
 
-            this.conquestSystem.armies.forEach(army => {
-                const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
-                this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
-            });
+                this.conquestSystem.armies.forEach(army => {
+                    const isSelected = this.selectedUnit && this.selectedUnit.id === army.id;
+                    this.renderer.drawUnit(army, this.cameraX, this.cameraY, '#00ff00', isSelected);
+                });
+            }
         }
 
         this.renderer.drawLavaSparks(this.cameraX, this.cameraY);
@@ -1995,6 +2033,10 @@ class Game {
     }
 
     showTechTreeUI() {
+        if (document.getElementById('tech-modal')) {
+            return;
+        }
+
         console.log('showTechTreeUI called');
         console.log('Player techTree:', this.player.techTree);
 
@@ -2032,7 +2074,7 @@ class Game {
                 techDiv.onclick = () => {
                     if (this.player.techTree.startResearch(techId)) {
                         this.log(`Started researching: ${tech.name}`);
-                        document.body.removeChild(modal);
+                        this.closeModal('tech-modal');
                         this.updateBuildingUI();
                     }
                 };
@@ -2042,7 +2084,7 @@ class Game {
         });
 
         document.getElementById('close-tech-modal').onclick = () => {
-            document.body.removeChild(modal);
+            this.closeModal('tech-modal');
         };
     }
 

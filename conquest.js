@@ -1,5 +1,5 @@
 class ConquestSystem {
-    constructor(game, planet, difficulty) {
+    constructor(game, planet, difficulty, isFirstVisit = true) {
         this.game = game;
         this.planet = planet;
         this.difficulty = difficulty;
@@ -14,10 +14,26 @@ class ConquestSystem {
         this.hackingMiniGame = null;
         this.guardian = null;
 
-        this.spawnSpaceship();
-        this.spawnDefenseNodes();
-        this.spawnSentinels();
-        this.spawnGuardian();
+        if (isFirstVisit) {
+            this.spawnSpaceship();
+            this.spawnDefenseNodes();
+            this.spawnSentinels();
+            this.spawnGuardian();
+        } else {
+            this.loadExistingConquestState(planet);
+        }
+    }
+
+    loadExistingConquestState(planet) {
+        this.spaceship = planet.structures.find(s => s.type === 'spaceship');
+        if (this.spaceship) {
+            this.cryoPopulation = this.spaceship.cryoPopulation;
+        }
+
+        this.defenseNodes = planet.structures.filter(s => s.type === 'defense_node');
+
+        this.sentinels = [];
+        this.armies = [];
     }
 
     spawnSpaceship() {
