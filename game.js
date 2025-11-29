@@ -143,7 +143,8 @@ class Game {
                     <p>Cassetu</p>
                     <br>
                     <p><strong style="color: #c0d0e8;">Music</strong></p>
-                    <p>Sean Garland & John Leonard French</p>
+                    <p>Sean Garland • John Leonard French</p>
+                    <p>Cassetu</p>
                     <br>
                     <p><strong style="color: #c0d0e8;">Special Thanks</strong></p>
                     <p>Community & Playtesters</p>
@@ -243,26 +244,68 @@ class Game {
         `;
 
         modal.innerHTML = `
-            <div style="background: #1a1f2e; border: 2px solid #5a6478; border-radius: 8px; padding: 30px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
-                <h2 style="color: #8fa3c8; margin-bottom: 20px;">How to Play</h2>
-                <div style="color: #a8b8d8; font-size: 14px; line-height: 1.6;">
-                    <p><strong>Goal:</strong> Survive on a volatile volcanic planet and escape before the core collapses!</p>
-                    <br>
-                    <p><strong>Controls:</strong></p>
-                    <ul style="margin-left: 20px;">
-                        <li>WASD / Arrow Keys - Pan camera</li>
-                        <li>Click tiles - View info</li>
-                        <li>Click buildings - Select to build</li>
-                        <li>End Turn - Progress game</li>
+            <div style="background: #1a1f2e; border: 2px solid #5a6478; border-radius: 8px; padding: 30px; max-width: 700px; max-height: 85vh; overflow-y: auto;">
+                <h2 style="color: #8fa3c8; margin-bottom: 20px; text-align: center;">How to Play Voidmarch Protocol</h2>
+                <div style="color: #a8b8d8; font-size: 13px; line-height: 1.7;">
+                    <h3 style="color: #8fa3c8; font-size: 15px; margin-top: 15px; margin-bottom: 10px;">Goal</h3>
+                    <p>Survive on a volatile volcanic planet and research technology to escape before the planetary core collapses! Advance through ages, manage settlements, and conquer hostile worlds.</p>
+
+                    <h3 style="color: #8fa3c8; font-size: 15px; margin-top: 15px; margin-bottom: 10px;">Controls</h3>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li><strong>WASD / Arrow Keys</strong> - Pan camera around the map</li>
+                        <li><strong>Mouse Wheel</strong> - Zoom in/out (when over map)</li>
+                        <li><strong>Left Click</strong> - Select tiles, buildings, or units</li>
+                        <li><strong>ESC</strong> - Cancel actions or close menus</li>
                     </ul>
-                    <br>
-                    <p><strong>Survival Tips:</strong></p>
-                    <ul style="margin-left: 20px;">
-                        <li>Monitor Core Stability - it decreases each turn</li>
-                        <li>Build settlements to house population</li>
-                        <li>Farms produce food to grow your civilization</li>
-                        <li>Research technologies to unlock new buildings</li>
-                        <li>Watch for eruptions - they destroy buildings!</li>
+
+                    <h3 style="color: #8fa3c8; font-size: 15px; margin-top: 15px; margin-bottom: 10px;">Building Mode</h3>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li><strong>Settlements</strong> - Create new population centers with their own claim areas (green square). Cannot overlap with other settlements.</li>
+                        <li><strong>Buildings</strong> - Click "Open Buildings Menu" to browse all available structures. Buildings must be placed within a settlement's claim area.</li>
+                        <li><strong>Builders</strong> - When you place a building, builders automatically travel from the nearest settlement to construct it. Watch their progress!</li>
+                        <li><strong>Ages</strong> - Unlock new buildings by researching technologies and advancing through Stone → Bronze → Iron → Medieval → Renaissance → Space ages.</li>
+                    </ul>
+
+                    <h3 style="color: #8fa3c8; font-size: 15px; margin-top: 15px; margin-bottom: 10px;">Settlements</h3>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Click on a settlement to view its citizens, food production, and building limits</li>
+                        <li>Citizens age, have children, and can die from starvation or old age</li>
+                        <li>Each settlement has limited space for specific building types (farms, warehouses, etc.)</li>
+                        <li>Keep food production above consumption to grow your population</li>
+                    </ul>
+
+                    <h3 style="color: #8fa3c8; font-size: 15px; margin-top: 15px; margin-bottom: 10px;">Research</h3>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Click "Research Tech" to view available technologies</li>
+                        <li>Research requires Science per turn and takes multiple turns to complete</li>
+                        <li>Technologies unlock new buildings, bonuses, and age advancements</li>
+                        <li>Plan your research path carefully - some techs have prerequisites!</li>
+                    </ul>
+
+                    <h3 style="color: #8fa3c8; font-size: 15px; margin-top: 15px; margin-bottom: 10px;">Volcanic Hazards</h3>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li><strong>Core Stability</strong> - Decreases each turn. At 75% and 35%, massive eruptions damage all buildings!</li>
+                        <li><strong>Eruptions</strong> - Random events that create lava and destroy nearby structures</li>
+                        <li><strong>Research</strong> - Unlock technologies to resist eruptions, predict them, or stabilize the core</li>
+                    </ul>
+
+                    <h3 style="color: #8fa3c8; font-size: 15px; margin-top: 15px; margin-bottom: 10px;">Galaxy Conquest</h3>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Research "Exodus Protocol" to unlock galaxy travel</li>
+                        <li>Click "Galaxy Map" to travel to other planets and conquer them</li>
+                        <li><strong>Combat</strong> - Deploy military units (Assault, Ranger, Tank, Hacker) adjacent to your buildings</li>
+                        <li><strong>Objectives</strong> - Destroy or hack all Defense Nodes and eliminate Sentinels to conquer the planet</li>
+                        <li><strong>Special Abilities</strong> - Each unit type has unique abilities: Tank Taunt, Assault Charge, Ranger Overwatch, Hacker EMP</li>
+                        <li><strong>Guardian Boss</strong> - Defeat the powerful Guardian enemy to claim rare technology</li>
+                    </ul>
+
+                    <h3 style="color: #8fa3c8; font-size: 15px; margin-top: 15px; margin-bottom: 10px;">Tips</h3>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Balance food production with population growth</li>
+                        <li>Build Observatories early for science generation</li>
+                        <li>Spread settlements across the map for more building space</li>
+                        <li>Research defensive technologies to protect against eruptions</li>
+                        <li>In conquest mode, protect your spaceship at all costs!</li>
                     </ul>
                 </div>
                 <button id="close-how-to-play" style="width: 100%; padding: 10px; margin-top: 20px; background: #3a4a5a; border: 1px solid #5a6a7a; color: #c0d0e8; cursor: pointer; border-radius: 4px;">
