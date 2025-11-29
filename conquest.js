@@ -225,12 +225,15 @@ class ConquestSystem {
     }
 
     getPlayerBuildingTypes() {
-        return ['spaceship', 'settlement', 'warehouse', 'farm', 'barracks', 'temple',
+        return ['spaceship', 'hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven', 'warehouse', 'farm', 'barracks', 'temple',
                 'forge', 'market', 'castle', 'library', 'university', 'observatory',
                 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument',
                 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena',
                 'hospital', 'academy', 'theater', 'mansion', 'spaceport', 'laboratory',
-                'megafactory'];
+                'megafactory', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks',
+                'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation',
+                'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab',
+                'warpgate', 'terraformer', 'colonyship', 'dysonswarm', 'matrixcore', 'ascensiongate'];
     }
 
     hireUnit(armyType, x, y) {

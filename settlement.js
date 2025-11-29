@@ -1,8 +1,9 @@
 class Settlement {
-    constructor(x, y, id) {
+    constructor(x, y, id, settlementType = 'hut') {
         this.x = x;
         this.y = y;
         this.id = id;
+        this.settlementType = settlementType;
         this.name = this.generateSettlementName();
         this.citizens = [];
         this.children = [];
@@ -31,12 +32,31 @@ class Settlement {
         this.tryCreateFamilies();
     }
 
+    getBasePopulationCap() {
+        const caps = {
+            hut: 5,
+            settlement: 15,
+            township: 25,
+            feudaltown: 40,
+            citystate: 60,
+            factorytown: 80,
+            steamcity: 120,
+            metropolis: 180,
+            powercity: 250,
+            technopolis: 350,
+            megacity: 500,
+            triworldhub: 750,
+            haven: 1000
+        };
+        return caps[this.settlementType] || 10;
+    }
+
     getPopulation() {
         return this.citizens.length + this.children.length;
     }
 
     getMaxPopulation() {
-        let capacity = 10;
+        let capacity = this.getBasePopulationCap();
 
         this.buildings.forEach((count, type) => {
             switch(type) {
@@ -48,9 +68,6 @@ class Settlement {
                     break;
                 case 'warehouse':
                     capacity += count * 2;
-                    break;
-                case 'settlement':
-                    capacity += count * 5;
                     break;
                 case 'barracks':
                     capacity += count * 4;
@@ -65,6 +82,25 @@ class Settlement {
         });
 
         return capacity;
+    }
+
+    getBaseFoodProduction() {
+        const foodProd = {
+            hut: 1,
+            settlement: 3,
+            township: 5,
+            feudaltown: 8,
+            citystate: 12,
+            factorytown: 15,
+            steamcity: 20,
+            metropolis: 30,
+            powercity: 40,
+            technopolis: 60,
+            megacity: 100,
+            triworldhub: 150,
+            haven: 250
+        };
+        return foodProd[this.settlementType] || 1;
     }
 
     tryCreateFamilies() {
@@ -288,7 +324,8 @@ class Settlement {
     }
 
     calculateFoodProduction(planet) {
-        let production = 0;
+        let production = this.getBaseFoodProduction();
+
         const farmCount = this.buildings.get('farm') || 0;
         const aqueductCount = this.buildings.get('aqueduct') || 0;
 

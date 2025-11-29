@@ -37,7 +37,7 @@ class Player {
     }
 
     advanceAge(newAge) {
-        const ages = ['stone', 'bronze', 'iron', 'medieval', 'renaissance', 'space'];
+        const ages = ['stone', 'bronze', 'iron', 'medieval', 'renaissance', 'industrial', 'earlymodern', 'victorian', 'modernization', 'digital', 'space', 'multiworld', 'zenith'];
         const oldIndex = ages.indexOf(this.age);
         const newIndex = ages.indexOf(newAge);
 
@@ -49,8 +49,8 @@ class Player {
         return false;
     }
 
-    addSettlement(x, y) {
-        const settlement = new Settlement(x, y, this.nextSettlementId++);
+    addSettlement(x, y, settlementType = 'hut') {
+        const settlement = new Settlement(x, y, this.nextSettlementId++, settlementType);
         this.settlements.push(settlement);
         return settlement;
     }
@@ -82,12 +82,19 @@ class Player {
 
     getAvailableBuildings() {
         const buildingsPerAge = {
-            stone: ['settlement', 'farm', 'warehouse'],
-            bronze: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks'],
-            iron: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge'],
-            medieval: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle'],
-            renaissance: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library'],
-            space: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university']
+            stone: ['hut', 'farm', 'warehouse', 'campfire', 'tent', 'woodpile'],
+            bronze: ['hut', 'settlement', 'farm', 'warehouse', 'barracks', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument'],
+            iron: ['hut', 'settlement', 'township', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower'],
+            medieval: ['hut', 'settlement', 'township', 'feudaltown', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital'],
+            renaissance: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion'],
+            industrial: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant'],
+            earlymodern: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks'],
+            victorian: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph'],
+            modernization: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation'],
+            digital: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank'],
+            space: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab'],
+            multiworld: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'warpgate', 'terraformer', 'colonyship'],
+            zenith: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'warpgate', 'terraformer', 'colonyship', 'dysonswarm', 'matrixcore', 'ascensiongate']
         };
         return buildingsPerAge[this.age] || buildingsPerAge.stone;
     }
@@ -126,11 +133,11 @@ class Player {
 
     getAvailableBuildings() {
         const buildingsPerAge = {
-            stone: ['settlement', 'farm', 'warehouse', 'observatory', 'campfire', 'tent', 'woodpile'],
-            bronze: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument'],
-            iron: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower'],
-            medieval: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital'],
-            renaissance: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion'],
+            stone: ['settlement', 'farm', 'warehouse', 'campfire', 'tent', 'woodpile'],
+            bronze: ['settlement', 'farm', 'warehouse', 'barracks', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument'],
+            iron: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower'],
+            medieval: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital'],
+            renaissance: ['settlement', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion'],
             space: ['settlement', 'farm', 'warehouse', 'observatory', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'academy', 'theater', 'mansion', 'spaceport', 'laboratory', 'megafactory']
         };
         return buildingsPerAge[this.age] || buildingsPerAge.stone;
