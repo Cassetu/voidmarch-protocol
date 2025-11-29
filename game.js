@@ -565,79 +565,92 @@ class Game {
 
         const buildingInfo = {
             hut: { name: 'Hut', desc: 'Basic shelter (Pop: 5, Food: +1)', age: 'Stone' },
-            settlement: { name: 'Settlement', desc: 'Small community (Pop: 15, Food: +3)', age: 'Bronze' },
             campfire: { name: 'Campfire', desc: 'Basic warmth and light (+1 Science)', age: 'Stone' },
             tent: { name: 'Tent', desc: 'Temporary shelter (+2 Science)', age: 'Stone' },
             woodpile: { name: 'Woodpile', desc: 'Stored fuel and materials', age: 'Stone' },
             farm: { name: 'Farm', desc: 'Grows food (+3 Food)', age: 'Stone' },
             warehouse: { name: 'Warehouse', desc: 'Stores resources safely', age: 'Stone' },
-            township: { name: 'Township', desc: 'Growing town (Pop: 25, Food: +5)', age: 'Iron' },
+
+            settlement: { name: 'Settlement', desc: 'Small community (Pop: 15, Food: +3)', age: 'Bronze' },
             barracks: { name: 'Barracks', desc: 'Train military units', age: 'Bronze' },
             granary: { name: 'Granary', desc: 'Stores extra food', age: 'Bronze' },
             quarry: { name: 'Quarry', desc: 'Extract stone and minerals', age: 'Bronze' },
             monument: { name: 'Monument', desc: 'Cultural landmark', age: 'Bronze' },
+
+            township: { name: 'Township', desc: 'Growing town (Pop: 25, Food: +5)', age: 'Iron' },
             temple: { name: 'Temple', desc: 'Spiritual center (+5 Science)', age: 'Iron' },
             forge: { name: 'Forge', desc: 'Craft tools and weapons', age: 'Iron' },
             workshop: { name: 'Workshop', desc: 'Advanced crafting', age: 'Iron' },
             aqueduct: { name: 'Aqueduct', desc: 'Water distribution system', age: 'Iron' },
             watchtower: { name: 'Watchtower', desc: 'Early warning system', age: 'Iron' },
+
+            feudaltown: { name: 'Feudal Town', desc: 'Medieval center (Pop: 40, Food: +8)', age: 'Medieval' },
             market: { name: 'Market', desc: 'Trade center', age: 'Medieval' },
             castle: { name: 'Castle', desc: 'Fortified stronghold', age: 'Medieval' },
             cathedral: { name: 'Cathedral', desc: 'Grand religious structure', age: 'Medieval' },
             townhall: { name: 'Town Hall', desc: 'Administrative center', age: 'Medieval' },
             arena: { name: 'Arena', desc: 'Entertainment venue', age: 'Medieval' },
             hospital: { name: 'Hospital', desc: 'Medical facility', age: 'Medieval' },
+
+            citystate: { name: 'City-State', desc: 'Independent city (Pop: 60, Food: +12)', age: 'Renaissance' },
             library: { name: 'Library', desc: 'Knowledge repository (+8 Science)', age: 'Renaissance' },
             academy: { name: 'Academy', desc: 'Educational institution', age: 'Renaissance' },
             theater: { name: 'Theater', desc: 'Cultural performance hall', age: 'Renaissance' },
             mansion: { name: 'Mansion', desc: 'Luxurious housing', age: 'Renaissance' },
+
+            factorytown: { name: 'Factory Town', desc: 'Industrial hub (Pop: 80, Food: +15)', age: 'Industrial' },
+            ironworks: { name: 'Ironworks', desc: 'Mass production facility', age: 'Industrial' },
+            trainstation: { name: 'Train Station', desc: 'Rail transport hub', age: 'Industrial' },
+            coalplant: { name: 'Coal Plant', desc: 'Early power generation', age: 'Industrial' },
+
+            steamcity: { name: 'Steamworks City', desc: 'Steam-powered metropolis (Pop: 120, Food: +20)', age: 'Early Modern' },
+            steamfactory: { name: 'Steam Factory', desc: 'Advanced manufacturing', age: 'Early Modern' },
+            clocktower: { name: 'Clock Tower', desc: 'Time coordination', age: 'Early Modern' },
+            gasworks: { name: 'Gasworks', desc: 'Gas lighting infrastructure', age: 'Early Modern' },
+
+            metropolis: { name: 'Metropolis', desc: 'Massive urban center (Pop: 180, Food: +30)', age: 'Victorian' },
+            parliament: { name: 'Parliament', desc: 'Governing body', age: 'Victorian' },
+            gaslamp: { name: 'Gas Lamp', desc: 'Street illumination', age: 'Victorian' },
+            telegraph: { name: 'Telegraph', desc: 'Long-distance communication', age: 'Victorian' },
+
+            powercity: { name: 'Power City', desc: 'Electrified civilization (Pop: 250, Food: +40)', age: 'Modernization' },
+            powerplant: { name: 'Power Plant', desc: 'Electrical generation', age: 'Modernization' },
+            skyscraper: { name: 'Skyscraper', desc: 'Vertical housing', age: 'Modernization' },
+            subwaystation: { name: 'Subway Station', desc: 'Underground transit', age: 'Modernization' },
+
+            technopolis: { name: 'Technopolis', desc: 'High-tech paradise (Pop: 350, Food: +60)', age: 'Digital' },
+            datacenter: { name: 'Data Center', desc: 'Information processing', age: 'Digital' },
+            cybercafe: { name: 'Cyber Cafe', desc: 'Digital gathering place', age: 'Digital' },
+            serverbank: { name: 'Server Bank', desc: 'Massive data storage', age: 'Digital' },
+
+            megacity: { name: 'Megacity', desc: 'Planetary capital (Pop: 500, Food: +100)', age: 'Space' },
             university: { name: 'University', desc: 'Advanced research (+12 Science)', age: 'Space' },
             spaceport: { name: 'Spaceport', desc: 'Launch facility', age: 'Space' },
             laboratory: { name: 'Laboratory', desc: 'Scientific research', age: 'Space' },
             megafactory: { name: 'Megafactory', desc: 'Mass production facility', age: 'Space' },
             observatory: { name: 'Observatory', desc: 'Study the stars (+25 Science)', age: 'Space' },
-            feudaltown: { name: 'Feudal Town', desc: 'Medieval center (Pop: 40, Food: +8)', age: 'Medieval' },
-            citystate: { name: 'City-State', desc: 'Independent city (Pop: 60, Food: +12)', age: 'Renaissance' },
-            factorytown: { name: 'Factory Town', desc: 'Industrial hub (Pop: 80, Food: +15)', age: 'Industrial' },
-            steamcity: { name: 'Steamworks City', desc: 'Steam-powered metropolis (Pop: 120, Food: +20)', age: 'Early Modern' },
-            metropolis: { name: 'Metropolis', desc: 'Massive urban center (Pop: 180, Food: +30)', age: 'Victorian' },
-            powercity: { name: 'Power City', desc: 'Electrified civilization (Pop: 250, Food: +40)', age: 'Modernization' },
-            technopolis: { name: 'Technopolis', desc: 'High-tech paradise (Pop: 350, Food: +60)', age: 'Digital' },
-            megacity: { name: 'Megacity', desc: 'Planetary capital (Pop: 500, Food: +100)', age: 'Space' },
-            triworldhub: { name: 'Triworld Hub', desc: 'Multi-planet nexus (Pop: 750, Food: +150)', age: 'Multi-World' },
-            haven: { name: 'Haven', desc: 'Galactic sanctuary (Pop: 1000, Food: +250)', age: 'Zenith' },
-            ironworks: { name: 'Ironworks', desc: 'Mass production facility', age: 'Industrial' },
-            trainstation: { name: 'Train Station', desc: 'Rail transport hub', age: 'Industrial' },
-            coalplant: { name: 'Coal Plant', desc: 'Early power generation', age: 'Industrial' },
-            steamfactory: { name: 'Steam Factory', desc: 'Advanced manufacturing', age: 'Early Modern' },
-            clocktower: { name: 'Clock Tower', desc: 'Time coordination', age: 'Early Modern' },
-            gasworks: { name: 'Gasworks', desc: 'Gas lighting infrastructure', age: 'Early Modern' },
-            parliament: { name: 'Parliament', desc: 'Governing body', age: 'Victorian' },
-            gaslamp: { name: 'Gas Lamp', desc: 'Street illumination', age: 'Victorian' },
-            telegraph: { name: 'Telegraph', desc: 'Long-distance communication', age: 'Victorian' },
-            powerplant: { name: 'Power Plant', desc: 'Electrical generation', age: 'Modernization' },
-            skyscraper: { name: 'Skyscraper', desc: 'Vertical housing', age: 'Modernization' },
-            subwaystation: { name: 'Subway Station', desc: 'Underground transit', age: 'Modernization' },
-            datacenter: { name: 'Data Center', desc: 'Information processing', age: 'Digital' },
-            cybercafe: { name: 'Cyber Cafe', desc: 'Digital gathering place', age: 'Digital' },
-            serverbank: { name: 'Server Bank', desc: 'Massive data storage', age: 'Digital' },
             fusionreactor: { name: 'Fusion Reactor', desc: 'Clean infinite energy', age: 'Space' },
             orbitalring: { name: 'Orbital Ring', desc: 'Space elevator system', age: 'Space' },
             quantumlab: { name: 'Quantum Lab', desc: 'Reality research', age: 'Space' },
+
+            triworldhub: { name: 'Triworld Hub', desc: 'Multi-planet nexus (Pop: 750, Food: +150)', age: 'Multi-World' },
             warpgate: { name: 'Warp Gate', desc: 'Instant planet travel', age: 'Multi-World' },
             terraformer: { name: 'Terraformer', desc: 'Planet reshaping device', age: 'Multi-World' },
             colonyship: { name: 'Colony Ship', desc: 'Mobile civilization', age: 'Multi-World' },
+
+            haven: { name: 'Haven', desc: 'Galactic sanctuary (Pop: 1000, Food: +250)', age: 'Zenith' },
             dysonswarm: { name: 'Dyson Swarm', desc: 'Star energy harvesting', age: 'Zenith' },
             matrixcore: { name: 'Matrix Core', desc: 'Reality simulation', age: 'Zenith' },
             ascensiongate: { name: 'Ascension Gate', desc: 'Transcendence portal', age: 'Zenith' }
         };
+
         console.log('buildingInfo keys:', Object.keys(buildingInfo).length);
         const availableBuildings = this.player.getAvailableBuildings();
         console.log('Missing buildings:', availableBuildings.filter(b => !buildingInfo[b]));
         console.log('Current age:', this.player.age);
         console.log('Available buildings:', availableBuildings);
         console.log('Observatory included?', availableBuildings.includes('observatory'));
-        const allBuildings = ['settlement', 'farm', 'warehouse', 'campfire', 'tent', 'woodpile', 'barracks', 'granary', 'quarry', 'monument', 'temple', 'forge', 'workshop', 'aqueduct', 'watchtower', 'market', 'castle', 'cathedral', 'townhall', 'arena', 'hospital', 'library', 'academy', 'theater', 'mansion', 'university', 'spaceport', 'laboratory', 'megafactory', 'observatory'];
+        const allBuildings = Object.keys(buildingInfo);
         allBuildings.forEach(buildingType => {
             const info = buildingInfo[buildingType];
             const isAvailable = availableBuildings.includes(buildingType);
@@ -1510,8 +1523,9 @@ class Game {
     }
 
     selectNearestSettlement(targetX, targetY) {
+        const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven', 'spaceship'];
         const settlements = this.currentPlanet.structures.filter(s =>
-            (s.type === 'settlement' || s.type === 'spaceship') && !s.isFrame
+            settlementTypes.includes(s.type) && !s.isFrame
         );
 
         if (settlements.length === 0) return null;
@@ -1890,7 +1904,8 @@ class Game {
         let canPlace = this.currentPlanet.canPlaceBuildingOfSize(gridX, gridY, size.w, size.h);
 
         if (canPlace) {
-            if (this.player.selectedBuilding === 'settlement') {
+            const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
+            if (settlementTypes.includes(this.player.selectedBuilding)) {
                 const inAnyClaim = this.player.settlements.some(settlement => {
                     const dx = Math.abs(settlement.x - gridX);
                     const dy = Math.abs(settlement.y - gridY);
