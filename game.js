@@ -631,8 +631,9 @@ class Game {
             matrixcore: { name: 'Matrix Core', desc: 'Reality simulation', age: 'Zenith' },
             ascensiongate: { name: 'Ascension Gate', desc: 'Transcendence portal', age: 'Zenith' }
         };
-
+        console.log('buildingInfo keys:', Object.keys(buildingInfo).length);
         const availableBuildings = this.player.getAvailableBuildings();
+        console.log('Missing buildings:', availableBuildings.filter(b => !buildingInfo[b]));
         console.log('Current age:', this.player.age);
         console.log('Available buildings:', availableBuildings);
         console.log('Observatory included?', availableBuildings.includes('observatory'));
