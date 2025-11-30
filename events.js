@@ -76,6 +76,14 @@ class EventSystem {
         }
 
         if (this.coreStability <= 0) {
+            this.damageAllBuildings(250);
+            this.causeEruption();
+            if (this.game.screenShake) {
+                this.game.screenShake(5000, 55);
+            }
+            if (typeof AudioManager !== 'undefined') {
+                AudioManager.playSFX('sfx-eruption-catastrophic', 1.0);
+            }
             return { gameOver: true, reason: 'planetary_collapse' };
         }
 
