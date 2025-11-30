@@ -392,7 +392,7 @@ body {
     padding: 15px;
     min-height: 120px;
     max-height: 200px;
-    overflow-y: auto;
+    overflow-y: hidden;
     font-family: 'Courier New', monospace;
     font-size: 13px;
 }
