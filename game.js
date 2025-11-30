@@ -41,8 +41,78 @@ class Game {
             'sounds/titles.mp3'
         ];
         AudioManager.init(menuPlaylist);
-        AudioManager.playBGM();
+
         document.getElementById('game-container').style.display = 'none';
+
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalSend = document.getElementById('terminal-send');
+        const terminalOutput = document.getElementById('terminal-output');
+        const terminalScreen = document.getElementById('terminal-screen');
+        const startMenu = document.getElementById('start-menu');
+
+        const addTerminalLine = (text, className = '') => {
+            const line = document.createElement('p');
+            line.className = `terminal-line ${className}`;
+            line.textContent = text;
+            terminalOutput.appendChild(line);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        };
+
+        const processCommand = () => {
+            const command = terminalInput.value.trim().toLowerCase();
+
+            if (command === '') return;
+
+            addTerminalLine(`> ${terminalInput.value}`);
+
+            if (command === 'initiate') {
+                addTerminalLine('> Command recognized...', 'terminal-success');
+
+                setTimeout(() => {
+                    addTerminalLine('> Initializing Voidmarch Protocol...', 'terminal-success');
+                }, 500);
+
+                setTimeout(() => {
+                    addTerminalLine('> Loading planetary data...', 'terminal-success');
+                }, 1000);
+
+                setTimeout(() => {
+                    addTerminalLine('> PROTOCOL ACTIVE', 'terminal-success');
+                }, 1500);
+
+                setTimeout(() => {
+                    addTerminalLine('> Transferring to main interface...', 'terminal-success');
+                }, 2000);
+
+                setTimeout(() => {
+                    terminalScreen.style.display = 'none';
+                    startMenu.style.display = 'flex';
+                    AudioManager.playBGM();
+                }, 2800);
+
+                terminalInput.disabled = true;
+                terminalSend.disabled = true;
+            } else {
+                addTerminalLine(`> ERROR: Unknown command '${command}'`, 'terminal-error');
+                addTerminalLine('> Type \'initiate\' to begin protocol', 'terminal-warning');
+            }
+
+            terminalInput.value = '';
+        };
+
+        terminalSend.addEventListener('click', processCommand);
+
+        terminalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                processCommand();
+            }
+        });
+
+        terminalInput.focus();
+
+        document.getElementById('start-game-btn').addEventListener('click', () => {
+            this.startGame();
+        });
 
         window.addEventListener('resize', () => this.handleResize());
         this.canvas.addEventListener('wheel', (e) => this.handleZoom(e));
@@ -56,10 +126,6 @@ class Game {
         document.getElementById('galaxy-map-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             this.showGalaxyMap();
-        });
-
-        document.getElementById('start-game-btn').addEventListener('click', () => {
-            this.startGame();
         });
 
         document.getElementById('how-to-play-btn').addEventListener('click', () => {

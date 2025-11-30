@@ -350,6 +350,114 @@ body {
     font-weight: 600;
 }
 
+#terminal-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #0a0f1e 0%, #0f0a1e 100%);
+    z-index: 20001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+.terminal-screen-content {
+    text-align: center;
+    animation: fadeIn 1s ease-in;
+}
+
+.terminal-container {
+    background: #0a0f1e;
+    border: 2px solid #3a5a8a;
+    border-radius: 4px;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px rgba(58, 90, 138, 0.3);
+}
+
+.terminal-header {
+    background: #1a2a4a;
+    padding: 8px 15px;
+    color: #8fa3c8;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    border-bottom: 1px solid #3a5a8a;
+}
+
+.terminal-output {
+    padding: 15px;
+    min-height: 120px;
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.terminal-line {
+    color: #8fa3c8;
+    margin: 4px 0;
+    line-height: 1.6;
+}
+
+.terminal-warning {
+    color: #ff8800;
+}
+
+.terminal-success {
+    color: #00ff88;
+}
+
+.terminal-error {
+    color: #ff4444;
+}
+
+.terminal-input-container {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-top: 1px solid #3a5a8a;
+    background: #0d1420;
+}
+
+.terminal-prompt {
+    color: #00ff88;
+    font-family: 'Courier New', monospace;
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #c0d0e8;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    outline: none;
+}
+
+.terminal-send {
+    background: #3a4a5a;
+    border: 1px solid #5a6a7a;
+    color: #c0d0e8;
+    padding: 6px 15px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+    font-family: 'Courier New', monospace;
+}
+
+.terminal-send:hover {
+    background: #4a5a6a;
+    border-color: #7a8a9a;
+}
+
 #settlement-buildings-list,
 #settlement-citizens-list {
     font-size: 10px;
