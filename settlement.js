@@ -107,7 +107,7 @@ class Settlement {
         const eligibleAdults = this.citizens.filter(c => c.age >= 20 && c.age <= 50 && !c.hasChildren);
 
         eligibleAdults.forEach(citizen => {
-            if (Math.random() < 0.3) {
+            if (Math.random() < 0.6) {
                 const numChildren = Math.floor(Math.random() * 2) + 1;
                 const maxPop = this.getMaxPopulation();
                 const totalPop = this.citizens.length + this.children.length;
@@ -128,7 +128,7 @@ class Settlement {
     }
 
     generateChild(parent) {
-        const firstNames = ['Alex', 'Sam', 'Jordan', 'Riley', 'Casey', 'Morgan', 'Taylor', 'Avery', 'Quinn', 'Reese'];
+        const firstNames = ['Alex', 'Sam', 'Jordan', 'Riley', 'Casey', 'Morgan', 'Taylor', 'Avery', 'Quinn', 'Reese', 'Hannah', 'Emily', 'Olivia', 'Sophia', 'Isabella', 'Mia', 'Charlotte', 'Amelia', 'Harper', 'Evelyn', 'Liam', 'Noah', 'James', 'Logan', 'Benjamin', 'Mason', 'Elijah', 'Oliver', 'Jacob', 'Lucas', 'Ethan', 'Alexander', 'Henry', 'William', 'Michael', 'Daniel', 'Sebastian', 'Jack', 'Aiden', 'Owen', 'Samuel', 'Matthew'];
         const lastName = parent.name.split(' ')[1];
         const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
 

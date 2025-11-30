@@ -210,7 +210,7 @@ class Game {
                     <br>
                     <p><strong style="color: #c0d0e8;">Music</strong></p>
                     <p>Sean Garland • John Leonard French</p>
-                    <p>Cassetu</p>
+                    <p>Cassetu • AI generated (Placeholder)</p>
                     <br>
                     <p><strong style="color: #c0d0e8;">Special Thanks</strong></p>
                     <p>Community & Playtesters</p>
@@ -281,10 +281,8 @@ class Game {
 
         AudioManager.stopBGM();
         const gamePlaylist = [
-            'sounds/bithero.mp3',
-            'sounds/plateau.mp3',
-            'sounds/wilds.mp3',
-            'sounds/skullmountain.mp3'
+            'sounds/exodus-protocol.mp3',
+            'sounds/magma-layer.mp3'
         ];
         AudioManager.init(gamePlaylist);
         AudioManager.playBGM();
