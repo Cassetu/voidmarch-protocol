@@ -32,8 +32,16 @@ class ConquestSystem {
 
         this.defenseNodes = planet.structures.filter(s => s.type === 'defense_node');
 
-        this.sentinels = [];
-        this.armies = [];
+        const sentinelData = planet.sentinelData || [];
+        this.sentinels = sentinelData.map(data => ({...data}));
+
+        const armyData = planet.armyData || [];
+        this.armies = armyData.map(data => ({...data}));
+    }
+
+    saveState() {
+        this.planet.sentinelData = this.sentinels.map(s => ({...s}));
+        this.planet.armyData = this.armies.map(a => ({...a}));
     }
 
     spawnSpaceship() {

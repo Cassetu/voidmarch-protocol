@@ -910,6 +910,10 @@ class Game {
             return;
         }
 
+        console.log('Current science:', this.player.sciencePerTurn);
+        console.log('Science bonus:', this.player.scienceBonus);
+        console.log('Current research:', this.player.techTree.currentResearch);
+
         const modal = document.createElement('div');
         modal.id = 'galaxy-modal';
         modal.innerHTML = `
@@ -945,6 +949,10 @@ class Game {
                     planetDiv.appendChild(currentLabel);
                 } else {
                     planetDiv.onclick = () => {
+                        if (this.conquestSystem) {
+                            this.conquestSystem.saveState();
+                        }
+
                         const result = this.galaxy.travelToPlanet(planet.id);
                         if (result.success) {
                             const leavingConquestPlanet = this.gameMode === 'conquest' && result.mode !== 'conquest';
@@ -1140,7 +1148,9 @@ class Game {
                             return;
                         }
 
-                        if (this.player.selectedBuilding === 'settlement') {
+                        const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
+
+                        if (settlementTypes.includes(this.player.selectedBuilding)) {
                             const inAnyClaim = this.player.settlements.some(settlement => {
                                 const dx = Math.abs(settlement.x - gridX);
                                 const dy = Math.abs(settlement.y - gridY);
@@ -1357,7 +1367,9 @@ class Game {
                         gridY >= 0 && gridY < this.currentPlanet.height) {
                         const tile = this.currentPlanet.tiles[gridY][gridX];
                         if (tile) {
-                            if (tile.building && tile.building.type === 'settlement' && !tile.building.isFrame) {
+                            const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
+
+                            if (tile.building && settlementTypes.includes(tile.building.type) && !tile.building.isFrame) {
                                 this.showSettlementPanel(gridX, gridY);
                             }
                             this.showTileInfo(tile, gridX, gridY);
@@ -1735,87 +1747,94 @@ class Game {
     }
 
     showSettlementPanel(x, y) {
-            const settlement = this.player.getSettlementAt(x, y);
-            if (!settlement) return;
+        const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
 
-            const panel = document.getElementById('settlement-panel');
-            panel.style.display = 'block';
+        const tile = this.currentPlanet.tiles[y][x];
+        if (!tile || !tile.building) return;
 
-            document.getElementById('settlement-title').textContent = settlement.name;
-            document.getElementById('settlement-population').textContent = settlement.getPopulation();
-            document.getElementById('settlement-food').textContent = Math.floor(settlement.food);
+        if (!settlementTypes.includes(tile.building.type)) return;
 
-            const foodRate = settlement.foodPerTurn - settlement.foodConsumption;
-            const rateEl = document.getElementById('settlement-food-rate');
-            rateEl.textContent = `(${foodRate >= 0 ? '+' : ''}${foodRate}/turn)`;
-            rateEl.style.color = foodRate >= 0 ? '#88cc88' : '#cc8888';
+        const settlement = this.player.getSettlementAt(x, y);
+        if (!settlement) return;
 
-            const growthPercent = Math.floor((settlement.growthProgress / settlement.growthRequired) * 100);
-            document.getElementById('settlement-growth').textContent = `${growthPercent}%`;
+        const panel = document.getElementById('settlement-panel');
+        panel.style.display = 'block';
 
-            const storage = settlement.getStorageCapacity();
-            document.getElementById('settlement-storage').textContent = `${Math.floor(settlement.food)}/${storage}`;
+        document.getElementById('settlement-title').textContent = settlement.name;
+        document.getElementById('settlement-population').textContent = settlement.getPopulation();
+        document.getElementById('settlement-food').textContent = Math.floor(settlement.food);
 
-            const buildingsList = document.getElementById('settlement-buildings-list');
-            buildingsList.innerHTML = '';
+        const foodRate = settlement.foodPerTurn - settlement.foodConsumption;
+        const rateEl = document.getElementById('settlement-food-rate');
+        rateEl.textContent = `(${foodRate >= 0 ? '+' : ''}${foodRate}/turn)`;
+        rateEl.style.color = foodRate >= 0 ? '#88cc88' : '#cc8888';
 
-            Object.entries(settlement.buildingLimits).forEach(([type, limit]) => {
-                const current = settlement.buildings.get(type) || 0;
-                const isShared = current % 1 !== 0;
-                const item = document.createElement('div');
-                item.className = 'building-limit-item' + (current >= limit ? ' at-limit' : '');
-                item.innerHTML = `
-                    <span>${type.charAt(0).toUpperCase() + type.slice(1)}${isShared ? ' 🔗' : ''}</span>
-                    <span>${isShared ? current.toFixed(1) : Math.floor(current)}/${limit}</span>
-                `;
-                buildingsList.appendChild(item);
-            });
+        const growthPercent = Math.floor((settlement.growthProgress / settlement.growthRequired) * 100);
+        document.getElementById('settlement-growth').textContent = `${growthPercent}%`;
 
-            const citizensList = document.getElementById('settlement-citizens-list');
-            citizensList.innerHTML = '';
+        const storage = settlement.getStorageCapacity();
+        document.getElementById('settlement-storage').textContent = `${Math.floor(settlement.food)}/${storage}`;
 
-            const maxPop = settlement.getMaxPopulation();
-            const totalPop = settlement.citizens.length + settlement.children.length;
+        const buildingsList = document.getElementById('settlement-buildings-list');
+        buildingsList.innerHTML = '';
 
-            const capacityDiv = document.createElement('div');
-            capacityDiv.style.cssText = 'margin-bottom: 8px; padding: 4px; background: rgba(74, 90, 106, 0.3); border-radius: 3px;';
-            capacityDiv.innerHTML = `<strong>Population: ${totalPop}/${maxPop}</strong>`;
-            citizensList.appendChild(capacityDiv);
+        Object.entries(settlement.buildingLimits).forEach(([type, limit]) => {
+            const current = settlement.buildings.get(type) || 0;
+            const isShared = current % 1 !== 0;
+            const item = document.createElement('div');
+            item.className = 'building-limit-item' + (current >= limit ? ' at-limit' : '');
+            item.innerHTML = `
+                <span>${type.charAt(0).toUpperCase() + type.slice(1)}${isShared ? ' 🔗' : ''}</span>
+                <span>${isShared ? current.toFixed(1) : Math.floor(current)}/${limit}</span>
+            `;
+            buildingsList.appendChild(item);
+        });
 
-            settlement.citizens.forEach(citizen => {
+        const citizensList = document.getElementById('settlement-citizens-list');
+        citizensList.innerHTML = '';
+
+        const maxPop = settlement.getMaxPopulation();
+        const totalPop = settlement.citizens.length + settlement.children.length;
+
+        const capacityDiv = document.createElement('div');
+        capacityDiv.style.cssText = 'margin-bottom: 8px; padding: 4px; background: rgba(74, 90, 106, 0.3); border-radius: 3px;';
+        capacityDiv.innerHTML = `<strong>Population: ${totalPop}/${maxPop}</strong>`;
+        citizensList.appendChild(capacityDiv);
+
+        settlement.citizens.forEach(citizen => {
+            const item = document.createElement('div');
+            item.className = 'citizen-item';
+            const childrenInfo = citizen.hasChildren ? ` | ${citizen.childrenCount} children` : '';
+            item.innerHTML = `
+                <div class="citizen-name">${citizen.name}</div>
+                <div class="citizen-details">Age: ${citizen.age} | ${citizen.job}${childrenInfo}</div>
+            `;
+            citizensList.appendChild(item);
+        });
+
+        if (settlement.children.length > 0) {
+            const childHeader = document.createElement('div');
+            childHeader.style.cssText = 'margin-top: 8px; margin-bottom: 4px; font-weight: 600; color: #8fa3c8; font-size: 10px;';
+            childHeader.textContent = 'CHILDREN:';
+            citizensList.appendChild(childHeader);
+
+            settlement.children.forEach(child => {
                 const item = document.createElement('div');
                 item.className = 'citizen-item';
-                const childrenInfo = citizen.hasChildren ? ` | ${citizen.childrenCount} children` : '';
+                item.style.background = 'rgba(90, 120, 150, 0.2)';
                 item.innerHTML = `
-                    <div class="citizen-name">${citizen.name}</div>
-                    <div class="citizen-details">Age: ${citizen.age} | ${citizen.job}${childrenInfo}</div>
+                    <div class="citizen-name">${child.name}</div>
+                    <div class="citizen-details">Age: ${child.age} | ${child.job}</div>
                 `;
                 citizensList.appendChild(item);
             });
-
-            if (settlement.children.length > 0) {
-                const childHeader = document.createElement('div');
-                childHeader.style.cssText = 'margin-top: 8px; margin-bottom: 4px; font-weight: 600; color: #8fa3c8; font-size: 10px;';
-                childHeader.textContent = 'CHILDREN:';
-                citizensList.appendChild(childHeader);
-
-                settlement.children.forEach(child => {
-                    const item = document.createElement('div');
-                    item.className = 'citizen-item';
-                    item.style.background = 'rgba(90, 120, 150, 0.2)';
-                    item.innerHTML = `
-                        <div class="citizen-name">${child.name}</div>
-                        <div class="citizen-details">Age: ${child.age} | ${child.job}</div>
-                    `;
-                    citizensList.appendChild(item);
-                });
-            }
-
-            document.getElementById('settlement-close-btn').onclick = (e) => {
-                e.stopPropagation();
-                panel.style.display = 'none';
-            };
         }
+
+        document.getElementById('settlement-close-btn').onclick = (e) => {
+            e.stopPropagation();
+            panel.style.display = 'none';
+        };
+    }
 
     showHackingMiniGame() {
         if (!this.conquestSystem.hackingMiniGame) return;
@@ -1971,6 +1990,7 @@ class Game {
 
         if (canPlace) {
             const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
+
             if (settlementTypes.includes(this.player.selectedBuilding)) {
                 const inAnyClaim = this.player.settlements.some(settlement => {
                     const dx = Math.abs(settlement.x - gridX);

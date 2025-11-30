@@ -38,7 +38,7 @@ class EventSystem {
 
     onTurnEnd() {
         this.turn++;
-        this.coreStability -= (0.5 * (this.player.coreStabilityMultiplier || 1));
+        this.coreStability -= (0.45 * (this.player.coreStabilityMultiplier || 1));
 
         if (this.player.coreStable) {
             this.coreStability = Math.min(100, this.coreStability + 1);

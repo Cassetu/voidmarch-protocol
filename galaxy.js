@@ -123,15 +123,16 @@ class Galaxy {
         }
 
         const isFirstVisit = !this.visitedPlanets.has(planetId);
-        if (!planet.conquered) {
+        if (!planet.conquered && planetId !== 0) {
             this.visitedPlanets.add(planetId);
         }
 
-        if (planet.conquered) {
+        if (planet.conquered || planetId === 0) {
             return {
                 success: true,
                 planet: planetInstance,
-                mode: 'building'
+                mode: 'building',
+                isFirstVisit: false
             };
         } else {
             return {

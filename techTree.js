@@ -677,8 +677,8 @@ class TechTree {
         }
 
         const tech = this.techs[this.currentResearch];
-        const baseTurns = Math.ceil(tech.cost / 2);
-        const scienceMultiplier = Math.max(1, this.player.sciencePerTurn / 10);
+        const baseTurns = Math.ceil(tech.cost / 5);
+        const scienceMultiplier = Math.max(0.5, this.player.sciencePerTurn / 15);
 
         this.researchProgress += scienceMultiplier;
 
