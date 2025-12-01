@@ -815,13 +815,42 @@ class Renderer {
                 break;
 
             case 'tent':
-                ctx.fillStyle = '#8b7355';
+                ctx.fillStyle = '#6d5d45';
                 ctx.beginPath();
-                ctx.moveTo(screenX, screenY - 12);
-                ctx.lineTo(screenX - 10, screenY + 4);
-                ctx.lineTo(screenX + 10, screenY + 4);
+                ctx.moveTo(screenX, screenY - 15);
+                ctx.lineTo(screenX + 12, screenY - 8);
+                ctx.lineTo(screenX + 12, screenY + 3);
+                ctx.lineTo(screenX, screenY + 8);
                 ctx.closePath();
                 ctx.fill();
+
+                ctx.fillStyle = '#8b7355';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 15);
+                ctx.lineTo(screenX - 12, screenY - 8);
+                ctx.lineTo(screenX - 12, screenY + 3);
+                ctx.lineTo(screenX, screenY + 8);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#a68a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 15);
+                ctx.lineTo(screenX - 12, screenY - 8);
+                ctx.lineTo(screenX, screenY - 2);
+                ctx.lineTo(screenX + 12, screenY - 8);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#3a2a1a';
+                ctx.fillRect(screenX - 6, screenY, 4, 6);
+
+                ctx.strokeStyle = '#5a4a3a';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 15);
+                ctx.lineTo(screenX, screenY + 8);
+                ctx.stroke();
                 break;
 
             case 'woodpile':
@@ -3342,26 +3371,52 @@ class Renderer {
                 break;
 
             case 'tent':
+                this.ctx.fillStyle = '#6d5d45';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 14, screenY - 9);
+                this.ctx.lineTo(screenX + 14, screenY + 5);
+                this.ctx.lineTo(screenX, screenY + 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
                 this.ctx.fillStyle = '#8b7355';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX, screenY - 15);
-                this.ctx.lineTo(screenX + 12, screenY - 8);
-                this.ctx.lineTo(screenX + 12, screenY + 4);
-                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 14, screenY - 9);
+                this.ctx.lineTo(screenX - 14, screenY + 5);
+                this.ctx.lineTo(screenX, screenY + 11);
                 this.ctx.closePath();
                 this.ctx.fill();
 
-                this.ctx.fillStyle = '#a0826d';
+                this.ctx.fillStyle = '#a68a6a';
                 this.ctx.beginPath();
-                this.ctx.moveTo(screenX, screenY - 15);
-                this.ctx.lineTo(screenX - 12, screenY - 8);
-                this.ctx.lineTo(screenX - 12, screenY + 4);
-                this.ctx.lineTo(screenX, screenY + 10);
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 14, screenY - 9);
+                this.ctx.lineTo(screenX, screenY);
+                this.ctx.lineTo(screenX + 14, screenY - 9);
                 this.ctx.closePath();
                 this.ctx.fill();
 
-                this.ctx.fillStyle = '#654321';
-                this.ctx.fillRect(screenX - 2, screenY - 3, 4, 10);
+                this.ctx.fillStyle = '#3a2a1a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 5, screenY + 3);
+                this.ctx.lineTo(screenX - 8, screenY + 1.5);
+                this.ctx.lineTo(screenX - 8, screenY + 8);
+                this.ctx.lineTo(screenX - 5, screenY + 9.5);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#5a4a3a';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX, screenY + 11);
+                this.ctx.stroke();
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 14, screenY - 9);
+                this.ctx.lineTo(screenX + 14, screenY - 9);
+                this.ctx.stroke();
                 break;
 
             case 'woodpile':

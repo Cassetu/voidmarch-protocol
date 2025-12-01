@@ -1181,7 +1181,9 @@ class Game {
                         return;
                     }
 
-                    if (this.player.selectedBuilding === 'settlement') {
+                    const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
+
+                    if (settlementTypes.includes(this.player.selectedBuilding)) {
                         const inAnyClaim = this.player.settlements.some(settlement => {
                             const dx = Math.abs(settlement.x - gridX);
                             const dy = Math.abs(settlement.y - gridY);
