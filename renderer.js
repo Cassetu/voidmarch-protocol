@@ -1352,6 +1352,1006 @@ class Renderer {
                 ctx.fill();
                 break;
 
+            case 'ironworks':
+                ctx.fillStyle = '#3a3a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 28);
+                ctx.lineTo(screenX + 16, screenY - 20);
+                ctx.lineTo(screenX + 16, screenY + 8);
+                ctx.lineTo(screenX, screenY + 16);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#4a4a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 28);
+                ctx.lineTo(screenX - 16, screenY - 20);
+                ctx.lineTo(screenX - 16, screenY + 8);
+                ctx.lineTo(screenX, screenY + 16);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a5a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 28);
+                ctx.lineTo(screenX - 16, screenY - 20);
+                ctx.lineTo(screenX, screenY - 12);
+                ctx.lineTo(screenX + 16, screenY - 20);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2a2a2a';
+                ctx.fillRect(screenX - 5, screenY - 34, 4, 8);
+                ctx.fillRect(screenX + 2, screenY - 32, 3, 6);
+
+                ctx.fillStyle = '#ff6600';
+                ctx.globalAlpha = 0.8;
+                ctx.fillRect(screenX - 4, screenY - 36, 2, 3);
+                ctx.fillRect(screenX + 3, screenY - 34, 2, 3);
+                ctx.globalAlpha = 1;
+
+                ctx.fillStyle = '#6a4a2a';
+                ctx.fillRect(screenX - 12, screenY - 4, 24, 14);
+
+                ctx.fillStyle = '#ff8800';
+                ctx.fillRect(screenX - 5, screenY, 10, 6);
+                break;
+
+            case 'trainstation':
+                ctx.fillStyle = '#5a4a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 24);
+                ctx.lineTo(screenX + 18, screenY - 15);
+                ctx.lineTo(screenX + 18, screenY + 8);
+                ctx.lineTo(screenX, screenY + 17);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#6a5a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 24);
+                ctx.lineTo(screenX - 18, screenY - 15);
+                ctx.lineTo(screenX - 18, screenY + 8);
+                ctx.lineTo(screenX, screenY + 17);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#7a6a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 24);
+                ctx.lineTo(screenX - 18, screenY - 15);
+                ctx.lineTo(screenX, screenY - 6);
+                ctx.lineTo(screenX + 18, screenY - 15);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.strokeStyle = '#3a3a3a';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(screenX - 20, screenY + 10);
+                ctx.lineTo(screenX + 20, screenY + 10);
+                ctx.stroke();
+
+                ctx.fillStyle = '#8a6a4a';
+                ctx.fillRect(screenX - 6, screenY - 10, 12, 16);
+
+                ctx.fillStyle = '#4a6a8a';
+                ctx.fillRect(screenX - 5, screenY - 8, 4, 5);
+                ctx.fillRect(screenX + 1, screenY - 8, 4, 5);
+                break;
+
+            case 'coalplant':
+                ctx.fillStyle = '#3a3a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 26);
+                ctx.lineTo(screenX + 15, screenY - 18);
+                ctx.lineTo(screenX + 15, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#4a4a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 26);
+                ctx.lineTo(screenX - 15, screenY - 18);
+                ctx.lineTo(screenX - 15, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a5a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 26);
+                ctx.lineTo(screenX - 15, screenY - 18);
+                ctx.lineTo(screenX, screenY - 10);
+                ctx.lineTo(screenX + 15, screenY - 18);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2a2a2a';
+                ctx.fillRect(screenX - 4, screenY - 32, 3, 8);
+                ctx.fillRect(screenX + 2, screenY - 30, 3, 6);
+
+                ctx.fillStyle = '#888888';
+                ctx.globalAlpha = 0.6;
+                ctx.fillRect(screenX - 3, screenY - 34, 2, 3);
+                ctx.fillRect(screenX + 3, screenY - 32, 2, 3);
+                ctx.globalAlpha = 1;
+
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(screenX - 10, screenY, 20, 10);
+
+                ctx.fillStyle = '#ff6600';
+                ctx.fillRect(screenX - 6, screenY + 2, 3, 5);
+                ctx.fillRect(screenX + 3, screenY + 2, 3, 5);
+                break;
+
+            case 'steamfactory':
+                ctx.fillStyle = '#4a4a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX + 16, screenY - 22);
+                ctx.lineTo(screenX + 16, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a5a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX - 16, screenY - 22);
+                ctx.lineTo(screenX - 16, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#6a6a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX - 16, screenY - 22);
+                ctx.lineTo(screenX, screenY - 14);
+                ctx.lineTo(screenX + 16, screenY - 22);
+                ctx.closePath();
+                ctx.fill();
+
+                for (let i = 0; i < 3; i++) {
+                    ctx.fillStyle = '#3a3a3a';
+                    ctx.fillRect(screenX - 12 + i * 6, screenY - 36 + i * 2, 3, 10);
+                }
+
+                ctx.fillStyle = '#cccccc';
+                ctx.globalAlpha = 0.7;
+                for (let i = 0; i < 3; i++) {
+                    ctx.fillRect(screenX - 12 + i * 6, screenY - 38 + i * 2, 3, 5);
+                }
+                ctx.globalAlpha = 1;
+
+                ctx.fillStyle = '#6a4a2a';
+                ctx.fillRect(screenX - 10, screenY - 3, 20, 12);
+                break;
+
+            case 'clocktower':
+                ctx.fillStyle = '#6a5a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 36);
+                ctx.lineTo(screenX + 6, screenY - 33);
+                ctx.lineTo(screenX + 6, screenY + 6);
+                ctx.lineTo(screenX, screenY + 9);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#7a6a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 36);
+                ctx.lineTo(screenX - 6, screenY - 33);
+                ctx.lineTo(screenX - 6, screenY + 6);
+                ctx.lineTo(screenX, screenY + 9);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#8a7a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 36);
+                ctx.lineTo(screenX - 6, screenY - 33);
+                ctx.lineTo(screenX, screenY - 30);
+                ctx.lineTo(screenX + 6, screenY - 33);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a4a3a';
+                ctx.fillRect(screenX - 2, screenY - 42, 4, 8);
+
+                ctx.strokeStyle = '#3a3a3a';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 16, 6, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#f0e68c';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 16, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = '#2a2a2a';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 16);
+                ctx.lineTo(screenX, screenY - 21);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 16);
+                ctx.lineTo(screenX + 3, screenY - 16);
+                ctx.stroke();
+                break;
+
+            case 'gasworks':
+                ctx.fillStyle = '#4a4a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 28);
+                ctx.lineTo(screenX + 15, screenY - 20);
+                ctx.lineTo(screenX + 15, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a5a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 28);
+                ctx.lineTo(screenX - 15, screenY - 20);
+                ctx.lineTo(screenX - 15, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#6a6a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 28);
+                ctx.lineTo(screenX - 15, screenY - 20);
+                ctx.lineTo(screenX, screenY - 12);
+                ctx.lineTo(screenX + 15, screenY - 20);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#3a3a2a';
+                ctx.fillRect(screenX - 4, screenY - 34, 3, 8);
+                ctx.fillRect(screenX + 2, screenY - 32, 3, 6);
+
+                ctx.fillStyle = '#ffaa44';
+                ctx.globalAlpha = 0.5;
+                ctx.fillRect(screenX - 3, screenY - 36, 2, 3);
+                ctx.fillRect(screenX + 3, screenY - 34, 2, 3);
+                ctx.globalAlpha = 1;
+
+                for (let i = 0; i < 3; i++) {
+                    ctx.fillStyle = '#6a5a4a';
+                    ctx.beginPath();
+                    ctx.arc(screenX - 10 + i * 10, screenY + 3, 5, 0, Math.PI);
+                    ctx.fill();
+                }
+                break;
+
+            case 'parliament':
+                ctx.fillStyle = '#6a5a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX + 16, screenY - 22);
+                ctx.lineTo(screenX + 16, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#7a6a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX - 16, screenY - 22);
+                ctx.lineTo(screenX - 16, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#8a7a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX - 16, screenY - 22);
+                ctx.lineTo(screenX, screenY - 14);
+                ctx.lineTo(screenX + 16, screenY - 22);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a4a3a';
+                ctx.fillRect(screenX - 3, screenY - 36, 6, 8);
+
+                ctx.fillStyle = '#b8860b';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 38, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                for (let i = -2; i <= 2; i++) {
+                    ctx.fillStyle = '#4a3a2a';
+                    ctx.fillRect(screenX + i * 4 - 1, screenY - 3, 2, 12);
+                }
+
+                ctx.fillStyle = '#3a2a1a';
+                ctx.fillRect(screenX - 5, screenY + 2, 10, 8);
+                break;
+
+            case 'gaslamp':
+                ctx.fillStyle = '#3a3a3a';
+                ctx.fillRect(screenX - 2, screenY - 2, 4, 14);
+
+                ctx.fillStyle = '#2a2a2a';
+                ctx.fillRect(screenX - 3, screenY + 12, 6, 3);
+                ctx.fillRect(screenX - 3, screenY - 5, 6, 3);
+
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(screenX - 5, screenY - 10, 10, 5);
+
+                ctx.fillStyle = '#ffdd88';
+                ctx.globalAlpha = 0.8;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 7, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                ctx.fillStyle = '#ffaa44';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 7, 2, 0, Math.PI * 2);
+                ctx.fill();
+                break;
+
+            case 'powerplant':
+                ctx.fillStyle = '#3a3a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 32);
+                ctx.lineTo(screenX + 18, screenY - 24);
+                ctx.lineTo(screenX + 18, screenY + 8);
+                ctx.lineTo(screenX, screenY + 16);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#4a4a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 32);
+                ctx.lineTo(screenX - 18, screenY - 24);
+                ctx.lineTo(screenX - 18, screenY + 8);
+                ctx.lineTo(screenX, screenY + 16);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a5a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 32);
+                ctx.lineTo(screenX - 18, screenY - 24);
+                ctx.lineTo(screenX, screenY - 16);
+                ctx.lineTo(screenX + 18, screenY - 24);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2a2a2a';
+                ctx.fillRect(screenX - 5, screenY - 38, 4, 10);
+                ctx.fillRect(screenX + 2, screenY - 36, 4, 8);
+                ctx.fillRect(screenX - 12, screenY - 34, 4, 6);
+
+                ctx.fillStyle = '#ffaa00';
+                ctx.globalAlpha = 0.6;
+                ctx.fillRect(screenX - 4, screenY - 40, 2, 3);
+                ctx.fillRect(screenX + 3, screenY - 38, 2, 3);
+                ctx.fillRect(screenX - 11, screenY - 36, 2, 3);
+                ctx.globalAlpha = 1;
+
+                ctx.strokeStyle = '#ffff00';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(screenX - 14, screenY - 5, 28, 14);
+                break;
+
+            case 'skyscraper':
+                ctx.fillStyle = '#3a4a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 42);
+                ctx.lineTo(screenX + 8, screenY - 38);
+                ctx.lineTo(screenX + 8, screenY + 6);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#4a5a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 42);
+                ctx.lineTo(screenX - 8, screenY - 38);
+                ctx.lineTo(screenX - 8, screenY + 6);
+                ctx.lineTo(screenX, screenY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a6a7a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 42);
+                ctx.lineTo(screenX - 8, screenY - 38);
+                ctx.lineTo(screenX, screenY - 34);
+                ctx.lineTo(screenX + 8, screenY - 38);
+                ctx.closePath();
+                ctx.fill();
+
+                for (let floor = 0; floor < 10; floor++) {
+                    const y = screenY - 35 + floor * 4;
+                    ctx.fillStyle = Math.random() > 0.3 ? '#ffff00' : '#333333';
+                    ctx.fillRect(screenX - 6, y, 2, 2);
+                    ctx.fillRect(screenX - 2, y, 2, 2);
+                    ctx.fillRect(screenX + 2, y, 2, 2);
+                    ctx.fillRect(screenX + 6, y, 2, 2);
+                }
+
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(screenX - 1, screenY - 45, 2, 3);
+                break;
+
+            case 'subwaystation':
+                ctx.fillStyle = '#4a4a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX + 16, screenY - 22);
+                ctx.lineTo(screenX + 16, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#5a5a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX - 16, screenY - 22);
+                ctx.lineTo(screenX - 16, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#6a6a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 30);
+                ctx.lineTo(screenX - 16, screenY - 22);
+                ctx.lineTo(screenX, screenY - 14);
+                ctx.lineTo(screenX + 16, screenY - 22);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2a2a2a';
+                ctx.fillRect(screenX - 6, screenY - 5, 12, 16);
+
+                ctx.fillStyle = '#ffaa00';
+                ctx.fillRect(screenX - 5, screenY - 3, 10, 2);
+                ctx.fillRect(screenX - 5, screenY + 2, 10, 2);
+                ctx.fillRect(screenX - 5, screenY + 7, 10, 2);
+
+                ctx.fillStyle = '#ff0000';
+                ctx.font = 'bold 8px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('M', screenX, screenY - 33);
+                break;
+
+            case 'datacenter':
+                ctx.fillStyle = '#1a1a2a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 35);
+                ctx.lineTo(screenX + 20, screenY - 25);
+                ctx.lineTo(screenX + 20, screenY + 10);
+                ctx.lineTo(screenX, screenY + 20);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2a2a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 35);
+                ctx.lineTo(screenX - 20, screenY - 25);
+                ctx.lineTo(screenX - 20, screenY + 10);
+                ctx.lineTo(screenX, screenY + 20);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#3a3a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 35);
+                ctx.lineTo(screenX - 20, screenY - 25);
+                ctx.lineTo(screenX, screenY - 15);
+                ctx.lineTo(screenX + 20, screenY - 25);
+                ctx.closePath();
+                ctx.fill();
+
+                for (let stack = 0; stack < 3; stack++) {
+                    for (let row = 0; row < 6; row++) {
+                        const x = screenX - 15 + stack * 10;
+                        const y = screenY - 12 + row * 4;
+                        ctx.fillStyle = Math.random() > 0.2 ? '#0088ff' : '#001144';
+                        ctx.fillRect(x, y, 8, 2);
+                    }
+                }
+
+                ctx.strokeStyle = '#00ffff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(screenX - 16, screenY - 14, 32, 26);
+                break;
+
+            case 'cybercafe':
+                ctx.fillStyle = '#2a2a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 32);
+                ctx.lineTo(screenX + 16, screenY - 24);
+                ctx.lineTo(screenX + 16, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#3a3a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 32);
+                ctx.lineTo(screenX - 16, screenY - 24);
+                ctx.lineTo(screenX - 16, screenY + 6);
+                ctx.lineTo(screenX, screenY + 14);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#4a4a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 32);
+                ctx.lineTo(screenX - 16, screenY - 24);
+                ctx.lineTo(screenX, screenY - 16);
+                ctx.lineTo(screenX + 16, screenY - 24);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#00ffff';
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 2; j++) {
+                        const x = screenX - 10 + i * 7;
+                        const y = screenY - 6 + j * 8;
+                        ctx.fillRect(x, y, 5, 3);
+                    }
+                }
+
+                ctx.fillStyle = '#ff00ff';
+                ctx.font = 'bold 7px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('CAFE', screenX, screenY - 35);
+                break;
+
+            case 'serverbank':
+                ctx.fillStyle = '#1a2a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 34);
+                ctx.lineTo(screenX + 18, screenY - 26);
+                ctx.lineTo(screenX + 18, screenY + 8);
+                ctx.lineTo(screenX, screenY + 16);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2a3a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 34);
+                ctx.lineTo(screenX - 18, screenY - 26);
+                ctx.lineTo(screenX - 18, screenY + 8);
+                ctx.lineTo(screenX, screenY + 16);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#3a4a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 34);
+                ctx.lineTo(screenX - 18, screenY - 26);
+                ctx.lineTo(screenX, screenY - 18);
+                ctx.lineTo(screenX + 18, screenY - 26);
+                ctx.closePath();
+                ctx.fill();
+
+                for (let row = 0; row < 5; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        const x = screenX - 13 + col * 7;
+                        const y = screenY - 14 + row * 5;
+                        ctx.fillStyle = Math.random() > 0.3 ? '#00ff00' : '#003300';
+                        ctx.fillRect(x, y, 5, 3);
+                    }
+                }
+                break;
+
+            case 'fusionreactor':
+                ctx.fillStyle = '#2a3a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 36);
+                ctx.lineTo(screenX + 20, screenY - 27);
+                ctx.lineTo(screenX + 20, screenY + 10);
+                ctx.lineTo(screenX, screenY + 19);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#3a4a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 36);
+                ctx.lineTo(screenX - 20, screenY - 27);
+                ctx.lineTo(screenX - 20, screenY + 10);
+                ctx.lineTo(screenX, screenY + 19);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#4a5a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 36);
+                ctx.lineTo(screenX - 20, screenY - 27);
+                ctx.lineTo(screenX, screenY - 18);
+                ctx.lineTo(screenX + 20, screenY - 27);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#00ffff';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 6, 10, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#88ffff';
+                ctx.globalAlpha = 0.8;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 6, 7, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                ctx.strokeStyle = '#00aaff';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(screenX, screenY - 6);
+                    ctx.lineTo(
+                        screenX + Math.cos(angle) * 15,
+                        screenY - 6 + Math.sin(angle) * 8
+                    );
+                    ctx.stroke();
+                }
+                break;
+
+            case 'orbitalring':
+                ctx.fillStyle = '#3a4a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 38);
+                ctx.lineTo(screenX + 22, screenY - 29);
+                ctx.lineTo(screenX + 22, screenY + 12);
+                ctx.lineTo(screenX, screenY + 21);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#4a5a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 38);
+                ctx.lineTo(screenX - 22, screenY - 29);
+                ctx.lineTo(screenX - 22, screenY + 12);
+                ctx.lineTo(screenX, screenY + 21);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.strokeStyle = '#6a7a8a';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.ellipse(screenX, screenY - 8, 20, 12, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#8a9aaa';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.ellipse(screenX, screenY - 8, 15, 8, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const x = screenX + Math.cos(angle) * 20;
+                const y = screenY - 8 + Math.sin(angle) * 12;
+                ctx.fillStyle = '#00ffff';
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+                }
+                break;
+
+            case 'quantumlab':
+                ctx.fillStyle = '#1a2a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 40);
+                ctx.lineTo(screenX + 23, screenY - 30);
+                ctx.lineTo(screenX + 23, screenY + 13);
+                ctx.lineTo(screenX, screenY + 23);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#2a3a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 40);
+                ctx.lineTo(screenX - 23, screenY - 30);
+                ctx.lineTo(screenX - 23, screenY + 13);
+                ctx.lineTo(screenX, screenY + 23);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#3a4a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 40);
+                ctx.lineTo(screenX - 23, screenY - 30);
+                ctx.lineTo(screenX, screenY - 20);
+                ctx.lineTo(screenX + 23, screenY - 30);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#00ffff';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 4; i++) {
+                    const x = screenX - 15 + i * 10;
+                    ctx.strokeRect(x, screenY - 13, 7, 17);
+                }
+                ctx.fillStyle = '#ff00ff';
+                ctx.globalAlpha = 0.7;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 44, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = '#ffff00';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(screenX, screenY - 44);
+                    ctx.lineTo(
+                        screenX + Math.cos(angle) * 10,
+                        screenY - 44 + Math.sin(angle) * 10
+                    );
+                    ctx.stroke();
+                }
+                break;
+            case 'warpgate':
+                ctx.fillStyle = '#2a2a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 43);
+                ctx.lineTo(screenX + 25, screenY - 32);
+                ctx.lineTo(screenX + 25, screenY + 15);
+                ctx.lineTo(screenX, screenY + 26);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#3a3a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 43);
+                ctx.lineTo(screenX - 25, screenY - 32);
+                ctx.lineTo(screenX - 25, screenY + 15);
+                ctx.lineTo(screenX, screenY + 26);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#1a1a3a';
+                ctx.fillRect(screenX - 7, screenY - 25, 14, 42);
+
+                ctx.strokeStyle = '#8800ff';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(screenX - 7, screenY - 25, 14, 42);
+
+                ctx.fillStyle = '#00ffff';
+                ctx.globalAlpha = 0.6;
+                for (let y = -22; y < 15; y += 5) {
+                    ctx.fillRect(screenX - 5, screenY + y, 10, 2);
+                }
+                ctx.globalAlpha = 1;
+
+                ctx.fillStyle = '#ff00ff';
+                ctx.beginPath();
+                ctx.arc(screenX - 13, screenY - 28, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(screenX + 13, screenY - 28, 3, 0, Math.PI * 2);
+                ctx.fill();
+                break;
+            case 'terraformer':
+                ctx.fillStyle = '#2a5a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 40);
+                ctx.lineTo(screenX + 22, screenY - 29);
+                ctx.lineTo(screenX + 22, screenY + 12);
+                ctx.lineTo(screenX, screenY + 23);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#3a6a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 40);
+                ctx.lineTo(screenX - 22, screenY - 29);
+                ctx.lineTo(screenX - 22, screenY + 12);
+                ctx.lineTo(screenX, screenY + 23);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#4a7a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 40);
+                ctx.lineTo(screenX - 22, screenY - 29);
+                ctx.lineTo(screenX, screenY - 18);
+                ctx.lineTo(screenX + 22, screenY - 29);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.strokeStyle = '#00ff00';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 44, 8, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#88ff88';
+                ctx.globalAlpha = 0.5;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(screenX, screenY - 44);
+                    ctx.lineTo(
+                        screenX + Math.cos(angle) * 16,
+                        screenY - 44 + Math.sin(angle) * 10
+                    );
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1;
+                break;
+
+            case 'colonyship':
+                ctx.fillStyle = '#3a4a5a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 42);
+                ctx.lineTo(screenX + 24, screenY - 31);
+                ctx.lineTo(screenX + 24, screenY + 14);
+                ctx.lineTo(screenX, screenY + 25);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#4a5a6a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 42);
+                ctx.lineTo(screenX - 24, screenY - 31);
+                ctx.lineTo(screenX - 24, screenY + 14);
+                ctx.lineTo(screenX, screenY + 25);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2a3a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 45);
+                ctx.lineTo(screenX - 8, screenY - 42);
+                ctx.lineTo(screenX - 7, screenY - 34);
+                ctx.lineTo(screenX, screenY - 37);
+                ctx.lineTo(screenX + 7, screenY - 34);
+                ctx.lineTo(screenX + 8, screenY - 42);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#6a7a8a';
+                ctx.fillRect(screenX - 17, screenY - 8, 34, 17);
+                ctx.fillRect(screenX - 5, screenY + 9, 10, 13);
+
+                ctx.fillStyle = '#00ffff';
+                ctx.fillRect(screenX - 14, screenY - 5, 7, 5);
+                ctx.fillRect(screenX + 7, screenY - 5, 7, 5);
+                ctx.fillRect(screenX - 3, screenY - 5, 7, 5);
+                break;
+
+            case 'dysonswarm':
+                ctx.fillStyle = '#1a1a0a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 45);
+                ctx.lineTo(screenX + 27, screenY - 34);
+                ctx.lineTo(screenX + 27, screenY + 15);
+                ctx.lineTo(screenX, screenY + 26);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#2a2a1a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 45);
+                ctx.lineTo(screenX - 27, screenY - 34);
+                ctx.lineTo(screenX - 27, screenY + 15);
+                ctx.lineTo(screenX, screenY + 26);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#ffaa00';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 50, 10, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffdd00';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY - 50, 7, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = '#ff8800';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 16; i++) {
+                    const angle = (i / 16) * Math.PI * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(screenX, screenY - 50);
+                    ctx.lineTo(
+                        screenX + Math.cos(angle) * 23,
+                        screenY - 50 + Math.sin(angle) * 13
+                    );
+                    ctx.stroke();
+                }
+                break;
+
+            case 'matrixcore':
+                ctx.fillStyle = '#0a0a1a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 47);
+                ctx.lineTo(screenX + 28, screenY - 36);
+                ctx.lineTo(screenX + 28, screenY + 17);
+                ctx.lineTo(screenX, screenY + 28);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#1a1a2a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 47);
+                ctx.lineTo(screenX - 28, screenY - 36);
+                ctx.lineTo(screenX - 28, screenY + 17);
+                ctx.lineTo(screenX, screenY + 28);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#2a2a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 47);
+                ctx.lineTo(screenX - 28, screenY - 36);
+                ctx.lineTo(screenX, screenY - 24);
+                ctx.lineTo(screenX + 28, screenY - 36);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#00ff00';
+                ctx.globalAlpha = 0.6;
+                for (let i = 0; i < 10; i++) {
+                    const x = screenX - 25 + (i % 5) * 10;
+                    const y = screenY - 17 + Math.floor(i / 5) * 17;
+                    ctx.fillRect(x, y, 2, 10);
+                }
+                ctx.globalAlpha = 1;
+
+                ctx.strokeStyle = '#00ffff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(screenX - 13, screenY - 7, 26, 20);
+                break;
+
+            case 'ascensiongate':
+                ctx.fillStyle = '#1a0a2a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 50);
+                ctx.lineTo(screenX + 30, screenY - 38);
+                ctx.lineTo(screenX + 30, screenY + 18);
+                ctx.lineTo(screenX, screenY + 30);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#2a1a3a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 50);
+                ctx.lineTo(screenX - 30, screenY - 38);
+                ctx.lineTo(screenX - 30, screenY + 18);
+                ctx.lineTo(screenX, screenY + 30);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#3a2a4a';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 50);
+                ctx.lineTo(screenX - 30, screenY - 38);
+                ctx.lineTo(screenX, screenY - 26);
+                ctx.lineTo(screenX + 30, screenY - 38);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#8800ff';
+                ctx.fillRect(screenX - 8, screenY - 8, 16, 34);
+
+                ctx.strokeStyle = '#ff00ff';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(screenX - 8, screenY - 8, 16, 34);
+
+                ctx.fillStyle = '#ffff00';
+                ctx.globalAlpha = 0.8;
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const x = screenX + Math.cos(angle) * 20;
+                    const y = screenY + 9 + Math.sin(angle) * 12;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+                break;
+
             default:
                 ctx.fillStyle = '#6a7a8a';
                 ctx.fillRect(screenX - 10, screenY - 6, 20, 12);
@@ -4131,6 +5131,1098 @@ class Renderer {
                 this.ctx.fillRect(screenX - 3, screenY - 2, 6, 8);
                 this.ctx.fillRect(screenX - 6, screenY + 2, 4, 4);
                 this.ctx.fillRect(screenX + 2, screenY + 4, 4, 3);
+                break;
+
+            case 'fusionreactor':
+                this.ctx.fillStyle = '#2a3a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 44);
+                this.ctx.lineTo(screenX + 24, screenY - 32);
+                this.ctx.lineTo(screenX + 24, screenY + 12);
+                this.ctx.lineTo(screenX, screenY + 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 44);
+                this.ctx.lineTo(screenX - 24, screenY - 32);
+                this.ctx.lineTo(screenX - 24, screenY + 12);
+                this.ctx.lineTo(screenX, screenY + 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a5a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 44);
+                this.ctx.lineTo(screenX - 24, screenY - 32);
+                this.ctx.lineTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 24, screenY - 32);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#00ffff';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 8, 12, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#88ffff';
+                this.ctx.globalAlpha = 0.8;
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 8, 8, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.strokeStyle = '#00aaff';
+                this.ctx.lineWidth = 3;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX, screenY - 8);
+                    this.ctx.lineTo(
+                        screenX + Math.cos(angle) * 18,
+                        screenY - 8 + Math.sin(angle) * 10
+                    );
+                    this.ctx.stroke();
+                }
+                break;
+
+            case 'serverbank':
+                this.ctx.fillStyle = '#1a2a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 40);
+                this.ctx.lineTo(screenX + 22, screenY - 30);
+                this.ctx.lineTo(screenX + 22, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 20);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a3a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 40);
+                this.ctx.lineTo(screenX - 22, screenY - 30);
+                this.ctx.lineTo(screenX - 22, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 20);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 40);
+                this.ctx.lineTo(screenX - 22, screenY - 30);
+                this.ctx.lineTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 22, screenY - 30);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                for (let row = 0; row < 6; row++) {
+                    for (let col = 0; col < 4; col++) {
+                        const x = screenX - 16 + col * 8;
+                        const y = screenY - 16 + row * 5;
+                        this.ctx.fillStyle = Math.random() > 0.3 ? '#00ff00' : '#003300';
+                        this.ctx.fillRect(x, y, 6, 3);
+                    }
+                }
+                break;
+
+            case 'cybercafe':
+                this.ctx.fillStyle = '#2a2a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 38);
+                this.ctx.lineTo(screenX + 20, screenY - 28);
+                this.ctx.lineTo(screenX + 20, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a3a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 38);
+                this.ctx.lineTo(screenX - 20, screenY - 28);
+                this.ctx.lineTo(screenX - 20, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a4a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 38);
+                this.ctx.lineTo(screenX - 20, screenY - 28);
+                this.ctx.lineTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 20, screenY - 28);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#00ffff';
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 2; j++) {
+                        const x = screenX - 12 + i * 8;
+                        const y = screenY - 8 + j * 10;
+                        this.ctx.fillRect(x, y, 6, 4);
+                    }
+                }
+
+                this.ctx.fillStyle = '#ff00ff';
+                this.ctx.font = 'bold 8px monospace';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('CAFE', screenX, screenY - 42);
+                break;
+
+            case 'datacenter':
+                this.ctx.fillStyle = '#1a1a2a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 42);
+                this.ctx.lineTo(screenX + 24, screenY - 30);
+                this.ctx.lineTo(screenX + 24, screenY + 12);
+                this.ctx.lineTo(screenX, screenY + 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 42);
+                this.ctx.lineTo(screenX - 24, screenY - 30);
+                this.ctx.lineTo(screenX - 24, screenY + 12);
+                this.ctx.lineTo(screenX, screenY + 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a3a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 42);
+                this.ctx.lineTo(screenX - 24, screenY - 30);
+                this.ctx.lineTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 24, screenY - 30);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                for (let stack = 0; stack < 3; stack++) {
+                    for (let row = 0; row < 8; row++) {
+                        const x = screenX - 18 + stack * 12;
+                        const y = screenY - 14 + row * 4;
+                        this.ctx.fillStyle = Math.random() > 0.2 ? '#0088ff' : '#001144';
+                        this.ctx.fillRect(x, y, 10, 2);
+                    }
+                }
+
+                this.ctx.strokeStyle = '#00ffff';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(screenX - 20, screenY - 16, 40, 30);
+                break;
+
+            case 'subwaystation':
+                this.ctx.fillStyle = '#4a4a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX + 20, screenY - 26);
+                this.ctx.lineTo(screenX + 20, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a5a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX - 20, screenY - 26);
+                this.ctx.lineTo(screenX - 20, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a6a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX - 20, screenY - 26);
+                this.ctx.lineTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 20, screenY - 26);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a2a';
+                this.ctx.fillRect(screenX - 8, screenY - 6, 16, 20);
+
+                this.ctx.fillStyle = '#ffaa00';
+                this.ctx.fillRect(screenX - 6, screenY - 4, 12, 3);
+                this.ctx.fillRect(screenX - 6, screenY + 2, 12, 3);
+                this.ctx.fillRect(screenX - 6, screenY + 8, 12, 3);
+
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.font = 'bold 10px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('M', screenX, screenY - 40);
+                break;
+
+            case 'skyscraper':
+                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 50);
+                this.ctx.lineTo(screenX + 10, screenY - 45);
+                this.ctx.lineTo(screenX + 10, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a5a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 50);
+                this.ctx.lineTo(screenX - 10, screenY - 45);
+                this.ctx.lineTo(screenX - 10, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 13);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a6a7a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 50);
+                this.ctx.lineTo(screenX - 10, screenY - 45);
+                this.ctx.lineTo(screenX, screenY - 40);
+                this.ctx.lineTo(screenX + 10, screenY - 45);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                for (let floor = 0; floor < 12; floor++) {
+                    const y = screenY - 42 + floor * 4;
+                    this.ctx.fillStyle = Math.random() > 0.3 ? '#ffff00' : '#333333';
+                    this.ctx.fillRect(screenX - 8, y, 3, 2);
+                    this.ctx.fillRect(screenX - 3, y, 3, 2);
+                    this.ctx.fillRect(screenX + 2, y, 3, 2);
+                    this.ctx.fillRect(screenX + 7, y, 3, 2);
+                }
+
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.fillRect(screenX - 1, screenY - 54, 2, 4);
+                break;
+
+            case 'powerplant':
+                this.ctx.fillStyle = '#3a3a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 38);
+                this.ctx.lineTo(screenX + 22, screenY - 28);
+                this.ctx.lineTo(screenX + 22, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 20);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a4a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 38);
+                this.ctx.lineTo(screenX - 22, screenY - 28);
+                this.ctx.lineTo(screenX - 22, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 20);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a5a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 38);
+                this.ctx.lineTo(screenX - 22, screenY - 28);
+                this.ctx.lineTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 22, screenY - 28);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a2a';
+                this.ctx.fillRect(screenX - 6, screenY - 46, 5, 12);
+                this.ctx.fillRect(screenX + 2, screenY - 44, 5, 10);
+                this.ctx.fillRect(screenX - 14, screenY - 42, 5, 8);
+
+                this.ctx.fillStyle = '#ffaa00';
+                this.ctx.globalAlpha = 0.6;
+                this.ctx.fillRect(screenX - 5, screenY - 48, 3, 4);
+                this.ctx.fillRect(screenX + 3, screenY - 46, 3, 4);
+                this.ctx.fillRect(screenX - 13, screenY - 44, 3, 4);
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.strokeStyle = '#ffff00';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(screenX - 16, screenY - 6, 32, 16);
+                break;
+
+            case 'gaslamp':
+                this.ctx.fillStyle = '#3a3a3a';
+                this.ctx.fillRect(screenX - 3, screenY - 2, 6, 18);
+
+                this.ctx.fillStyle = '#2a2a2a';
+                this.ctx.fillRect(screenX - 4, screenY + 16, 8, 4);
+                this.ctx.fillRect(screenX - 4, screenY - 6, 8, 4);
+
+                this.ctx.fillStyle = '#1a1a1a';
+                this.ctx.fillRect(screenX - 6, screenY - 12, 12, 6);
+
+                this.ctx.fillStyle = '#ffdd88';
+                this.ctx.globalAlpha = 0.8;
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 9, 5, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.fillStyle = '#ffaa44';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 9, 3, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#5a5a5a';
+                this.ctx.lineWidth = 1;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 6, screenY - 12);
+                this.ctx.lineTo(screenX - 8, screenY - 14);
+                this.ctx.stroke();
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + 6, screenY - 12);
+                this.ctx.lineTo(screenX + 8, screenY - 14);
+                this.ctx.stroke();
+                break;
+
+            case 'parliament':
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX + 20, screenY - 26);
+                this.ctx.lineTo(screenX + 20, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX - 20, screenY - 26);
+                this.ctx.lineTo(screenX - 20, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a7a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX - 20, screenY - 26);
+                this.ctx.lineTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 20, screenY - 26);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a4a3a';
+                this.ctx.fillRect(screenX - 4, screenY - 44, 8, 10);
+
+                this.ctx.fillStyle = '#b8860b';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 46, 5, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                for (let i = -3; i <= 3; i++) {
+                    this.ctx.fillStyle = '#4a3a2a';
+                    this.ctx.fillRect(screenX + i * 5 - 1, screenY - 4, 2, 14);
+                }
+
+                this.ctx.fillStyle = '#3a2a1a';
+                this.ctx.fillRect(screenX - 6, screenY + 2, 12, 10);
+                break;
+
+            case 'gasworks':
+                this.ctx.fillStyle = '#4a4a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX + 18, screenY - 24);
+                this.ctx.lineTo(screenX + 18, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX - 18, screenY - 24);
+                this.ctx.lineTo(screenX - 18, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX - 18, screenY - 24);
+                this.ctx.lineTo(screenX, screenY - 14);
+                this.ctx.lineTo(screenX + 18, screenY - 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a3a2a';
+                this.ctx.fillRect(screenX - 5, screenY - 42, 4, 10);
+                this.ctx.fillRect(screenX + 2, screenY - 40, 4, 8);
+
+                this.ctx.fillStyle = '#ffaa44';
+                this.ctx.globalAlpha = 0.5;
+                this.ctx.fillRect(screenX - 4, screenY - 44, 2, 4);
+                this.ctx.fillRect(screenX + 3, screenY - 42, 2, 4);
+                this.ctx.globalAlpha = 1;
+
+                for (let i = 0; i < 3; i++) {
+                    this.ctx.fillStyle = '#6a5a4a';
+                    this.ctx.beginPath();
+                    this.ctx.arc(screenX - 12 + i * 12, screenY + 4, 6, 0, Math.PI);
+                    this.ctx.fill();
+                }
+                break;
+
+            case 'clocktower':
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 44);
+                this.ctx.lineTo(screenX + 8, screenY - 40);
+                this.ctx.lineTo(screenX + 8, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 44);
+                this.ctx.lineTo(screenX - 8, screenY - 40);
+                this.ctx.lineTo(screenX - 8, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a7a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 44);
+                this.ctx.lineTo(screenX - 8, screenY - 40);
+                this.ctx.lineTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX + 8, screenY - 40);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a4a3a';
+                this.ctx.fillRect(screenX - 3, screenY - 52, 6, 10);
+
+                this.ctx.strokeStyle = '#3a3a3a';
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 20, 8, 0, Math.PI * 2);
+                this.ctx.stroke();
+
+                this.ctx.fillStyle = '#f0e68c';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 20, 7, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#2a2a2a';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX, screenY - 26);
+                this.ctx.stroke();
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 4, screenY - 20);
+                this.ctx.stroke();
+                break;
+
+            case 'steamfactory':
+                this.ctx.fillStyle = '#4a4a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX + 20, screenY - 26);
+                this.ctx.lineTo(screenX + 20, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a5a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX - 20, screenY - 26);
+                this.ctx.lineTo(screenX - 20, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a6a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 36);
+                this.ctx.lineTo(screenX - 20, screenY - 26);
+                this.ctx.lineTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 20, screenY - 26);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                for (let i = 0; i < 3; i++) {
+                    this.ctx.fillStyle = '#3a3a3a';
+                    this.ctx.fillRect(screenX - 14 + i * 7, screenY - 44 + i * 2, 4, 12);
+                }
+
+                this.ctx.fillStyle = '#cccccc';
+                this.ctx.globalAlpha = 0.7;
+                for (let i = 0; i < 3; i++) {
+                    this.ctx.fillRect(screenX - 14 + i * 7, screenY - 46 + i * 2, 4, 6);
+                }
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.fillStyle = '#6a4a2a';
+                this.ctx.fillRect(screenX - 12, screenY - 4, 24, 14);
+
+                this.ctx.strokeStyle = '#8a6a4a';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(screenX - 12, screenY - 4, 24, 14);
+                break;
+
+            case 'coalplant':
+                this.ctx.fillStyle = '#3a3a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 32);
+                this.ctx.lineTo(screenX + 18, screenY - 22);
+                this.ctx.lineTo(screenX + 18, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a4a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 32);
+                this.ctx.lineTo(screenX - 18, screenY - 22);
+                this.ctx.lineTo(screenX - 18, screenY + 8);
+                this.ctx.lineTo(screenX, screenY + 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a5a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 32);
+                this.ctx.lineTo(screenX - 18, screenY - 22);
+                this.ctx.lineTo(screenX, screenY - 12);
+                this.ctx.lineTo(screenX + 18, screenY - 22);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a2a';
+                this.ctx.fillRect(screenX - 5, screenY - 40, 4, 10);
+                this.ctx.fillRect(screenX + 2, screenY - 38, 4, 8);
+
+                this.ctx.fillStyle = '#888888';
+                this.ctx.globalAlpha = 0.6;
+                this.ctx.fillRect(screenX - 4, screenY - 42, 3, 4);
+                this.ctx.fillRect(screenX + 3, screenY - 40, 3, 4);
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.fillStyle = '#1a1a1a';
+                this.ctx.fillRect(screenX - 12, screenY, 24, 12);
+
+                this.ctx.fillStyle = '#ff6600';
+                this.ctx.fillRect(screenX - 8, screenY + 2, 4, 6);
+                this.ctx.fillRect(screenX + 4, screenY + 2, 4, 6);
+                break;
+
+            case 'trainstation':
+                this.ctx.fillStyle = '#5a4a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 30);
+                this.ctx.lineTo(screenX + 22, screenY - 18);
+                this.ctx.lineTo(screenX + 22, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 22);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 30);
+                this.ctx.lineTo(screenX - 22, screenY - 18);
+                this.ctx.lineTo(screenX - 22, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 22);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 30);
+                this.ctx.lineTo(screenX - 22, screenY - 18);
+                this.ctx.lineTo(screenX, screenY - 6);
+                this.ctx.lineTo(screenX + 22, screenY - 18);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#3a3a3a';
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 24, screenY + 12);
+                this.ctx.lineTo(screenX + 24, screenY + 12);
+                this.ctx.stroke();
+
+                this.ctx.strokeStyle = '#2a2a2a';
+                this.ctx.lineWidth = 2;
+                for (let i = -20; i <= 20; i += 8) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX + i, screenY + 10);
+                    this.ctx.lineTo(screenX + i, screenY + 14);
+                    this.ctx.stroke();
+                }
+
+                this.ctx.fillStyle = '#8a6a4a';
+                this.ctx.fillRect(screenX - 8, screenY - 14, 16, 20);
+
+                this.ctx.fillStyle = '#4a6a8a';
+                this.ctx.fillRect(screenX - 6, screenY - 10, 5, 6);
+                this.ctx.fillRect(screenX + 1, screenY - 10, 5, 6);
+                break;
+
+
+
+            case 'ironworks':
+                this.ctx.fillStyle = '#3a3a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX + 20, screenY - 24);
+                this.ctx.lineTo(screenX + 20, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 20);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a4a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX - 20, screenY - 24);
+                this.ctx.lineTo(screenX - 20, screenY + 10);
+                this.ctx.lineTo(screenX, screenY + 20);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#5a5a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX - 20, screenY - 24);
+                this.ctx.lineTo(screenX, screenY - 14);
+                this.ctx.lineTo(screenX + 20, screenY - 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a2a';
+                this.ctx.fillRect(screenX - 6, screenY - 42, 5, 10);
+                this.ctx.fillRect(screenX + 2, screenY - 40, 4, 8);
+
+                this.ctx.fillStyle = '#ff6600';
+                this.ctx.globalAlpha = 0.8;
+                this.ctx.fillRect(screenX - 5, screenY - 44, 3, 4);
+                this.ctx.fillRect(screenX + 3, screenY - 42, 3, 4);
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.fillStyle = '#6a4a2a';
+                this.ctx.fillRect(screenX - 14, screenY - 6, 28, 18);
+
+                this.ctx.fillStyle = '#ff8800';
+                this.ctx.fillRect(screenX - 6, screenY, 12, 8);
+
+                this.ctx.strokeStyle = '#8a6a4a';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(screenX - 14, screenY - 6, 28, 18);
+                break;
+
+            case 'telegraph':
+                this.ctx.fillStyle = '#5a4a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX + 16, screenY - 26);
+                this.ctx.lineTo(screenX + 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX - 16, screenY - 26);
+                this.ctx.lineTo(screenX - 16, screenY + 6);
+                this.ctx.lineTo(screenX, screenY + 14);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 34);
+                this.ctx.lineTo(screenX - 16, screenY - 26);
+                this.ctx.lineTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 16, screenY - 26);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#3a3a3a';
+                this.ctx.lineWidth = 2;
+                for (let i = -2; i <= 2; i++) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX + i * 6, screenY - 38);
+                    this.ctx.lineTo(screenX + i * 6, screenY - 28);
+                    this.ctx.stroke();
+                }
+
+                this.ctx.strokeStyle = '#2a2a2a';
+                this.ctx.lineWidth = 1;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX - 12, screenY - 36);
+                this.ctx.lineTo(screenX + 12, screenY - 36);
+                this.ctx.stroke();
+
+                this.ctx.fillStyle = '#8b7355';
+                this.ctx.fillRect(screenX - 4, screenY - 8, 8, 16);
+                break;
+
+            case 'ascensiongate':
+                this.ctx.fillStyle = '#1a0a2a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 60);
+                this.ctx.lineTo(screenX + 36, screenY - 46);
+                this.ctx.lineTo(screenX + 36, screenY + 22);
+                this.ctx.lineTo(screenX, screenY + 36);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a1a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 60);
+                this.ctx.lineTo(screenX - 36, screenY - 46);
+                this.ctx.lineTo(screenX - 36, screenY + 22);
+                this.ctx.lineTo(screenX, screenY + 36);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a2a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 60);
+                this.ctx.lineTo(screenX - 36, screenY - 46);
+                this.ctx.lineTo(screenX, screenY - 32);
+                this.ctx.lineTo(screenX + 36, screenY - 46);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8800ff';
+                this.ctx.fillRect(screenX - 10, screenY - 10, 20, 40);
+
+                this.ctx.strokeStyle = '#ff00ff';
+                this.ctx.lineWidth = 4;
+                this.ctx.strokeRect(screenX - 10, screenY - 10, 20, 40);
+
+                this.ctx.fillStyle = '#ffff00';
+                this.ctx.globalAlpha = 0.8;
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const x = screenX + Math.cos(angle) * 24;
+                    const y = screenY + 10 + Math.sin(angle) * 14;
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                this.ctx.globalAlpha = 1;
+                break;
+
+            case 'matrixcore':
+                this.ctx.fillStyle = '#0a0a1a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 56);
+                this.ctx.lineTo(screenX + 34, screenY - 42);
+                this.ctx.lineTo(screenX + 34, screenY + 20);
+                this.ctx.lineTo(screenX, screenY + 34);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#1a1a2a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 56);
+                this.ctx.lineTo(screenX - 34, screenY - 42);
+                this.ctx.lineTo(screenX - 34, screenY + 20);
+                this.ctx.lineTo(screenX, screenY + 34);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 56);
+                this.ctx.lineTo(screenX - 34, screenY - 42);
+                this.ctx.lineTo(screenX, screenY - 28);
+                this.ctx.lineTo(screenX + 34, screenY - 42);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#00ff00';
+                this.ctx.globalAlpha = 0.6;
+                for (let i = 0; i < 12; i++) {
+                    const x = screenX - 30 + (i % 6) * 10;
+                    const y = screenY - 20 + Math.floor(i / 6) * 20;
+                    this.ctx.fillRect(x, y, 2, 12);
+                }
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.strokeStyle = '#00ffff';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(screenX - 16, screenY - 8, 32, 24);
+                break;
+
+            case 'dysonswarm':
+                this.ctx.fillStyle = '#1a1a0a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 54);
+                this.ctx.lineTo(screenX + 32, screenY - 40);
+                this.ctx.lineTo(screenX + 32, screenY + 18);
+                this.ctx.lineTo(screenX, screenY + 32);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a2a1a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 54);
+                this.ctx.lineTo(screenX - 32, screenY - 40);
+                this.ctx.lineTo(screenX - 32, screenY + 18);
+                this.ctx.lineTo(screenX, screenY + 32);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ffaa00';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 60, 12, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ffdd00';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 60, 8, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#ff8800';
+                this.ctx.lineWidth = 2;
+                for (let i = 0; i < 16; i++) {
+                    const angle = (i / 16) * Math.PI * 2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX, screenY - 60);
+                    this.ctx.lineTo(
+                        screenX + Math.cos(angle) * 28,
+                        screenY - 60 + Math.sin(angle) * 16
+                    );
+                    this.ctx.stroke();
+                }
+                break;
+
+            case 'colonyship':
+                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 50);
+                this.ctx.lineTo(screenX + 28, screenY - 36);
+                this.ctx.lineTo(screenX + 28, screenY + 16);
+                this.ctx.lineTo(screenX, screenY + 30);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a5a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 50);
+                this.ctx.lineTo(screenX - 28, screenY - 36);
+                this.ctx.lineTo(screenX - 28, screenY + 16);
+                this.ctx.lineTo(screenX, screenY + 30);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a3a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 54);
+                this.ctx.lineTo(screenX - 10, screenY - 50);
+                this.ctx.lineTo(screenX - 8, screenY - 40);
+                this.ctx.lineTo(screenX, screenY - 44);
+                this.ctx.lineTo(screenX + 8, screenY - 40);
+                this.ctx.lineTo(screenX + 10, screenY - 50);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a7a8a';
+                this.ctx.fillRect(screenX - 20, screenY - 10, 40, 20);
+                this.ctx.fillRect(screenX - 6, screenY + 10, 12, 16);
+
+                this.ctx.fillStyle = '#00ffff';
+                this.ctx.fillRect(screenX - 16, screenY - 6, 8, 6);
+                this.ctx.fillRect(screenX + 8, screenY - 6, 8, 6);
+                this.ctx.fillRect(screenX - 4, screenY - 6, 8, 6);
+                break;
+
+            case 'terraformer':
+                this.ctx.fillStyle = '#2a5a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 48);
+                this.ctx.lineTo(screenX + 26, screenY - 34);
+                this.ctx.lineTo(screenX + 26, screenY + 14);
+                this.ctx.lineTo(screenX, screenY + 28);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a6a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 48);
+                this.ctx.lineTo(screenX - 26, screenY - 34);
+                this.ctx.lineTo(screenX - 26, screenY + 14);
+                this.ctx.lineTo(screenX, screenY + 28);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a7a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 48);
+                this.ctx.lineTo(screenX - 26, screenY - 34);
+                this.ctx.lineTo(screenX, screenY - 20);
+                this.ctx.lineTo(screenX + 26, screenY - 34);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#00ff00';
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 52, 10, 0, Math.PI * 2);
+                this.ctx.stroke();
+
+                this.ctx.fillStyle = '#88ff88';
+                this.ctx.globalAlpha = 0.5;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX, screenY - 52);
+                    this.ctx.lineTo(
+                        screenX + Math.cos(angle) * 20,
+                        screenY - 52 + Math.sin(angle) * 12
+                    );
+                    this.ctx.stroke();
+                }
+                this.ctx.globalAlpha = 1;
+                break;
+
+            case 'warpgate':
+                this.ctx.fillStyle = '#2a2a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 52);
+                this.ctx.lineTo(screenX + 30, screenY - 38);
+                this.ctx.lineTo(screenX + 30, screenY + 18);
+                this.ctx.lineTo(screenX, screenY + 32);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a3a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 52);
+                this.ctx.lineTo(screenX - 30, screenY - 38);
+                this.ctx.lineTo(screenX - 30, screenY + 18);
+                this.ctx.lineTo(screenX, screenY + 32);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#1a1a3a';
+                this.ctx.fillRect(screenX - 8, screenY - 30, 16, 50);
+
+                this.ctx.strokeStyle = '#8800ff';
+                this.ctx.lineWidth = 4;
+                this.ctx.strokeRect(screenX - 8, screenY - 30, 16, 50);
+
+                this.ctx.fillStyle = '#00ffff';
+                this.ctx.globalAlpha = 0.6;
+                for (let y = -26; y < 18; y += 6) {
+                    this.ctx.fillRect(screenX - 6, screenY + y, 12, 2);
+                }
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.fillStyle = '#ff00ff';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX - 16, screenY - 34, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.arc(screenX + 16, screenY - 34, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+                break;
+
+            case 'quantumlab':
+                this.ctx.fillStyle = '#1a2a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 48);
+                this.ctx.lineTo(screenX + 28, screenY - 36);
+                this.ctx.lineTo(screenX + 28, screenY + 16);
+                this.ctx.lineTo(screenX, screenY + 28);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#2a3a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 48);
+                this.ctx.lineTo(screenX - 28, screenY - 36);
+                this.ctx.lineTo(screenX - 28, screenY + 16);
+                this.ctx.lineTo(screenX, screenY + 28);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 48);
+                this.ctx.lineTo(screenX - 28, screenY - 36);
+                this.ctx.lineTo(screenX, screenY - 24);
+                this.ctx.lineTo(screenX + 28, screenY - 36);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#00ffff';
+                this.ctx.lineWidth = 2;
+                for (let i = 0; i < 4; i++) {
+                    const x = screenX - 18 + i * 12;
+                    this.ctx.strokeRect(x, screenY - 16, 8, 20);
+                }
+
+                this.ctx.fillStyle = '#ff00ff';
+                this.ctx.globalAlpha = 0.7;
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 52, 6, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.globalAlpha = 1;
+
+                this.ctx.strokeStyle = '#ffff00';
+                this.ctx.lineWidth = 1;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(screenX, screenY - 52);
+                    this.ctx.lineTo(
+                        screenX + Math.cos(angle) * 12,
+                        screenY - 52 + Math.sin(angle) * 12
+                    );
+                    this.ctx.stroke();
+                }
+                break;
+
+            case 'orbitalring':
+                this.ctx.fillStyle = '#3a4a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 46);
+                this.ctx.lineTo(screenX + 26, screenY - 34);
+                this.ctx.lineTo(screenX + 26, screenY + 14);
+                this.ctx.lineTo(screenX, screenY + 26);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#4a5a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 46);
+                this.ctx.lineTo(screenX - 26, screenY - 34);
+                this.ctx.lineTo(screenX - 26, screenY + 14);
+                this.ctx.lineTo(screenX, screenY + 26);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#6a7a8a';
+                this.ctx.lineWidth = 4;
+                this.ctx.beginPath();
+                this.ctx.ellipse(screenX, screenY - 10, 24, 14, 0, 0, Math.PI * 2);
+                this.ctx.stroke();
+
+                this.ctx.strokeStyle = '#8a9aaa';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.ellipse(screenX, screenY - 10, 18, 10, 0, 0, Math.PI * 2);
+                this.ctx.stroke();
+
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const x = screenX + Math.cos(angle) * 24;
+                    const y = screenY - 10 + Math.sin(angle) * 14;
+                    this.ctx.fillStyle = '#00ffff';
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, 2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
                 break;
 
 
