@@ -460,13 +460,10 @@ class Game {
                 this.log(`🎉 CIVILIZATION ADVANCED! Welcome to the ${researchResult.newAge.toUpperCase()} AGE!`);
                 this.log(`Research complete: ${techName}`);
                 if (typeof AudioManager !== 'undefined') {
-                    AudioManager.playSFX('sfx-success', 0.8);
+                    AudioManager.playSFX('sounds/complete.mp3', 0.8);
                 }
             } else {
                 this.log(`RESEARCH COMPLETE: ${techName}`);
-                if (typeof AudioManager !== 'undefined') {
-                    AudioManager.playSFX('sfx-success', 0.5);
-                }
             }
 
             if (researchResult.victory) {
@@ -603,9 +600,6 @@ class Game {
                     e.stopPropagation();
                     this.hiringMode = unit.type;
                     this.log(`Click adjacent to your buildings to deploy ${unit.name}`);
-                    if (typeof AudioManager !== 'undefined') {
-                        AudioManager.playSFX('sfx-success', 0.3);
-                    }
                 };
             }
 
@@ -770,9 +764,6 @@ class Game {
 
                     this.player.selectedBuilding = buildingType;
                     this.log(`Selected: ${info.name} - Click on the map to place`);
-                    if (typeof AudioManager !== 'undefined') {
-                        AudioManager.playSFX('sfx-success', 0.3);
-                    }
                 };
             }
 
