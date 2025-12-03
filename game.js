@@ -2219,7 +2219,9 @@ class Game {
     }
 
     updateUI() {
-        document.getElementById('resource-count').textContent = Math.floor(this.player.resources);
+        document.getElementById('resource-count').textContent =
+            `Fe: ${Math.floor(this.player.resources.iron)} Cu: ${Math.floor(this.player.resources.copper)} C: ${Math.floor(this.player.resources.coal)}`;
+
         const totalFood = this.player.settlements.reduce((sum, s) => sum + s.food, 0);
         document.getElementById('food-count').textContent = Math.floor(totalFood);
         const totalPop = this.player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);

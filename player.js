@@ -1,6 +1,13 @@
 class Player {
     constructor() {
-        this.resources = 15000;
+        this.resources = {
+            iron: 5000,
+            copper: 3000,
+            coal: 2000,
+            oil: 0,
+            silicon: 0,
+            rareMinerals: 0
+        };
         this.population = 50;
         this.settlements = [];
         this.nextSettlementId = 0;
@@ -53,6 +60,30 @@ class Player {
         const settlement = new Settlement(x, y, this.nextSettlementId++, settlementType);
         this.settlements.push(settlement);
         return settlement;
+    }
+
+    hasResources(costs) {
+        for (const [resource, amount] of Object.entries(costs)) {
+            if ((this.resources[resource] || 0) < amount) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    spendResourceTypes(costs) {
+        if (!this.hasResources(costs)) return false;
+
+        for (const [resource, amount] of Object.entries(costs)) {
+            this.resources[resource] -= amount;
+        }
+        return true;
+    }
+
+    addResourceTypes(gains) {
+        for (const [resource, amount] of Object.entries(gains)) {
+            this.resources[resource] = (this.resources[resource] || 0) + amount;
+        }
     }
 
     findNearestSettlement(x, y) {

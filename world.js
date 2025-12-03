@@ -30,30 +30,41 @@ class Planet {
     }
 
     calculateYields(terrain) {
-        const yields = { food: 0, production: 0, science: 0 };
+        const yields = {
+            food: 0,
+            production: 0,
+            science: 0,
+            iron: 0,
+            copper: 0,
+            coal: 0,
+            oil: 0,
+            silicon: 0,
+            rareMinerals: 0
+        };
 
         switch(terrain) {
             case 'darksoil':
                 yields.food = 2;
-                yields.production = 1;
-                yields.science = 1;
+                yields.iron = 1;
+                yields.coal = 1;
                 break;
             case 'rock':
-                yields.production = 2;
-                yields.science = 1;
+                yields.iron = 3;
+                yields.copper = 2;
+                yields.coal = 1;
                 break;
             case 'ash':
-                yields.production = 1;
-                yields.food = 1;
-                yields.science = 2;
+                yields.copper = 2;
+                yields.silicon = 1;
+                yields.coal = 2;
                 break;
             case 'lava':
-                yields.production = 3;
-                yields.science = 1;
+                yields.iron = 2;
+                yields.rareMinerals = 1;
                 break;
             case 'floating':
-                yields.science = 3;
-                yields.production = 1;
+                yields.silicon = 2;
+                yields.rareMinerals = 1;
                 break;
         }
 

@@ -458,6 +458,11 @@ body {
     border-color: #7a8a9a;
 }
 
+#resource-count {
+    font-size: 10px;
+    line-height: 1.3;
+}
+
 #settlement-buildings-list,
 #settlement-citizens-list {
     font-size: 10px;
