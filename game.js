@@ -67,31 +67,260 @@ class Game {
 
             if (command === 'initiate') {
                 addTerminalLine('> Command recognized...', 'terminal-success');
-
-                setTimeout(() => {
-                    addTerminalLine('> Initializing Voidmarch Protocol...', 'terminal-success');
-                }, 500);
-
-                setTimeout(() => {
-                    addTerminalLine('> Loading planetary data...', 'terminal-success');
-                }, 1000);
-
-                setTimeout(() => {
-                    addTerminalLine('> PROTOCOL ACTIVE', 'terminal-success');
-                }, 1500);
-
-                setTimeout(() => {
-                    addTerminalLine('> Transferring to main interface...', 'terminal-success');
-                }, 2000);
-
-                setTimeout(() => {
-                    terminalScreen.style.display = 'none';
-                    startMenu.style.display = 'flex';
-                    AudioManager.playBGM();
-                }, 2800);
+                addTerminalLine('> Accessing deep archive...', 'terminal-success');
 
                 terminalInput.disabled = true;
                 terminalSend.disabled = true;
+
+                setTimeout(() => {
+                    terminalScreen.style.transition = 'opacity 2s ease';
+                    terminalScreen.style.opacity = '0';
+                }, 1000);
+
+                setTimeout(() => {
+                    terminalScreen.style.display = 'none';
+
+                    const cinematicContainer = document.createElement('div');
+                    cinematicContainer.id = 'cinematic-container';
+                    cinematicContainer.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        z-index: 20005;
+                        background: #000000;
+                        overflow: hidden;
+                    `;
+                    document.body.appendChild(cinematicContainer);
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    canvas.style.cssText = 'position: absolute; top: 0; left: 0;';
+                    cinematicContainer.appendChild(canvas);
+
+                    const ctx = canvas.getContext('2d');
+
+                    const ruins = [];
+                    for (let i = 0; i < 20; i++) {
+                        ruins.push({
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * canvas.height,
+                            size: 20 + Math.random() * 60,
+                            speed: 0.2 + Math.random() * 0.5,
+                            opacity: 0.3 + Math.random() * 0.4,
+                            rotation: Math.random() * Math.PI * 2,
+                            rotSpeed: (Math.random() - 0.5) * 0.01
+                        });
+                    }
+
+                    const planet = {
+                        x: canvas.width / 2,
+                        y: canvas.height / 2,
+                        radius: 80,
+                        opacity: 0
+                    };
+
+                    let frame = 0;
+                    const animate = () => {
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        ruins.forEach(ruin => {
+                            ruin.x -= ruin.speed;
+                            ruin.rotation += ruin.rotSpeed;
+                            if (ruin.x < -100) ruin.x = canvas.width + 100;
+
+                            ctx.save();
+                            ctx.translate(ruin.x, ruin.y);
+                            ctx.rotate(ruin.rotation);
+                            ctx.strokeStyle = `rgba(100, 100, 120, ${ruin.opacity})`;
+                            ctx.lineWidth = 2;
+                            ctx.strokeRect(-ruin.size / 2, -ruin.size / 2, ruin.size, ruin.size);
+                            ctx.strokeRect(-ruin.size / 3, -ruin.size / 3, ruin.size / 1.5, ruin.size / 1.5);
+                            ctx.restore();
+                        });
+
+                        if (frame > 60) {
+                            planet.opacity = Math.min(0.8, planet.opacity + 0.01);
+                            ctx.beginPath();
+                            ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(80, 60, 50, ${planet.opacity})`;
+                            ctx.fill();
+                            ctx.strokeStyle = `rgba(150, 100, 80, ${planet.opacity})`;
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
+                        }
+
+                        if (frame === 120) {
+                            ctx.beginPath();
+                            ctx.arc(planet.x, planet.y + planet.radius + 30, 8, 0, Math.PI * 2);
+                            ctx.fillStyle = 'rgba(100, 200, 255, 0.8)';
+                            ctx.fill();
+                        }
+
+                        if (frame > 120 && frame < 150) {
+                            const pulseRadius = (frame - 120) * 15;
+                            ctx.beginPath();
+                            ctx.arc(planet.x, planet.y + planet.radius + 30, pulseRadius, 0, Math.PI * 2);
+                            ctx.strokeStyle = `rgba(100, 200, 255, ${1 - (frame - 120) / 30})`;
+                            ctx.lineWidth = 3;
+                            ctx.stroke();
+                        }
+
+                        frame++;
+                        if (frame < 600) {
+                            requestAnimationFrame(animate);
+                        }
+                    };
+
+                    animate();
+
+                    const textOverlay = document.createElement('div');
+                    textOverlay.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        text-align: center;
+                        color: rgba(200, 200, 220, 0);
+                        font-family: 'Courier New', monospace;
+                        font-size: 24px;
+                        transition: color 1s ease;
+                        pointer-events: none;
+                        text-shadow: 0 0 10px rgba(100, 150, 200, 0.5);
+                    `;
+                    cinematicContainer.appendChild(textOverlay);
+
+                    setTimeout(() => {
+                        textOverlay.textContent = 'The last march failed.';
+                        textOverlay.style.color = 'rgba(200, 200, 220, 1)';
+                    }, 3000);
+
+                    setTimeout(() => {
+                        textOverlay.style.color = 'rgba(200, 200, 220, 0)';
+                    }, 5500);
+
+                    setTimeout(() => {
+                        textOverlay.textContent = 'Yours begins now.';
+                        textOverlay.style.color = 'rgba(200, 200, 220, 1)';
+                    }, 6500);
+
+                    setTimeout(() => {
+                        textOverlay.style.color = 'rgba(200, 200, 220, 0)';
+                    }, 9000);
+
+                    setTimeout(() => {
+                        canvas.style.transition = 'opacity 1s ease';
+                        canvas.style.opacity = '0';
+                        textOverlay.style.display = 'none';
+
+                        const dataStream = document.createElement('div');
+                        dataStream.style.cssText = `
+                            position: absolute;
+                            top: 20%;
+                            left: 10%;
+                            right: 10%;
+                            font-family: 'Courier New', monospace;
+                            font-size: 14px;
+                            color: #00ff00;
+                            line-height: 1.8;
+                        `;
+                        cinematicContainer.appendChild(dataStream);
+
+                        const lines = [
+                            'Reconstructing planetary biosphere...',
+                            'Simulating ecological variables...',
+                            'Uploading societal genetic memory...',
+                            'Analyzing historical collapse patterns...',
+                            'Error: No governing protocol detected.',
+                            '',
+                            'Initializing Voidmarch Protocol...'
+                        ];
+
+                        let lineIndex = 0;
+                        const typeLines = () => {
+                            if (lineIndex < lines.length) {
+                                const p = document.createElement('p');
+                                p.style.margin = '4px 0';
+                                p.textContent = '> ' + lines[lineIndex];
+                                dataStream.appendChild(p);
+                                lineIndex++;
+                                setTimeout(typeLines, 800);
+                            }
+                        };
+
+                        typeLines();
+                    }, 10000);
+
+                    setTimeout(() => {
+                        cinematicContainer.style.transition = 'opacity 0.5s ease';
+                        cinematicContainer.style.opacity = '0';
+                    }, 17000);
+
+                    setTimeout(() => {
+                        const hologramDiv = document.createElement('div');
+                        hologramDiv.style.cssText = `
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            z-index: 20006;
+                            background: #000000;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            opacity: 0;
+                            transition: opacity 1s ease;
+                        `;
+                        document.body.appendChild(hologramDiv);
+
+                        const hologramText = document.createElement('div');
+                        hologramText.style.cssText = `
+                            font-family: 'Courier New', monospace;
+                            font-size: 18px;
+                            color: rgba(100, 200, 255, 0.7);
+                            text-align: center;
+                            max-width: 800px;
+                            line-height: 1.8;
+                            text-shadow: 0 0 15px rgba(100, 200, 255, 0.5);
+                            animation: flicker 0.15s infinite;
+                        `;
+                        hologramText.innerHTML = `
+                            <p style="margin-bottom: 30px; font-size: 12px; color: rgba(255, 100, 100, 0.6);">[TRANSMISSION CORRUPTED]</p>
+                            <p>"If this message reaches you...</p>
+                            <p>the cycle has begun again.</p>
+                            <p style="margin-top: 20px;">The Voidmarch Protocol is your only hope.</p>
+                            <p style="margin-top: 30px; font-weight: bold;">Build. Survive. Ascend."</p>
+                            <p style="margin-top: 30px; font-size: 10px; color: rgba(150, 150, 170, 0.5);">— Species Archive 7741-Ω</p>
+                        `;
+                        hologramDiv.appendChild(hologramText);
+
+                        setTimeout(() => {
+                            hologramDiv.style.opacity = '1';
+                        }, 100);
+
+                        setTimeout(() => {
+                            hologramDiv.style.opacity = '0';
+                        }, 6000);
+
+                        setTimeout(() => {
+                            document.body.removeChild(cinematicContainer);
+                            document.body.removeChild(hologramDiv);
+
+                            startMenu.style.display = 'flex';
+                            startMenu.style.opacity = '0';
+                            startMenu.style.transition = 'opacity 2s ease';
+
+                            setTimeout(() => {
+                                startMenu.style.opacity = '1';
+                                AudioManager.playBGM();
+                            }, 100);
+                        }, 7000);
+                    }, 17500);
+                }, 500);
             } else {
                 addTerminalLine(`> ERROR: Unknown command '${command}'`, 'terminal-error');
                 addTerminalLine('> Type \'initiate\' to begin protocol', 'terminal-warning');
