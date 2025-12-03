@@ -282,7 +282,8 @@ class Game {
         AudioManager.stopBGM();
         const gamePlaylist = [
             'sounds/exodus-protocol.mp3',
-            'sounds/magma-layer.mp3'
+            'sounds/magma-layer.mp3',
+            'sounds/retro-protocol.mp3'
         ];
         AudioManager.init(gamePlaylist);
         AudioManager.playBGM();
@@ -450,6 +451,35 @@ class Game {
         this.player.sciencePerTurn = totalScience;
 
         this.player.addProduction(totalProduction);
+
+        const resourceYields = {
+            iron: 0,
+            copper: 0,
+            coal: 0,
+            oil: 0,
+            silicon: 0,
+            rareMinerals: 0
+        };
+
+        this.currentPlanet.structures.forEach(building => {
+            if (building.isFrame || building.type === 'ruins' || building.type === 'defense_node') return;
+
+            const tile = this.currentPlanet.tiles[building.y][building.x];
+
+            for (const resource in resourceYields) {
+                resourceYields[resource] += tile.yields[resource] || 0;
+            }
+        });
+
+        this.player.settlements.forEach(settlement => {
+            settlement.storageCapacity = settlement.getBaseStorageCapacity();
+
+            for (const resource in resourceYields) {
+                const amount = resourceYields[resource] / this.player.settlements.length;
+                const stored = settlement.addResourcesToStorage(resource, amount);
+                this.player.resources[resource] += stored;
+            }
+        });
 
         const researchResult = this.player.techTree.progressResearch();
 
@@ -1781,8 +1811,106 @@ class Game {
             buildingsList.appendChild(item);
         });
 
+        let educationDiv = document.getElementById('settlement-education');
+        if (!educationDiv) {
+            educationDiv = document.createElement('div');
+            educationDiv.id = 'settlement-education';
+            educationDiv.style.cssText = 'margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #3a4454;';
+            document.getElementById('settlement-buildings-list').parentElement.insertAdjacentElement('afterend', educationDiv);
+        }
+
+        educationDiv.innerHTML = '';
+
+        const educationTitle = document.createElement('h3');
+        educationTitle.textContent = 'EDUCATION';
+        educationTitle.style.cssText = 'color: #8fa3c8; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; font-weight: 600;';
+        educationDiv.appendChild(educationTitle);
+
+        const educationStats = settlement.getEducationStats();
+        const totalEducatable = educationStats.uneducated + educationStats.basic + educationStats.advanced + educationStats.expert;
+
+        if (totalEducatable > 0) {
+            const statsContainer = document.createElement('div');
+            statsContainer.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 9px;';
+
+            const createStatItem = (label, count, color) => {
+                const item = document.createElement('div');
+                item.style.cssText = `background: rgba(58, 74, 90, 0.3); padding: 3px 6px; border-radius: 3px; border-left: 3px solid ${color};`;
+                item.innerHTML = `<span style="color: #a8b8d8;">${label}:</span> <strong style="color: ${color};">${count}</strong>`;
+                return item;
+            };
+
+            statsContainer.appendChild(createStatItem('Uneducated', educationStats.uneducated, '#888888'));
+            statsContainer.appendChild(createStatItem('Basic', educationStats.basic, '#88cc88'));
+            statsContainer.appendChild(createStatItem('Advanced', educationStats.advanced, '#88aaff'));
+            statsContainer.appendChild(createStatItem('Expert', educationStats.expert, '#ffaa00'));
+
+            educationDiv.appendChild(statsContainer);
+
+            const schoolCount = settlement.buildings.get('school') || 0;
+            const universityCount = settlement.buildings.get('university') || 0;
+            const academyCount = settlement.buildings.get('academy') || 0;
+
+            if (schoolCount + universityCount + academyCount > 0) {
+                const facilitiesDiv = document.createElement('div');
+                facilitiesDiv.style.cssText = 'margin-top: 6px; font-size: 8px; color: #7a8a9a;';
+                facilitiesDiv.innerHTML = `Facilities: ${schoolCount > 0 ? `${schoolCount} School(s)` : ''} ${universityCount > 0 ? `${universityCount} University` : ''} ${academyCount > 0 ? `${academyCount} Academy` : ''}`.trim();
+                educationDiv.appendChild(facilitiesDiv);
+            } else {
+                const noFacilitiesDiv = document.createElement('div');
+                noFacilitiesDiv.style.cssText = 'margin-top: 6px; font-size: 8px; color: #aa6666; font-style: italic;';
+                noFacilitiesDiv.textContent = 'No education facilities - citizens learning slowly';
+                educationDiv.appendChild(noFacilitiesDiv);
+            }
+        } else {
+            const noPopDiv = document.createElement('div');
+            noPopDiv.style.cssText = 'font-size: 9px; color: #7a8a9a; font-style: italic;';
+            noPopDiv.textContent = 'No citizens of school age';
+            educationDiv.appendChild(noPopDiv);
+        }
+
         const citizensList = document.getElementById('settlement-citizens-list');
         citizensList.innerHTML = '';
+
+
+
+        let demographicsDiv = document.getElementById('settlement-demographics');
+        if (!demographicsDiv) {
+            demographicsDiv = document.createElement('div');
+            demographicsDiv.id = 'settlement-demographics';
+            demographicsDiv.style.cssText = 'margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #3a4454;';
+
+            const insertAfter = document.getElementById('settlement-education') || document.getElementById('settlement-buildings-list').parentElement;
+            insertAfter.insertAdjacentElement('afterend', demographicsDiv);
+        }
+
+        demographicsDiv.innerHTML = '';
+
+        const demographicsTitle = document.createElement('h3');
+        demographicsTitle.textContent = 'DEMOGRAPHICS';
+        demographicsTitle.style.cssText = 'color: #8fa3c8; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; font-weight: 600;';
+        demographicsDiv.appendChild(demographicsTitle);
+
+        const children = settlement.children.length;
+        const adults = settlement.citizens.filter(c => c.age < 65).length;
+        const elders = settlement.citizens.filter(c => c.age >= 65).length;
+        const total = children + adults + elders;
+
+        const childPercent = total > 0 ? Math.round((children / total) * 100) : 0;
+        const adultPercent = total > 0 ? Math.round((adults / total) * 100) : 0;
+        const elderPercent = total > 0 ? Math.round((elders / total) * 100) : 0;
+
+        const demographicsContent = document.createElement('div');
+        demographicsContent.style.cssText = 'font-size: 9px; color: #a8b8d8;';
+        demographicsContent.innerHTML = `
+            <div style="margin: 3px 0;">Children (0-17): ${children} (${childPercent}%)</div>
+            <div style="margin: 3px 0;">Adults (18-64): ${adults} (${adultPercent}%)</div>
+            <div style="margin: 3px 0;">Elders (65+): ${elders} (${elderPercent}%)</div>
+            <div style="margin: 6px 0 3px 0; padding-top: 6px; border-top: 1px solid #3a4454;">Birth Rate: 0/turn</div>
+            <div style="margin: 3px 0;">Death Rate: 0/turn</div>
+            <div style="margin: 3px 0;">Life Expectancy: 65 years</div>
+        `;
+        demographicsDiv.appendChild(demographicsContent);
 
         const maxPop = settlement.getMaxPopulation();
         const totalPop = settlement.citizens.length + settlement.children.length;
@@ -1795,10 +1923,32 @@ class Game {
         settlement.citizens.forEach(citizen => {
             const item = document.createElement('div');
             item.className = 'citizen-item';
+
+            const educationColors = {
+                uneducated: '#888888',
+                basic: '#88cc88',
+                advanced: '#88aaff',
+                expert: '#ffaa00'
+            };
+
+            const educationLabels = {
+                uneducated: 'Uneducated',
+                basic: 'Basic Ed.',
+                advanced: 'Advanced Ed.',
+                expert: 'Expert'
+            };
+
+            const eduColor = educationColors[citizen.education] || '#888888';
+            const eduLabel = educationLabels[citizen.education] || 'Unknown';
+
             const childrenInfo = citizen.hasChildren ? ` | ${citizen.childrenCount} children` : '';
+
             item.innerHTML = `
                 <div class="citizen-name">${citizen.name}</div>
-                <div class="citizen-details">Age: ${citizen.age} | ${citizen.job}${childrenInfo}</div>
+                <div class="citizen-details">
+                    Age: ${citizen.age} | ${citizen.job}${childrenInfo}
+                    <span style="color: ${eduColor}; margin-left: 4px;">| ${eduLabel}</span>
+                </div>
             `;
             citizensList.appendChild(item);
         });
@@ -1813,9 +1963,33 @@ class Game {
                 const item = document.createElement('div');
                 item.className = 'citizen-item';
                 item.style.background = 'rgba(90, 120, 150, 0.2)';
+
+                const educationColors = {
+                    uneducated: '#888888',
+                    basic: '#88cc88',
+                    advanced: '#88aaff',
+                    expert: '#ffaa00'
+                };
+
+                const educationLabels = {
+                    uneducated: 'Uneducated',
+                    basic: 'Basic Ed.',
+                    advanced: 'Advanced Ed.',
+                    expert: 'Expert'
+                };
+
+                const eduColor = educationColors[child.education] || '#888888';
+                const eduLabel = educationLabels[child.education] || 'Unknown';
+
+                const progressInfo = child.age >= 6 && child.educationProgress > 0 ?
+                    ` (${Math.floor(child.educationProgress)}%)` : '';
+
                 item.innerHTML = `
                     <div class="citizen-name">${child.name}</div>
-                    <div class="citizen-details">Age: ${child.age} | ${child.job}</div>
+                    <div class="citizen-details">
+                        Age: ${child.age} | ${child.job}
+                        <span style="color: ${eduColor}; margin-left: 4px;">| ${eduLabel}${progressInfo}</span>
+                    </div>
                 `;
                 citizensList.appendChild(item);
             });
@@ -2046,6 +2220,16 @@ class Game {
                 this.ctx.globalAlpha = 0.5;
             }
         }
+
+        if (canPlace) {
+            this.ctx.fillStyle = '#88ff88';
+        } else {
+            this.ctx.fillStyle = '#ff8888';
+        }
+        this.ctx.font = '12px monospace';
+        this.ctx.textAlign = 'left';
+        this.ctx.globalAlpha = 1;
+        this.ctx.fillText(`Building: ${this.player.selectedBuilding} | Location: (${gridX}, ${gridY})`, 650, this.height - 240);
 
         this.ctx.restore();
     }

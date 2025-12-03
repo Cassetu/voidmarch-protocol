@@ -22,14 +22,145 @@ class Settlement {
             forge: 1,
             temple: 1,
             barracks: 1,
-            market: 1
+            market: 1,
+            school: 2,
+            academy: 1
         };
+
+        this.resourceStorage = {
+            iron: 0,
+            copper: 0,
+            coal: 0,
+            oil: 0,
+            silicon: 0,
+            rareMinerals: 0
+        };
+        this.storageCapacity = this.getBaseStorageCapacity();
+
+        this.lastBirths = 0;
+        this.lastDeaths = 0;
+        this.demographicHistory = [];
 
         for (let i = 0; i < 5; i++) {
             this.citizens.push(this.generateCitizen());
         }
 
         this.tryCreateFamilies();
+    }
+
+    progressEducation() {
+        const schoolCount = this.buildings.get('school') || 0;
+        const universityCount = this.buildings.get('university') || 0;
+        const academyCount = this.buildings.get('academy') || 0;
+
+        const educationCapacity = {
+            basic: schoolCount * 10 + academyCount * 5,
+            advanced: universityCount * 8 + academyCount * 4,
+            expert: universityCount * 3
+        };
+
+        let basicSlots = educationCapacity.basic;
+        let advancedSlots = educationCapacity.advanced;
+        let expertSlots = educationCapacity.expert;
+
+        this.children.forEach(child => {
+            if (child.age >= 6) {
+                if (child.education === 'uneducated') {
+                    if (basicSlots > 0) {
+                        child.educationProgress += 15;
+                        basicSlots--;
+                    } else {
+                        child.educationProgress += 2;
+                    }
+
+                    if (child.educationProgress >= 100) {
+                        child.education = 'basic';
+                        child.educationProgress = 0;
+                    }
+                }
+            }
+        });
+
+        this.citizens.forEach(citizen => {
+            if (citizen.education === 'uneducated') {
+                if (basicSlots > 0) {
+                    citizen.educationProgress += 8;
+                    basicSlots--;
+                } else {
+                    citizen.educationProgress += 1;
+                }
+
+                if (citizen.educationProgress >= 100) {
+                    citizen.education = 'basic';
+                    citizen.educationProgress = 0;
+                }
+            } else if (citizen.education === 'basic') {
+                if (advancedSlots > 0) {
+                    citizen.educationProgress += 6;
+                    advancedSlots--;
+
+                    if (citizen.educationProgress >= 150) {
+                        citizen.education = 'advanced';
+                        citizen.educationProgress = 0;
+                    }
+                }
+            } else if (citizen.education === 'advanced') {
+                if (expertSlots > 0) {
+                    citizen.educationProgress += 4;
+                    expertSlots--;
+
+                    if (citizen.educationProgress >= 200) {
+                        citizen.education = 'expert';
+                        citizen.educationProgress = 0;
+                    }
+                }
+            }
+        });
+    }
+
+    getEducationStats() {
+        const stats = {
+            uneducated: 0,
+            basic: 0,
+            advanced: 0,
+            expert: 0
+        };
+
+        this.citizens.forEach(citizen => {
+            stats[citizen.education] = (stats[citizen.education] || 0) + 1;
+        });
+
+        this.children.forEach(child => {
+            if (child.age >= 6) {
+                stats[child.education] = (stats[child.education] || 0) + 1;
+            }
+        });
+
+        return stats;
+    }
+
+    getBaseStorageCapacity() {
+        let capacity = 100;
+
+        const warehouseCount = this.buildings.get('warehouse') || 0;
+        capacity += warehouseCount * 200;
+
+        return capacity;
+    }
+
+    canStoreResources(resourceType, amount) {
+        const currentStored = this.resourceStorage[resourceType] || 0;
+        return (currentStored + amount) <= this.storageCapacity;
+    }
+
+    addResourcesToStorage(resourceType, amount) {
+        if (!this.canStoreResources(resourceType, amount)) {
+            const available = this.storageCapacity - (this.resourceStorage[resourceType] || 0);
+            this.resourceStorage[resourceType] += available;
+            return available;
+        }
+        this.resourceStorage[resourceType] += amount;
+        return amount;
     }
 
     getBasePopulationCap() {
@@ -104,6 +235,7 @@ class Settlement {
     }
 
     tryCreateFamilies() {
+        this.lastBirths = 0;
         const eligibleAdults = this.citizens.filter(c => c.age >= 20 && c.age <= 50 && !c.hasChildren);
 
         eligibleAdults.forEach(citizen => {
@@ -117,6 +249,7 @@ class Settlement {
                 for (let i = 0; i < actualChildren; i++) {
                     const child = this.generateChild(citizen);
                     this.children.push(child);
+                    this.lastBirths++;
                 }
 
                 if (actualChildren > 0) {
@@ -264,11 +397,58 @@ class Settlement {
             id: `${Date.now()}-${Math.random()}`,
             name: `${firstName} ${lastName}`,
             age: Math.floor(Math.random() * 50) + 18,
-            job: 'Citizen'
+            job: 'Citizen',
+            ageGroup: this.getAgeGroup(Math.floor(Math.random() * 50) + 18)
         };
     }
 
+    getAgeGroup(age) {
+        if (age < 18) return 'child';
+        if (age < 65) return 'adult';
+        return 'elder';
+    }
+
+    updateAgeGroups() {
+        this.citizens.forEach(citizen => {
+            citizen.ageGroup = this.getAgeGroup(citizen.age);
+        });
+        this.children.forEach(child => {
+            child.ageGroup = this.getAgeGroup(child.age);
+        });
+    }
+
+    getDemographics() {
+        const demographics = {
+            children: 0,
+            adults: 0,
+            elders: 0,
+            totalPop: this.getPopulation(),
+            birthRate: 0,
+            deathRate: 0,
+            lifeExpectancy: 70
+        };
+
+        this.citizens.forEach(citizen => {
+            demographics[citizen.ageGroup]++;
+        });
+
+        this.children.forEach(child => {
+            demographics.children++;
+        });
+
+        demographics.birthRate = this.lastBirths || 0;
+        demographics.deathRate = this.lastDeaths || 0;
+
+        const foodPerPerson = this.food / Math.max(1, demographics.totalPop);
+        const wellFed = foodPerPerson >= 10;
+        demographics.lifeExpectancy = wellFed ? 75 : 65;
+
+        return demographics;
+    }
+
     ageUp() {
+        this.lastDeaths = 0;
+
         this.citizens.forEach(citizen => {
             citizen.age++;
 
@@ -281,7 +461,11 @@ class Settlement {
             } else {
                 citizen.job = 'Apprentice';
             }
+
+            citizen.ageGroup = this.getAgeGroup(citizen.age);
         });
+
+        const beforeCount = this.citizens.length;
 
         this.citizens = this.citizens.filter(citizen => {
             const foodPerPerson = this.food / Math.max(1, this.getPopulation());
@@ -295,6 +479,9 @@ class Settlement {
             }
             return true;
         });
+
+        this.lastDeaths = beforeCount - this.citizens.length;
+        this.updateAgeGroups();
     }
 
     isWithinClaim(x, y) {
