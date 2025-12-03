@@ -513,7 +513,8 @@ class Game {
             'sounds/exodus-protocol.mp3',
             'sounds/magma-layer.mp3',
             'sounds/retro-protocol.mp3',
-            'sounds/core_ruin.mp3'
+            'sounds/core_ruin.mp3',
+            'sounds/swarm_defense.mp3'
         ];
         AudioManager.init(gamePlaylist);
         AudioManager.playBGM();
