@@ -88,6 +88,27 @@
                     <button id="galaxy-map-btn" style="display: none;">Galaxy Map</button>
                     <button id="open-military-btn" style="display: none;">Military Command</button>
                 </div>
+                <div class="panel-section">
+                    <h3>Ecosystem</h3>
+                    <div id="ecosystem-info">
+                        <div class="ecosystem-stat">
+                            <span>Health:</span>
+                            <strong id="ecosystem-health">100%</strong>
+                        </div>
+                        <div class="ecosystem-stat">
+                            <span>Ashworms:</span>
+                            <strong id="ashworm-count">0</strong>
+                        </div>
+                        <div class="ecosystem-stat">
+                            <span>Magma Beetles:</span>
+                            <strong id="beetle-count">0</strong>
+                        </div>
+                        <div class="ecosystem-stat">
+                            <span>Emberbirds:</span>
+                            <strong id="bird-count">0</strong>
+                        </div>
+                    </div>
+                </div>
                 <button id="end-turn-btn">End Turn</button>
                 <button id="open-buildings-btn" style="background: #2a4a5a; border-color: #4a6a8a; width: 100%; padding: 8px; margin-bottom: 6px;">Open Buildings Menu</button>
                 <div class="panel-section">
@@ -163,9 +184,11 @@
 <script src="renderers/unitRenderer.js"></script>
 <script src="renderers/effectsRenderer.js"></script>
 <script src="renderers/overlayRenderer.js"></script>
+<script src="renderers/creatureRenderer.js"></script>
 <script src="renderers/renderer.js"></script>
 <script src="input.js"></script>
 <script src="events.js"></script>
+<script src="ecosystem.js"></script>
 <script src="techTree.js"></script>
 <script src="galaxy.js"></script>
 <script src="conquest.js"></script>

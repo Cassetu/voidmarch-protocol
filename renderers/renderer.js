@@ -53,6 +53,7 @@ class Renderer {
             this.unitRenderer = new UnitRenderer(ctx, this.tileWidth, this.tileHeight);
             this.effectsRenderer = new EffectsRenderer(ctx, width, height);
             this.overlayRenderer = new OverlayRenderer(ctx, this.tileWidth, this.tileHeight);
+            this.creatureRenderer = new CreatureRenderer(ctx, this.tileWidth, this.tileHeight);
     }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
@@ -129,5 +130,16 @@ class Renderer {
 
     drawBuildingQueue(buildingQueue) {
         this.overlayRenderer.drawBuildingQueue(buildingQueue);
+    }
+
+    drawTileEnrichment(gridX, gridY, tile, cameraX, cameraY) {
+        const screenX = (gridX - gridY) * (this.tileWidth / 2);
+        const screenY = (gridX + gridY) * (this.tileHeight / 2);
+        this.creatureRenderer.drawTileEnrichments(tile, screenX, screenY);
+    }
+
+    drawCreatures(ecosystem, cameraX, cameraY) {
+        this.creatureRenderer.updateAnimation();
+        this.creatureRenderer.drawCreatures(ecosystem, cameraX, cameraY);
     }
 }

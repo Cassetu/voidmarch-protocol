@@ -468,6 +468,24 @@ body {
     50% { opacity: 0.8; }
 }
 
+.ecosystem-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    margin: 4px 0;
+    color: #a8b8d8;
+}
+
+.ecosystem-stat strong {
+    color: #c0d0e8;
+}
+
+#ecosystem-info {
+    padding: 6px;
+    background: rgba(26, 31, 46, 0.4);
+    border-radius: 3px;
+}
+
 #settlement-buildings-list,
 #settlement-citizens-list {
     font-size: 10px;

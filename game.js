@@ -25,6 +25,7 @@ class Game {
         this.galaxy = new Galaxy(this);
         this.currentPlanet = this.galaxy.planetInstances.get(0);
         this.eventSystem = new EventSystem(this.currentPlanet, this.player, this);
+        this.ecosystem = new Ecosystem(this.currentPlanet, this);
         this.turnBased = true;
         this.player.techTree = new TechTree(this.player);
         this.gameState = 'volcanic';
@@ -620,6 +621,10 @@ class Game {
         this.player.nextTurn();
         this.player.processTurnForSettlements(this.currentPlanet);
         this.updateBuilders();
+
+        if (this.galaxy.currentPlanetIndex === 0) {
+            this.ecosystem.update();
+        }
 
         const totalPopulation = this.player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
         const hasSettlements = this.player.settlements.length > 0;
@@ -2534,6 +2539,14 @@ class Game {
             }
         }
 
+        if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
+            for (let y = 0; y < this.currentPlanet.height; y++) {
+                for (let x = 0; x < this.currentPlanet.width; x++) {
+                    this.renderer.drawTileEnrichment(x, y, this.currentPlanet.tiles[y][x], this.cameraX, this.cameraY);
+                }
+            }
+        }
+
         if (Math.random() < 0.05) {
             for (let y = 0; y < this.currentPlanet.height; y++) {
                 for (let x = 0; x < this.currentPlanet.width; x++) {
@@ -2622,6 +2635,11 @@ class Game {
         });
 
         this.renderer.drawBuildingQueue(this.player.buildingQueue);
+
+        if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
+            this.renderer.drawCreatures(this.ecosystem, this.cameraX, this.cameraY);
+        }
+
         this.ctx.restore();
 
         if (this.player.selectedBuilding && this.gameMode === 'building') {
@@ -2663,6 +2681,23 @@ class Game {
         document.getElementById('production-count').textContent = Math.floor(this.player.production);
         document.getElementById('turn-count').textContent = this.player.turn;
         document.getElementById('core-stability').textContent = Math.floor(this.eventSystem.coreStability) + '%';
+
+        if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
+            const stats = this.ecosystem.getPopulationStats();
+            document.getElementById('ecosystem-health').textContent = Math.floor(stats.health) + '%';
+            document.getElementById('ashworm-count').textContent = stats.ashworms;
+            document.getElementById('beetle-count').textContent = stats.magmabeetles;
+            document.getElementById('bird-count').textContent = stats.emberbirds;
+
+            const healthEl = document.getElementById('ecosystem-health');
+            if (stats.health >= 70) {
+                healthEl.style.color = '#88cc88';
+            } else if (stats.health >= 40) {
+                healthEl.style.color = '#ccaa66';
+            } else {
+                healthEl.style.color = '#cc6666';
+            }
+        }
 
         const isConquest = this.gameMode === 'conquest' && this.conquestSystem;
         document.getElementById('open-military-btn').style.display = isConquest ? 'block' : 'none';
