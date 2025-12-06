@@ -646,6 +646,10 @@ class Game {
         this.player.processTurnForSettlements(this.currentPlanet);
         this.updateBuilders();
 
+        this.player.settlements.forEach(settlement => {
+            settlement.recalculateBuildingCounts(this.currentPlanet);
+        });
+
         if (this.galaxy.currentPlanetIndex === 0) {
             this.ecosystem.update();
         }
@@ -1529,20 +1533,6 @@ class Game {
                     const controllingSettlement = this.player.getControllingSettlement(gridX, gridY);
 
                     if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
-                        const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
-                        tempBuilding.isFrame = true;
-                        tempBuilding.buildProgress = 0;
-                        if (controllingSettlement) {
-                            tempBuilding.settlementIds = [controllingSettlement.id];
-                            tempBuilding.isShared = false;
-                        }
-                        tile.building = tempBuilding;
-                        this.currentPlanet.structures.push(tempBuilding);
-
-                        if (this.player.selectedBuilding !== 'settlement' && controllingSettlement) {
-                            controllingSettlement.addBuilding(this.player.selectedBuilding, 1.0);
-                        }
-
                         const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
 
                         if (settlementTypes.includes(this.player.selectedBuilding)) {
@@ -1944,11 +1934,6 @@ class Game {
                     tile.building.buildProgress = 100;
                     this.player.addBuilding(tile.building);
 
-                    const controllingSettlement = this.player.getControllingSettlement(builder.targetX, builder.targetY);
-                    if (controllingSettlement && builder.buildingType !== 'settlement') {
-                        controllingSettlement.addBuilding(builder.buildingType);
-                    }
-
                     this.log(`Building complete: ${builder.buildingType} at (${builder.targetX}, ${builder.targetY})`);
                 } else if (tile && !tile.building) {
                     const completedBuilding = new Building(builder.targetX, builder.targetY, builder.buildingType);
@@ -2032,6 +2017,8 @@ class Game {
 
         const settlement = this.player.getSettlementAt(x, y);
         if (!settlement) return;
+
+        settlement.recalculateBuildingCounts(this.currentPlanet);
 
         const panel = document.getElementById('settlement-panel');
         panel.style.display = 'block';
@@ -2429,6 +2416,8 @@ class Game {
                     this.log('Must build within settlement claim area!');
                     return;
                 }
+
+                controllingSettlement.recalculateBuildingCounts(this.currentPlanet);
 
                 if (!controllingSettlement.canBuildStructure(this.player.selectedBuilding)) {
                     this.log(`Settlement "${controllingSettlement.name}" already has maximum ${this.player.selectedBuilding}s!`);

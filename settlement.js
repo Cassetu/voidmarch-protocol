@@ -292,6 +292,28 @@ class Settlement {
         }
     }
 
+    recalculateBuildingCounts(planet) {
+        const newCounts = new Map();
+
+        if (!planet || !planet.structures) return;
+
+        planet.structures.forEach(building => {
+            if (building.isFrame || building.type === 'ruins') return;
+
+            const game = window.game;
+            if (!game || !game.player) return;
+
+            const controller = game.player.getControllingSettlement(building.x, building.y);
+
+            if (controller && controller.id === this.id) {
+                const currentCount = newCounts.get(building.type) || 0;
+                newCounts.set(building.type, currentCount + 1);
+            }
+        });
+
+        this.buildings = newCounts;
+    }
+
     generateSettlementName() {
         const terrainCounts = {
             lava: 0,
