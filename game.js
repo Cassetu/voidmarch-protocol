@@ -2433,15 +2433,13 @@ class Game {
                 const controllingSettlement = this.player.getControllingSettlement(gridX, gridY);
 
                 if (!controllingSettlement) {
-                    this.log('Must build within settlement claim area!');
-                    return;
-                }
+                    canPlace = false;
+                } else {
+                    controllingSettlement.recalculateBuildingCounts(this.currentPlanet);
 
-                controllingSettlement.recalculateBuildingCounts(this.currentPlanet);
-
-                if (!controllingSettlement.canBuildStructure(this.player.selectedBuilding)) {
-                    this.log(`Settlement "${controllingSettlement.name}" already has maximum ${this.player.selectedBuilding}s!`);
-                    return;
+                    if (!controllingSettlement.canBuildStructure(this.player.selectedBuilding)) {
+                        canPlace = false;
+                    }
                 }
             }
         }
