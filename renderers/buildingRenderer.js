@@ -207,6 +207,86 @@ class BuildingRenderer {
                 this.ctx.fillRect(screenX - 4, screenY, 2, 2);
                 break;
 
+            case 'shrine':
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX + 10, screenY - 11);
+                this.ctx.lineTo(screenX + 10, screenY + 1);
+                this.ctx.lineTo(screenX, screenY + 6);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8a7a6a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 10, screenY - 11);
+                this.ctx.lineTo(screenX - 10, screenY + 1);
+                this.ctx.lineTo(screenX, screenY + 6);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#9a8a7a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 16);
+                this.ctx.lineTo(screenX - 10, screenY - 11);
+                this.ctx.lineTo(screenX, screenY - 6);
+                this.ctx.lineTo(screenX + 10, screenY - 11);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.beginPath();
+                this.ctx.arc(screenX, screenY - 19, 3, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#ffd700';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 22);
+                this.ctx.lineTo(screenX, screenY - 16);
+                this.ctx.stroke();
+                break;
+
+            case 'scriptorium':
+                this.ctx.fillStyle = '#5a4a3a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX + 12, screenY - 12);
+                this.ctx.lineTo(screenX + 12, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#6a5a4a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 12, screenY - 12);
+                this.ctx.lineTo(screenX - 12, screenY + 2);
+                this.ctx.lineTo(screenX, screenY + 8);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#7a6a5a';
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, screenY - 18);
+                this.ctx.lineTo(screenX - 12, screenY - 12);
+                this.ctx.lineTo(screenX, screenY - 6);
+                this.ctx.lineTo(screenX + 12, screenY - 12);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#8b6914';
+                this.ctx.fillRect(screenX - 8, screenY - 4, 4, 6);
+                this.ctx.fillRect(screenX + 4, screenY - 4, 4, 6);
+
+                this.ctx.fillStyle = '#d4af37';
+                this.ctx.fillRect(screenX - 7, screenY - 3, 2, 1);
+                this.ctx.fillRect(screenX + 5, screenY - 3, 2, 1);
+                this.ctx.fillRect(screenX - 7, screenY, 2, 1);
+                this.ctx.fillRect(screenX + 5, screenY, 2, 1);
+                break;
+
             case 'feudaltown':
                 this.ctx.fillStyle = '#7a6a5a';
                 this.ctx.beginPath();
