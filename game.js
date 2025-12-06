@@ -1526,24 +1526,21 @@ class Game {
                     });
 
                     const tile = this.currentPlanet.tiles[gridY][gridX];
-                    const possibleSettlements = this.player.settlements.filter(settlement =>
-                        settlement.isWithinClaim(gridX, gridY)
-                    );
+                    const controllingSettlement = this.player.getControllingSettlement(gridX, gridY);
 
                     if (tile && !tile.building && tile.type !== 'lava' && tile.type !== 'water' && tile.type !== 'void') {
                         const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
                         tempBuilding.isFrame = true;
                         tempBuilding.buildProgress = 0;
-                        tempBuilding.settlementIds = possibleSettlements.map(s => s.id);
-                        tempBuilding.isShared = possibleSettlements.length > 1;
+                        if (controllingSettlement) {
+                            tempBuilding.settlementIds = [controllingSettlement.id];
+                            tempBuilding.isShared = false;
+                        }
                         tile.building = tempBuilding;
                         this.currentPlanet.structures.push(tempBuilding);
 
-                        if (this.player.selectedBuilding !== 'settlement') {
-                            const shareAmount = 1.0 / possibleSettlements.length;
-                            possibleSettlements.forEach(settlement => {
-                                settlement.addBuilding(this.player.selectedBuilding, shareAmount);
-                            });
+                        if (this.player.selectedBuilding !== 'settlement' && controllingSettlement) {
+                            controllingSettlement.addBuilding(this.player.selectedBuilding, 1.0);
                         }
 
                         const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
@@ -1947,11 +1944,9 @@ class Game {
                     tile.building.buildProgress = 100;
                     this.player.addBuilding(tile.building);
 
-                    const nearestSettlement = this.player.findNearestSettlement(builder.targetX, builder.targetY);
-                    if (nearestSettlement && nearestSettlement.isWithinClaim(builder.targetX, builder.targetY)) {
-                        if (builder.buildingType !== 'settlement') {
-                            nearestSettlement.addBuilding(builder.buildingType);
-                        }
+                    const controllingSettlement = this.player.getControllingSettlement(builder.targetX, builder.targetY);
+                    if (controllingSettlement && builder.buildingType !== 'settlement') {
+                        controllingSettlement.addBuilding(builder.buildingType);
                     }
 
                     this.log(`Building complete: ${builder.buildingType} at (${builder.targetX}, ${builder.targetY})`);
@@ -2428,22 +2423,16 @@ class Game {
                     canPlace = false;
                 }
             } else {
-                const possibleSettlements = this.player.settlements.filter(settlement =>
-                    settlement.isWithinClaim(gridX, gridY)
-                );
+                const controllingSettlement = this.player.getControllingSettlement(gridX, gridY);
 
-                if (possibleSettlements.length === 0) {
-                    canPlace = false;
-                } else {
-                    const nearestSettlement = possibleSettlements.reduce((closest, settlement) => {
-                        const distCurrent = Math.abs(settlement.x - gridX) + Math.abs(settlement.y - gridY);
-                        const distClosest = Math.abs(closest.x - gridX) + Math.abs(closest.y - gridY);
-                        return distCurrent < distClosest ? settlement : closest;
-                    });
+                if (!controllingSettlement) {
+                    this.log('Must build within settlement claim area!');
+                    return;
+                }
 
-                    if (!nearestSettlement.canBuildStructure(this.player.selectedBuilding)) {
-                        canPlace = false;
-                    }
+                if (!controllingSettlement.canBuildStructure(this.player.selectedBuilding)) {
+                    this.log(`Settlement "${controllingSettlement.name}" already has maximum ${this.player.selectedBuilding}s!`);
+                    return;
                 }
             }
         }
