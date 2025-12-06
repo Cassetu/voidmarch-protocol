@@ -705,8 +705,14 @@ class Game {
             if (building.type === 'temple') {
                 totalScience += 5;
             }
+            if (building.type === 'shrine') {
+                totalScience += 3;
+            }
             if (building.type === 'library') {
                 totalScience += 8;
+            }
+            if (building.type === 'scriptorium') {
+                totalScience += 7;
             }
             if (building.type === 'university') {
                 totalScience += 12;
@@ -942,6 +948,7 @@ class Game {
             granary: { name: 'Granary', desc: 'Stores extra food', age: 'Bronze' },
             quarry: { name: 'Quarry', desc: 'Extract stone and minerals', age: 'Bronze' },
             monument: { name: 'Monument', desc: 'Cultural landmark', age: 'Bronze' },
+            shrine: { name: 'Shrine', desc: 'Sacred place (+3 Science)', age: 'Bronze' },
 
             township: { name: 'Township', desc: 'Growing town (Pop: 25, Food: +5)', age: 'Iron' },
             temple: { name: 'Temple', desc: 'Spiritual center (+5 Science)', age: 'Iron' },
@@ -957,6 +964,7 @@ class Game {
             townhall: { name: 'Town Hall', desc: 'Administrative center', age: 'Medieval' },
             arena: { name: 'Arena', desc: 'Entertainment venue', age: 'Medieval' },
             hospital: { name: 'Hospital', desc: 'Medical facility', age: 'Medieval' },
+            scriptorium: { name: 'Scriptorium', desc: 'Knowledge copying center (+7 Science)', age: 'Medieval' },
 
             citystate: { name: 'City-State', desc: 'Independent city (Pop: 60, Food: +12)', age: 'Renaissance' },
             library: { name: 'Library', desc: 'Knowledge repository (+8 Science)', age: 'Renaissance' },
