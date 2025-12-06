@@ -16,6 +16,7 @@ class Player {
         this.ageLevel = 0;
         this.selectedBuilding = null;
         this.buildings = [];
+        this.science = 0;
         this.sciencePerTurn = 0;
         this.production = 0;
         this.turn = 0;

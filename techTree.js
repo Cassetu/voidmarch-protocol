@@ -5,6 +5,21 @@ class TechTree {
         this.researchQueue = [];
         this.currentResearch = null;
         this.researchProgress = 0;
+        this.lockedPaths = new Set();
+        this.techChoices = new Map();
+    }
+
+    lockAlternativePaths(techId) {
+        const tech = this.techs[techId];
+        if (tech.locksOut) {
+            tech.locksOut.forEach(lockedTechId => {
+                this.lockedPaths.add(lockedTechId);
+                const lockedTech = this.techs[lockedTechId];
+                if (lockedTech && lockedTech.locksOut) {
+                    lockedTech.locksOut.forEach(id => this.lockedPaths.add(id));
+                }
+            });
+        }
     }
 
     initializeTechs() {
@@ -28,7 +43,7 @@ class TechTree {
                 prerequisites: ['mining', 'shelter'],
                 unlocks: ['ironAge', 'barracks'],
                 bonus: { age: 'bronze' },
-                description: 'Advance to Bronze Age - Unlock military buildings',
+                description: 'Advance to Bronze Age',
                 planets: ['volcanic']
             },
             ironAge: {
@@ -39,7 +54,7 @@ class TechTree {
                 prerequisites: ['bronzeAge', 'deepMining'],
                 unlocks: ['medievalAge', 'forge', 'temple'],
                 bonus: { age: 'iron' },
-                description: 'Advance to Iron Age - Unlock forges and temples',
+                description: 'Advance to Iron Age',
                 planets: ['volcanic']
             },
             medievalAge: {
@@ -50,7 +65,7 @@ class TechTree {
                 prerequisites: ['ironAge', 'reinforcedStructures'],
                 unlocks: ['renaissanceAge', 'market', 'castle'],
                 bonus: { age: 'medieval' },
-                description: 'Advance to Medieval Era - Unlock markets and castles',
+                description: 'Advance to Medieval Era',
                 planets: ['volcanic']
             },
             renaissanceAge: {
@@ -59,22 +74,224 @@ class TechTree {
                 type: 'age',
                 researched: false,
                 prerequisites: ['medievalAge', 'volcanology'],
-                unlocks: ['spaceAge', 'library'],
+                unlocks: ['industrialAge', 'library'],
                 bonus: { age: 'renaissance' },
-                description: 'Advance to Renaissance - Unlock libraries',
+                description: 'Advance to Renaissance',
                 planets: ['volcanic']
             },
-            spaceAge: {
-                name: 'Space Age',
+
+            industrialAge: {
+                name: 'Industrial Revolution',
                 cost: 800,
                 type: 'age',
                 researched: false,
-                prerequisites: ['renaissanceAge', 'rocketry'],
-                unlocks: ['university', 'exodusProtocol'],
-                bonus: { age: 'space' },
-                description: 'Advance to Space Age - Unlock universities and space travel',
+                prerequisites: ['renaissanceAge', 'steamPower'],
+                unlocks: ['earlyModernAge', 'ironworks', 'trainstation'],
+                bonus: { age: 'industrial', production: 20 },
+                description: 'Advance to Industrial Age',
                 planets: ['volcanic']
             },
+
+            steamPower: {
+                name: 'Steam Power',
+                cost: 600,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['renaissanceAge'],
+                unlocks: ['industrialAge', 'coalPlant'],
+                locksOut: ['renewableEnergy', 'windmills', 'solarPower'],
+                bonus: { production: 15, coal_consumption: 2 },
+                description: 'PATH CHOICE: Fossil fuel based industry',
+                planets: ['volcanic']
+            },
+
+            renewableEnergy: {
+                name: 'Renewable Energy',
+                cost: 600,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['renaissanceAge'],
+                unlocks: ['industrialAge', 'windmills'],
+                locksOut: ['steamPower', 'coalPlant', 'oilRefinery'],
+                bonus: { production: 12, science: 8 },
+                description: 'PATH CHOICE: Sustainable clean energy',
+                planets: ['volcanic']
+            },
+
+            coalPlant: {
+                name: 'Coal Power Plant',
+                cost: 400,
+                type: 'production',
+                researched: false,
+                prerequisites: ['steamPower'],
+                unlocks: ['oilRefinery'],
+                bonus: { production: 25 },
+                description: 'Massive coal-powered production',
+                planets: ['volcanic']
+            },
+
+            windmills: {
+                name: 'Wind Power',
+                cost: 400,
+                type: 'production',
+                researched: false,
+                prerequisites: ['renewableEnergy'],
+                unlocks: ['solarPower'],
+                bonus: { production: 18, science: 5 },
+                description: 'Harness wind energy',
+                planets: ['volcanic']
+            },
+
+            earlyModernAge: {
+                name: 'Early Modern Era',
+                cost: 1200,
+                type: 'age',
+                researched: false,
+                prerequisites: ['industrialAge', 'massProduction'],
+                unlocks: ['victorianAge', 'steamfactory'],
+                bonus: { age: 'earlymodern', production: 30 },
+                description: 'Advance to Early Modern Era',
+                planets: ['volcanic']
+            },
+
+            massProduction: {
+                name: 'Mass Production',
+                cost: 900,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['industrialAge'],
+                unlocks: ['earlyModernAge', 'assemblyLine'],
+                locksOut: ['craftsmanship', 'artisanGuilds'],
+                bonus: { production: 40, buildingHP: -20 },
+                description: 'PATH CHOICE: Quantity over quality',
+                planets: ['volcanic']
+            },
+
+            craftsmanship: {
+                name: 'Master Craftsmanship',
+                cost: 900,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['industrialAge'],
+                unlocks: ['earlyModernAge', 'artisanGuilds'],
+                locksOut: ['massProduction', 'assemblyLine'],
+                bonus: { production: 25, buildingHP: 50, science: 15 },
+                description: 'PATH CHOICE: Quality and expertise',
+                planets: ['volcanic']
+            },
+
+            victorianAge: {
+                name: 'Victorian Age',
+                cost: 1800,
+                type: 'age',
+                researched: false,
+                prerequisites: ['earlyModernAge', 'urbanPlanning'],
+                unlocks: ['modernizationAge', 'parliament'],
+                bonus: { age: 'victorian', population: 50 },
+                description: 'Advance to Victorian Age',
+                planets: ['volcanic']
+            },
+
+            urbanPlanning: {
+                name: 'Urban Planning',
+                cost: 1400,
+                type: 'expansion',
+                researched: false,
+                prerequisites: ['earlyModernAge'],
+                unlocks: ['victorianAge', 'subwaySystem'],
+                bonus: { population: 30 },
+                description: 'Organize cities efficiently',
+                planets: ['volcanic']
+            },
+
+            modernizationAge: {
+                name: 'Age of Modernization',
+                cost: 2500,
+                type: 'age',
+                researched: false,
+                prerequisites: ['victorianAge', 'electricity'],
+                unlocks: ['digitalAge', 'powerplant'],
+                bonus: { age: 'modernization', production: 50 },
+                description: 'Advance to Modernization Age',
+                planets: ['volcanic']
+            },
+
+            electricity: {
+                name: 'Electrical Power',
+                cost: 2000,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['victorianAge'],
+                unlocks: ['modernizationAge', 'powerGrid'],
+                locksOut: ['mechanicalPower'],
+                bonus: { production: 45, science: 20 },
+                description: 'PATH CHOICE: Electrical revolution',
+                planets: ['volcanic']
+            },
+
+            mechanicalPower: {
+                name: 'Advanced Mechanics',
+                cost: 2000,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['victorianAge'],
+                unlocks: ['modernizationAge', 'clockworkEngineering'],
+                locksOut: ['electricity', 'powerGrid'],
+                bonus: { production: 50, buildingHP: 75 },
+                description: 'PATH CHOICE: Mechanical mastery',
+                planets: ['volcanic']
+            },
+
+            digitalAge: {
+                name: 'Digital Age',
+                cost: 3500,
+                type: 'age',
+                researched: false,
+                prerequisites: ['modernizationAge', 'computing'],
+                unlocks: ['spaceAge', 'datacenter'],
+                bonus: { age: 'digital', science: 50 },
+                description: 'Advance to Digital Age',
+                planets: ['volcanic']
+            },
+
+            computing: {
+                name: 'Computing Technology',
+                cost: 3000,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['modernizationAge'],
+                unlocks: ['digitalAge', 'artificialIntelligence'],
+                locksOut: ['analogSystems'],
+                bonus: { science: 40 },
+                description: 'PATH CHOICE: Digital computers',
+                planets: ['volcanic']
+            },
+
+            analogSystems: {
+                name: 'Analog Systems',
+                cost: 3000,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['modernizationAge'],
+                unlocks: ['digitalAge', 'mechanicalComputers'],
+                locksOut: ['computing', 'artificialIntelligence'],
+                bonus: { science: 30, production: 35 },
+                description: 'PATH CHOICE: Mechanical computing',
+                planets: ['volcanic']
+            },
+
+            spaceAge: {
+                name: 'Space Age',
+                cost: 5000,
+                type: 'age',
+                researched: false,
+                prerequisites: ['digitalAge', 'rocketry'],
+                unlocks: ['university', 'exodusProtocol'],
+                bonus: { age: 'space', science: 75 },
+                description: 'Advance to Space Age',
+                planets: ['volcanic']
+            },
+
             shelter: {
                 name: 'Emergency Shelter',
                 cost: 25,
@@ -141,503 +358,54 @@ class TechTree {
                 description: 'Harness planetary heat for power',
                 planets: ['volcanic']
             },
-            seismicDampers: {
-                name: 'Seismic Dampers',
-                cost: 180,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['reinforcedStructures'],
-                unlocks: ['seismicNetwork', 'earthquakePredictor'],
-                bonus: { eruption_resistance: 30 },
-                description: 'Reduce earthquake damage by 30%',
-                planets: ['volcanic']
-            },
-            verticalFarm: {
-                name: 'Vertical Farming',
-                cost: 220,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['hydroponics'],
-                unlocks: ['biodome', 'geneticSeeds'],
-                bonus: { food: 15 },
-                description: 'Stack farms to save space',
-                planets: ['volcanic']
-            },
-            thermalVents: {
-                name: 'Thermal Vent Control',
-                cost: 300,
-                type: 'energy',
-                researched: false,
-                prerequisites: ['geothermalHarvesting'],
-                unlocks: ['coreStabilizer', 'magmaPump'],
-                bonus: { core_stability_slowdown: 0.2 },
-                description: 'Slow core collapse by 20%',
-                planets: ['volcanic']
-            },
-            magmaForge: {
-                name: 'Magma Forge',
-                cost: 250,
-                type: 'production',
-                researched: false,
-                prerequisites: ['geothermalHarvesting'],
-                unlocks: ['advancedAlloys', 'plasmaTools'],
-                bonus: { production: 15 },
-                description: 'Use lava to craft materials',
-                planets: ['volcanic']
-            },
-            seismicNetwork: {
-                name: 'Seismic Network',
-                cost: 280,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['seismicDampers'],
-                unlocks: ['earlyWarning', 'volcanology'],
-                bonus: { eruption_warning: 2 },
-                description: 'Predict eruptions 2 turns early',
-                planets: ['volcanic']
-            },
-            biodome: {
-                name: 'Biodome Technology',
-                cost: 320,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['verticalFarm'],
-                unlocks: ['closedEcosystem', 'oxygenRecycling'],
-                bonus: { food: 20, population: 10 },
-                description: 'Self-contained habitat',
-                planets: ['volcanic']
-            },
-            coreStabilizer: {
-                name: 'Core Stabilizer',
-                cost: 500,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['thermalVents'],
-                unlocks: ['planetaryEngineering', 'coreReactor'],
-                bonus: { core_stability_slowdown: 0.5 },
-                description: 'Slow collapse by 50%',
-                planets: ['volcanic']
-            },
-            advancedAlloys: {
-                name: 'Heat-Resistant Alloys',
-                cost: 350,
-                type: 'production',
-                researched: false,
-                prerequisites: ['magmaForge'],
-                unlocks: ['heatShielding', 'volcanicArmor'],
-                bonus: { production: 20, buildingHP: 100 },
-                description: 'Materials that withstand extreme heat',
-                planets: ['volcanic']
-            },
             volcanology: {
                 name: 'Volcanology',
                 cost: 400,
                 type: 'science',
                 researched: false,
-                prerequisites: ['seismicNetwork'],
-                unlocks: ['mantleMapping', 'eruption_control'],
-                bonus: { science: 15, eruption_warning: 3 },
+                prerequisites: ['geothermalHarvesting'],
+                unlocks: ['renaissanceAge'],
+                bonus: { science: 15 },
                 description: 'Study volcanic patterns',
-                planets: ['volcanic']
-            },
-            closedEcosystem: {
-                name: 'Closed Ecosystem',
-                cost: 450,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['biodome'],
-                unlocks: ['lifeSupportSystems', 'exodusProtocol'],
-                bonus: { food: 30, self_sufficient: true },
-                description: 'No external food needed',
-                planets: ['volcanic']
-            },
-            floatingPlatforms: {
-                name: 'Floating Platforms',
-                cost: 300,
-                type: 'expansion',
-                researched: false,
-                prerequisites: ['reinforcedStructures'],
-                unlocks: ['skyCity', 'antigravity'],
-                bonus: { floating_build: true },
-                description: 'Build on floating islands',
                 planets: ['volcanic']
             },
             rocketry: {
                 name: 'Basic Rocketry',
-                cost: 400,
+                cost: 4000,
                 type: 'escape',
                 researched: false,
-                prerequisites: ['advancedAlloys'],
-                unlocks: ['orbitTech', 'fuelSynthesis'],
+                prerequisites: ['digitalAge'],
+                unlocks: ['spaceAge'],
                 bonus: { rocket_capacity: 10 },
                 description: 'First step to space',
                 planets: ['volcanic']
             },
-            mantleMapping: {
-                name: 'Mantle Mapping',
-                cost: 550,
-                type: 'science',
-                researched: false,
-                prerequisites: ['volcanology'],
-                unlocks: ['coreDiving', 'predictiveModels'],
-                bonus: { science: 25, eruption_warning: 5 },
-                description: 'Map entire planetary core',
-                planets: ['volcanic']
-            },
-            spaceHabitat: {
-                name: 'Space Habitat Design',
-                cost: 600,
-                type: 'escape',
-                researched: false,
-                prerequisites: ['closedEcosystem', 'floatingPlatforms'],
-                unlocks: ['generationShip', 'colonizationPod'],
-                bonus: { ship_capacity: 50 },
-                description: 'Live in space indefinitely',
-                planets: ['volcanic']
-            },
-            antigravity: {
-                name: 'Antigravity Fields',
-                cost: 700,
-                type: 'expansion',
-                researched: false,
-                prerequisites: ['floatingPlatforms', 'coreStabilizer'],
-                unlocks: ['levitatingCity', 'gravityManipulation'],
-                bonus: { all_tiles_buildable: true },
-                description: 'Build anywhere, even on lava',
-                planets: ['volcanic']
-            },
-            orbitTech: {
-                name: 'Orbital Technology',
-                cost: 650,
-                type: 'escape',
-                researched: false,
-                prerequisites: ['rocketry'],
-                unlocks: ['spaceElevator', 'orbitalStation'],
-                bonus: { rocket_capacity: 30 },
-                description: 'Reach stable orbit',
-                planets: ['volcanic']
-            },
-            coreDiving: {
-                name: 'Core Diving',
-                cost: 800,
-                type: 'science',
-                researched: false,
-                prerequisites: ['mantleMapping', 'heatShielding'],
-                unlocks: ['coreHarvesting', 'planetaryReversal'],
-                bonus: { production: 40 },
-                description: 'Extract resources from core',
-                planets: ['volcanic']
-            },
-            generationShip: {
-                name: 'Generation Ship',
-                cost: 1000,
-                type: 'escape',
-                researched: false,
-                prerequisites: ['spaceHabitat', 'orbitTech'],
-                unlocks: ['exodusProtocol'],
-                bonus: { ship_capacity: 200 },
-                description: 'Ship for 200 population',
-                planets: ['volcanic']
-            },
-            heatShielding: {
-                name: 'Thermal Shielding',
-                cost: 500,
-                type: 'production',
-                researched: false,
-                prerequisites: ['advancedAlloys'],
-                unlocks: ['coreDiving', 'lavaSuits'],
-                bonus: { eruption_resistance: 60 },
-                description: 'Survive direct lava exposure',
-                planets: ['volcanic']
-            },
-            fuelSynthesis: {
-                name: 'Fuel Synthesis',
-                cost: 550,
-                type: 'escape',
-                researched: false,
-                prerequisites: ['rocketry', 'geothermalHarvesting'],
-                unlocks: ['fusionDrive', 'antimatterCollector'],
-                bonus: { rocket_fuel_efficiency: 2 },
-                description: 'Create rocket fuel from heat',
-                planets: ['volcanic']
-            },
-            predictiveModels: {
-                name: 'Predictive Models',
-                cost: 750,
-                type: 'science',
-                researched: false,
-                prerequisites: ['mantleMapping'],
-                unlocks: ['eruption_control', 'collapseCalculator'],
-                bonus: { eruption_warning: 7, science: 30 },
-                description: 'Predict all eruptions',
-                planets: ['volcanic']
-            },
-            spaceElevator: {
-                name: 'Space Elevator',
-                cost: 900,
-                type: 'escape',
-                researched: false,
-                prerequisites: ['orbitTech', 'advancedAlloys'],
-                unlocks: ['massEvacuation'],
-                bonus: { evacuation_speed: 50 },
-                description: 'Evacuate 50 people per turn',
-                planets: ['volcanic']
-            },
-            coreHarvesting: {
-                name: 'Core Harvesting',
-                cost: 1200,
-                type: 'production',
-                researched: false,
-                prerequisites: ['coreDiving'],
-                unlocks: ['coreReactor'],
-                bonus: { production: 100, core_stability_loss: 2 },
-                description: 'Massive resources, speeds collapse',
-                planets: ['volcanic']
-            },
-            fusionDrive: {
-                name: 'Fusion Drive',
-                cost: 1100,
-                type: 'escape',
-                researched: false,
-                prerequisites: ['fuelSynthesis'],
-                unlocks: ['warpDrive', 'exodusProtocol'],
-                bonus: { rocket_speed: 10 },
-                description: 'Faster than light travel',
-                planets: ['volcanic']
-            },
-            eruption_control: {
-                name: 'Eruption Suppression',
-                cost: 1300,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['predictiveModels', 'volcanology'],
-                unlocks: ['planetarySalvation'],
-                bonus: { eruption_chance: -50 },
-                description: 'Reduce eruptions by 50%',
-                planets: ['volcanic']
-            },
-            massEvacuation: {
-                name: 'Mass Evacuation',
-                cost: 1400,
-                type: 'escape',
-                researched: false,
-                prerequisites: ['spaceElevator', 'generationShip'],
-                unlocks: ['exodusProtocol'],
-                bonus: { evacuation_speed: 100 },
-                description: 'Save everyone quickly',
-                planets: ['volcanic']
-            },
             exodusProtocol: {
                 name: 'Exodus Protocol',
-                cost: 2000,
+                cost: 8000,
                 type: 'victory',
                 researched: false,
-                prerequisites: ['advancedAlloys', 'closedEcosystem', 'planetaryEngineering'],
+                prerequisites: ['spaceAge', 'rocketry'],
                 unlocks: [],
                 bonus: { can_escape: true },
                 description: 'ESCAPE THE PLANET - Victory!',
                 planets: ['volcanic']
-            },
-            planetarySalvation: {
-                name: 'Planetary Salvation',
-                cost: 2500,
-                type: 'victory',
-                researched: false,
-                prerequisites: ['eruption_control', 'coreStabilizer', 'planetaryEngineering'],
-                unlocks: [],
-                bonus: { core_stable: true },
-                description: 'STABILIZE THE CORE - Victory!',
-                planets: ['volcanic']
-            },
-            planetaryEngineering: {
-                name: 'Planetary Engineering',
-                cost: 1500,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['coreStabilizer', 'mantleMapping'],
-                unlocks: ['planetarySalvation'],
-                bonus: { core_stability_slowdown: 0.8 },
-                description: 'Reshape entire planets',
-                planets: ['volcanic']
-            },
-            coreReactor: {
-                name: 'Core Reactor',
-                cost: 1600,
-                type: 'energy',
-                researched: false,
-                prerequisites: ['coreStabilizer', 'coreHarvesting'],
-                unlocks: ['planetaryEngineering'],
-                bonus: { production: 150, energy: 100 },
-                description: 'Harness core energy directly',
-                planets: ['volcanic']
-            },
-
-            // Conquest planet techs
-            combatTraining: {
-                name: 'Combat Training',
-                cost: 25,
-                type: 'military',
-                researched: false,
-                prerequisites: [],
-                unlocks: ['advancedTactics', 'armorPlating'],
-                bonus: { unit_damage: 5 },
-                description: 'Basic military training',
-                planets: ['conquest']
-            },
-            scavenging: {
-                name: 'Scavenging',
-                cost: 30,
-                type: 'survival',
-                researched: false,
-                prerequisites: [],
-                unlocks: ['efficientSalvage', 'resourceDetection'],
-                bonus: { production: 3 },
-                description: 'Salvage resources from wreckage',
-                planets: ['conquest']
-            },
-            fieldMedicine: {
-                name: 'Field Medicine',
-                cost: 35,
-                type: 'survival',
-                researched: false,
-                prerequisites: [],
-                unlocks: ['combatMedics', 'stimPacks'],
-                bonus: { unit_heal: 10 },
-                description: 'Heal units in the field',
-                planets: ['conquest']
-            },
-            advancedTactics: {
-                name: 'Advanced Tactics',
-                cost: 80,
-                type: 'military',
-                researched: false,
-                prerequisites: ['combatTraining'],
-                unlocks: ['flanking', 'ambushTech'],
-                bonus: { unit_damage: 10 },
-                description: 'Superior battle strategies',
-                planets: ['conquest']
-            },
-            armorPlating: {
-                name: 'Armor Plating',
-                cost: 90,
-                type: 'military',
-                researched: false,
-                prerequisites: ['combatTraining'],
-                unlocks: ['reactiveArmor', 'shieldGenerators'],
-                bonus: { unit_health: 20 },
-                description: 'Better protection for units',
-                planets: ['conquest']
-            },
-            efficientSalvage: {
-                name: 'Efficient Salvage',
-                cost: 100,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['scavenging'],
-                unlocks: ['automatedSalvage'],
-                bonus: { production: 8 },
-                description: 'Extract more from wreckage',
-                planets: ['conquest']
-            },
-            combatMedics: {
-                name: 'Combat Medics',
-                cost: 110,
-                type: 'survival',
-                researched: false,
-                prerequisites: ['fieldMedicine'],
-                unlocks: ['reviveTech'],
-                bonus: { unit_heal: 20 },
-                description: 'Dedicated healing units',
-                planets: ['conquest']
-            },
-            hackingProtocols: {
-                name: 'Hacking Protocols',
-                cost: 120,
-                type: 'tech',
-                researched: false,
-                prerequisites: ['advancedTactics'],
-                unlocks: ['virusUpload', 'systemOverride'],
-                bonus: { hacking_speed: 20 },
-                description: 'Faster node hacking',
-                planets: ['conquest']
-            },
-            flanking: {
-                name: 'Flanking Maneuvers',
-                cost: 150,
-                type: 'military',
-                researched: false,
-                prerequisites: ['advancedTactics'],
-                unlocks: ['surroundTactics'],
-                bonus: { unit_damage: 15, unit_move: 1 },
-                description: 'Attack from multiple angles',
-                planets: ['conquest']
-            },
-            shieldGenerators: {
-                name: 'Shield Generators',
-                cost: 200,
-                type: 'military',
-                researched: false,
-                prerequisites: ['armorPlating'],
-                unlocks: ['fortifiedPositions'],
-                bonus: { unit_health: 40 },
-                description: 'Energy shields for units',
-                planets: ['conquest']
-            },
-            virusUpload: {
-                name: 'Virus Upload',
-                cost: 180,
-                type: 'tech',
-                researched: false,
-                prerequisites: ['hackingProtocols'],
-                unlocks: ['sentinelCorruption'],
-                bonus: { hacking_speed: 40 },
-                description: 'Disable sentinel systems',
-                planets: ['conquest']
-            },
-            sentinelCorruption: {
-                name: 'Sentinel Corruption',
-                cost: 300,
-                type: 'tech',
-                researched: false,
-                prerequisites: ['virusUpload'],
-                unlocks: ['totalDominance'],
-                bonus: { sentinel_weaken: 20 },
-                description: 'Weaken all sentinels by 20%',
-                planets: ['conquest']
-            },
-            fortifiedPositions: {
-                name: 'Fortified Positions',
-                cost: 250,
-                type: 'military',
-                researched: false,
-                prerequisites: ['shieldGenerators'],
-                unlocks: ['totalDominance'],
-                bonus: { building_health: 100 },
-                description: 'Stronger defensive structures',
-                planets: ['conquest']
-            },
-            totalDominance: {
-                name: 'Total Dominance',
-                cost: 500,
-                type: 'victory',
-                researched: false,
-                prerequisites: ['sentinelCorruption', 'fortifiedPositions'],
-                unlocks: [],
-                bonus: { conquest_victory: true },
-                description: 'CONQUER THE PLANET - Victory!',
-                planets: ['conquest']
             }
         };
     }
 
     canResearch(techId) {
         const tech = this.techs[techId];
-        if (!tech || tech.researched) return false;
+        if (!tech || tech.researched || this.lockedPaths.has(techId)) return false;
 
         for (let prereq of tech.prerequisites) {
             if (!this.techs[prereq].researched) {
                 return false;
             }
+        }
+
+        if (this.player.game && this.player.game.instantResearchMode) {
+            return true;
         }
 
         return this.player.sciencePerTurn >= tech.cost;
@@ -647,6 +415,11 @@ class TechTree {
         if (!this.canResearch(techId)) return false;
 
         const tech = this.techs[techId];
+
+        if (this.player.game && this.player.game.instantResearchMode) {
+            return this.completeTech(techId);
+        }
+
         if (this.player.sciencePerTurn < tech.cost) {
             return false;
         }
@@ -692,6 +465,8 @@ class TechTree {
     completeTech(techId) {
         const tech = this.techs[techId];
         tech.researched = true;
+
+        this.lockAlternativePaths(techId);
 
         this.applyBonus(tech.bonus);
 

@@ -13,6 +13,9 @@ class Game {
         this.cheatCodeTimeout = null;
         this.eruptionSequence = [];
         this.eruptionTarget = ['e', 'r', 't', 'e'];
+        this.scienceSequence = [];
+        this.scienceTarget = ['s', 'c', 'i'];
+        this.instantResearchMode = false;
         this.hiringMode = null;
         this.deployMode = null;
         this.viewMode = 'basic';
@@ -1138,6 +1141,31 @@ class Game {
                     this.eruptionSequence = [];
                     return;
                 }
+            }
+        }
+
+        this.scienceSequence.push(key);
+        if (this.scienceSequence.length > this.scienceTarget.length) {
+            this.scienceSequence.shift();
+        }
+
+        if (this.scienceSequence.length === this.scienceTarget.length) {
+            let matches = true;
+            for (let i = 0; i < this.scienceTarget.length; i++) {
+                if (this.scienceSequence[i] !== this.scienceTarget[i]) {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches) {
+                this.instantResearchMode = !this.instantResearchMode;
+                this.player.sciencePerTurn = this.instantResearchMode ? 999999 : this.player.sciencePerTurn;
+                this.log(this.instantResearchMode ?
+                    'INSTANT RESEARCH MODE ON - Click any tech to research it instantly!' :
+                    'INSTANT RESEARCH MODE OFF');
+                this.scienceSequence = [];
+                this.updateBuildingUI();
+                return;
             }
         }
 
@@ -2862,18 +2890,43 @@ class Game {
         availableTechs.forEach(techId => {
             const tech = this.player.techTree.techs[techId];
             const canAfford = this.player.sciencePerTurn >= tech.cost;
+            const isLocked = this.player.techTree.lockedPaths.has(techId);
 
             const techDiv = document.createElement('div');
-            techDiv.className = 'tech-item' + (canAfford ? '' : ' tech-disabled');
+            techDiv.className = 'tech-item' + (canAfford && !isLocked ? '' : ' tech-disabled');
+
+            if (isLocked) {
+                techDiv.style.borderColor = '#aa3333';
+                techDiv.style.opacity = '0.3';
+            }
+
+            if (tech.type === 'divergent') {
+                techDiv.style.borderColor = '#ff8800';
+                techDiv.style.boxShadow = '0 0 10px rgba(255, 136, 0, 0.3)';
+            }
+
             techDiv.innerHTML = `
-                <div class="tech-name">${tech.name}</div>
+                <div class="tech-name">${tech.name}${tech.type === 'divergent' ? ' ⚡' : ''}</div>
                 <div class="tech-cost">Cost: ${tech.cost} Science</div>
                 <div class="tech-desc">${tech.description}</div>
                 <div class="tech-type">${tech.type.toUpperCase()}</div>
+                ${isLocked ? '<div style="color: #ff5555; font-size: 9px; margin-top: 4px;">LOCKED BY CHOICE</div>' : ''}
+                ${tech.locksOut ? '<div style="color: #ff8800; font-size: 9px; margin-top: 4px;">⚠ Locks other paths</div>' : ''}
             `;
 
-            if (canAfford) {
+            if (canAfford && !isLocked) {
                 techDiv.onclick = () => {
+                    if (tech.type === 'divergent' && tech.locksOut) {
+                        const lockedTechNames = tech.locksOut
+                            .filter(id => this.player.techTree.techs[id])
+                            .map(id => this.player.techTree.techs[id].name);
+
+                        if (lockedTechNames.length > 0) {
+                            const confirmMsg = `This choice will PERMANENTLY lock: ${lockedTechNames.join(', ')}. Continue?`;
+                            if (!confirm(confirmMsg)) return;
+                        }
+                    }
+
                     if (this.player.techTree.startResearch(techId)) {
                         this.log(`Started researching: ${tech.name}`);
                         this.closeModal('tech-modal');
