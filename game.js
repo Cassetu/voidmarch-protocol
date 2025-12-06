@@ -2070,13 +2070,6 @@ class Game {
         }
     }
 
-    closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal && modal.parentNode) {
-            document.body.removeChild(modal);
-        }
-    }
-
     showSettlementPanel(x, y) {
         const settlementTypes = ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven'];
 
@@ -2862,13 +2855,21 @@ class Game {
         this._updateBuildingButtonsActive(buildingsList);
     }
 
+    closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            const detailPanel = document.getElementById('tech-detail-panel');
+            if (detailPanel) {
+                detailPanel.classList.remove('visible');
+            }
+            document.body.removeChild(modal);
+        }
+    }
+
     showTechTreeUI() {
         if (document.getElementById('tech-modal')) {
             return;
         }
-
-        console.log('showTechTreeUI called');
-        console.log('Player techTree:', this.player.techTree);
 
         const modal = document.createElement('div');
         modal.id = 'tech-modal';
@@ -2878,14 +2879,130 @@ class Game {
                 <div id="tech-list"></div>
                 <button id="close-tech-modal">Close</button>
             </div>
+            <div id="tech-detail-panel" class="tech-detail-panel"></div>
         `;
         document.body.appendChild(modal);
 
         const techList = document.getElementById('tech-list');
+        const detailPanel = document.getElementById('tech-detail-panel');
         const availableTechs = this.player.techTree.getAvailableTechs();
 
-        console.log('Available techs:', availableTechs);
-        console.log('Tech list element:', techList);
+        let currentDetailTech = null;
+
+        const showTechDetail = (techId) => {
+            const details = this.player.techTree.getTechDetails(techId);
+            if (!details) return;
+
+            currentDetailTech = techId;
+            const tech = this.player.techTree.techs[techId];
+
+            let bonusHTML = '<div class="tech-detail-stats">';
+            if (tech.bonus.production) {
+                bonusHTML += `
+                    <div class="tech-detail-stat">
+                        <div class="tech-detail-stat-label">Production</div>
+                        <div class="tech-detail-stat-value ${tech.bonus.production < 0 ? 'negative' : ''}">
+                            ${tech.bonus.production > 0 ? '+' : ''}${tech.bonus.production}
+                        </div>
+                    </div>
+                `;
+            }
+            if (tech.bonus.science) {
+                bonusHTML += `
+                    <div class="tech-detail-stat">
+                        <div class="tech-detail-stat-label">Science</div>
+                        <div class="tech-detail-stat-value ${tech.bonus.science < 0 ? 'negative' : ''}">
+                            ${tech.bonus.science > 0 ? '+' : ''}${tech.bonus.science}
+                        </div>
+                    </div>
+                `;
+            }
+            if (tech.bonus.buildingHP) {
+                bonusHTML += `
+                    <div class="tech-detail-stat">
+                        <div class="tech-detail-stat-label">Building HP</div>
+                        <div class="tech-detail-stat-value ${tech.bonus.buildingHP < 0 ? 'negative' : ''}">
+                            ${tech.bonus.buildingHP > 0 ? '+' : ''}${tech.bonus.buildingHP}
+                        </div>
+                    </div>
+                `;
+            }
+            if (tech.bonus.population) {
+                bonusHTML += `
+                    <div class="tech-detail-stat">
+                        <div class="tech-detail-stat-label">Population</div>
+                        <div class="tech-detail-stat-value ${tech.bonus.population < 0 ? 'negative' : ''}">
+                            ${tech.bonus.population > 0 ? '+' : ''}${tech.bonus.population}
+                        </div>
+                    </div>
+                `;
+            }
+            if (tech.bonus.food) {
+                bonusHTML += `
+                    <div class="tech-detail-stat">
+                        <div class="tech-detail-stat-label">Food</div>
+                        <div class="tech-detail-stat-value">+${tech.bonus.food}</div>
+                    </div>
+                `;
+            }
+            if (tech.bonus.energy) {
+                bonusHTML += `
+                    <div class="tech-detail-stat">
+                        <div class="tech-detail-stat-label">Energy</div>
+                        <div class="tech-detail-stat-value">+${tech.bonus.energy}</div>
+                    </div>
+                `;
+            }
+            bonusHTML += '</div>';
+
+            let choiceHTML = '';
+            if (details.choiceConsequence) {
+                choiceHTML = `
+                    <div class="tech-detail-choice">
+                        <div class="tech-detail-choice-title">⚠️ Path Choice Consequences</div>
+                        <div class="tech-detail-section-content">${details.choiceConsequence}</div>
+                    </div>
+                `;
+            }
+
+            detailPanel.innerHTML = `
+                <button class="tech-detail-close" id="close-detail">×</button>
+                <div class="tech-detail-header">
+                    <div class="tech-detail-title">${details.name}</div>
+                    <div class="tech-detail-era">${details.era}</div>
+                    <div class="tech-detail-year">${details.year}</div>
+                </div>
+
+                <div class="tech-detail-inventor">
+                    ${details.inventor}
+                </div>
+
+                <div class="tech-detail-section">
+                    <div class="tech-detail-section-title">📜 Historical Context</div>
+                    <div class="tech-detail-section-content">${details.description}</div>
+                </div>
+
+                <div class="tech-detail-section">
+                    <div class="tech-detail-section-title">⚡ Historical Impact</div>
+                    <div class="tech-detail-section-content">${details.impact}</div>
+                </div>
+
+                <div class="tech-detail-section tech-detail-volcano">
+                    <div class="tech-detail-section-title">🌋 Volcanic World Connection</div>
+                    <div class="tech-detail-section-content">${details.volcanoConnection}</div>
+                </div>
+
+                ${choiceHTML}
+                ${bonusHTML}
+            `;
+
+            detailPanel.classList.add('visible');
+
+            document.getElementById('close-detail').onclick = () => {
+                detailPanel.classList.remove('visible');
+                currentDetailTech = null;
+            };
+        };
 
         availableTechs.forEach(techId => {
             const tech = this.player.techTree.techs[techId];
@@ -2893,7 +3010,7 @@ class Game {
             const isLocked = this.player.techTree.lockedPaths.has(techId);
 
             const techDiv = document.createElement('div');
-            techDiv.className = 'tech-item' + (canAfford && !isLocked ? '' : ' tech-disabled');
+            techDiv.className = 'tech-item tech-item-enhanced' + (canAfford && !isLocked ? '' : ' tech-disabled');
 
             if (isLocked) {
                 techDiv.style.borderColor = '#aa3333';
@@ -2905,30 +3022,47 @@ class Game {
                 techDiv.style.boxShadow = '0 0 10px rgba(255, 136, 0, 0.3)';
             }
 
+            if (tech.type === 'age') {
+                techDiv.style.borderColor = '#8888ff';
+                techDiv.style.boxShadow = '0 0 10px rgba(136, 136, 255, 0.3)';
+            }
+
             techDiv.innerHTML = `
-                <div class="tech-name">${tech.name}${tech.type === 'divergent' ? ' ⚡' : ''}</div>
+                <div class="tech-name">${tech.name}${tech.type === 'divergent' ? ' ⚡' : ''}${tech.type === 'age' ? ' 👑' : ''}</div>
                 <div class="tech-cost">Cost: ${tech.cost} Science</div>
                 <div class="tech-desc">${tech.description}</div>
                 <div class="tech-type">${tech.type.toUpperCase()}</div>
                 ${isLocked ? '<div style="color: #ff5555; font-size: 9px; margin-top: 4px;">LOCKED BY CHOICE</div>' : ''}
                 ${tech.locksOut ? '<div style="color: #ff8800; font-size: 9px; margin-top: 4px;">⚠ Locks other paths</div>' : ''}
+                ${tech.historicalContext ? '<div style="color: #88aaff; font-size: 9px; margin-top: 4px;">📖 Click for history</div>' : ''}
             `;
 
+            techDiv.onmouseenter = () => {
+                if (tech.historicalContext && !isLocked) {
+                    showTechDetail(techId);
+                }
+            };
+
             if (canAfford && !isLocked) {
-                techDiv.onclick = () => {
+                techDiv.onclick = (e) => {
+                    e.stopPropagation();
+
                     if (tech.type === 'divergent' && tech.locksOut) {
                         const lockedTechNames = tech.locksOut
                             .filter(id => this.player.techTree.techs[id])
                             .map(id => this.player.techTree.techs[id].name);
 
                         if (lockedTechNames.length > 0) {
-                            const confirmMsg = `This choice will PERMANENTLY lock: ${lockedTechNames.join(', ')}. Continue?`;
+                            const confirmMsg = `⚠️ PERMANENT CHOICE\n\nResearching "${tech.name}" will LOCK:\n• ${lockedTechNames.join('\n• ')}\n\nThis cannot be undone. Continue?`;
                             if (!confirm(confirmMsg)) return;
                         }
                     }
 
                     if (this.player.techTree.startResearch(techId)) {
                         this.log(`Started researching: ${tech.name}`);
+                        if (tech.historicalContext) {
+                            this.log(`"${tech.historicalContext.inventor}"`);
+                        }
                         this.closeModal('tech-modal');
                         this.updateBuildingUI();
                     }
@@ -2940,6 +3074,12 @@ class Game {
 
         document.getElementById('close-tech-modal').onclick = () => {
             this.closeModal('tech-modal');
+        };
+
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                detailPanel.classList.remove('visible');
+            }
         };
     }
 

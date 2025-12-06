@@ -1391,3 +1391,206 @@ body {
     background: #5a4a4a;
     border-color: #8a7a7a;
 }
+
+.tech-detail-panel {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    width: 450px;
+    max-height: 80vh;
+    background: linear-gradient(135deg, #1a1f2e 0%, #2a2f3e 100%);
+    border: 3px solid #5a6478;
+    border-radius: 8px;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 10001;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.tech-detail-panel.visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.tech-detail-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tech-detail-panel::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.tech-detail-panel::-webkit-scrollbar-thumb {
+    background: #5a6478;
+    border-radius: 4px;
+}
+
+.tech-detail-header {
+    border-bottom: 2px solid #ff8800;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.tech-detail-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #c0d0e8;
+    margin-bottom: 5px;
+}
+
+.tech-detail-era {
+    font-size: 11px;
+    color: #ff8800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.tech-detail-year {
+    font-size: 10px;
+    color: #8fa3c8;
+    font-style: italic;
+    margin-top: 3px;
+}
+
+.tech-detail-section {
+    margin: 15px 0;
+    padding: 12px;
+    background: rgba(58, 74, 90, 0.3);
+    border-left: 3px solid #5a7a8a;
+    border-radius: 4px;
+}
+
+.tech-detail-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8fa3c8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.tech-detail-section-content {
+    font-size: 11px;
+    line-height: 1.6;
+    color: #a8b8d8;
+    text-align: justify;
+}
+
+.tech-detail-inventor {
+    background: rgba(90, 122, 138, 0.2);
+    padding: 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: #b8c8e8;
+    font-style: italic;
+    margin: 10px 0;
+}
+
+.tech-detail-volcano {
+    background: linear-gradient(135deg, rgba(255, 68, 0, 0.1) 0%, rgba(255, 136, 0, 0.1) 100%);
+    border-left: 3px solid #ff8800;
+}
+
+.tech-detail-choice {
+    background: linear-gradient(135deg, rgba(255, 136, 0, 0.2) 0%, rgba(255, 68, 0, 0.2) 100%);
+    border: 2px solid #ff8800;
+    padding: 12px;
+    border-radius: 4px;
+    margin-top: 15px;
+}
+
+.tech-detail-choice-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ff8800;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.tech-detail-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #3a4454;
+}
+
+.tech-detail-stat {
+    background: rgba(90, 122, 138, 0.2);
+    padding: 6px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+.tech-detail-stat-label {
+    font-size: 9px;
+    color: #7a8a9a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tech-detail-stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #88ff88;
+    margin-top: 2px;
+}
+
+.tech-detail-stat-value.negative {
+    color: #ff8888;
+}
+
+.tech-detail-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    background: #3a4a5a;
+    border: 1px solid #5a6a7a;
+    color: #ffffff;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.tech-detail-close:hover {
+    background: #4a5a6a;
+    transform: scale(1.1);
+}
+
+.tech-item-enhanced {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.tech-item-enhanced:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(90, 122, 138, 0.4);
+}
+
+.tech-item-enhanced::after {
+    content: '📖';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tech-item-enhanced:hover::after {
+    opacity: 0.6;
+}
