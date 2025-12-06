@@ -15,10 +15,12 @@ class Game {
         this.eruptionTarget = ['e', 'r', 't', 'e'];
         this.hiringMode = null;
         this.deployMode = null;
+        this.viewMode = 'basic';
         this.selectedUnit = null;
         this.player = new Player();
         this.player.game = this;
         this.world = new World(this.player);
+
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
         window.game = this;
@@ -344,6 +346,11 @@ class Game {
             this.startGame();
         });
 
+        document.getElementById('view-toggle-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.cycleViewMode();
+        });
+
         window.addEventListener('resize', () => this.handleResize());
         this.canvas.addEventListener('wheel', (e) => this.handleZoom(e));
         window.addEventListener('keypress', (e) => this.handleCheatCode(e));
@@ -617,6 +624,21 @@ class Game {
         document.getElementById('close-how-to-play').onclick = () => {
             this.closeModal('how-to-play-modal');
         };
+    }
+
+    cycleViewMode() {
+        const modes = ['basic', 'claims'];
+        const currentIndex = modes.indexOf(this.viewMode);
+        const nextIndex = (currentIndex + 1) % modes.length;
+        this.viewMode = modes[nextIndex];
+
+        const displayNames = {
+            'basic': 'Basic',
+            'claims': 'Settlement Claims'
+        };
+        document.getElementById('view-toggle-btn').textContent = `View: ${displayNames[this.viewMode]}`;
+
+        this.log(`View changed to: ${displayNames[this.viewMode]}`);
     }
 
     endTurn() {
@@ -2019,7 +2041,8 @@ class Game {
         const panel = document.getElementById('settlement-panel');
         panel.style.display = 'block';
 
-        document.getElementById('settlement-title').textContent = settlement.name;
+        const controlIcon = settlement.priority === Math.max(...this.player.settlements.map(s => s.priority)) ? ' 👑' : '';
+        document.getElementById('settlement-title').textContent = settlement.name + controlIcon;
         document.getElementById('settlement-population').textContent = settlement.getPopulation();
         document.getElementById('settlement-food').textContent = Math.floor(settlement.food);
 
@@ -2561,14 +2584,20 @@ class Game {
 
         this.renderer.updateLavaSparks();
 
-        const settlementPanel = document.getElementById('settlement-panel');
-        if (settlementPanel && settlementPanel.style.display === 'block') {
-            const title = document.getElementById('settlement-title');
-            if (title) {
-                const settlementName = title.textContent;
-                const settlement = this.player.settlements.find(s => s.name === settlementName);
-                if (settlement) {
-                    this.renderer.drawSettlementClaim(settlement, this.cameraX, this.cameraY);
+        if (this.viewMode === 'claims') {
+            this.player.settlements.forEach(settlement => {
+                this.renderer.drawSettlementClaim(settlement, this.cameraX, this.cameraY);
+            });
+        } else {
+            const settlementPanel = document.getElementById('settlement-panel');
+            if (settlementPanel && settlementPanel.style.display === 'block') {
+                const title = document.getElementById('settlement-title');
+                if (title) {
+                    const settlementName = title.textContent;
+                    const settlement = this.player.settlements.find(s => s.name === settlementName);
+                    if (settlement) {
+                        this.renderer.drawSettlementClaim(settlement, this.cameraX, this.cameraY);
+                    }
                 }
             }
         }

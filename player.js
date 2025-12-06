@@ -80,6 +80,25 @@ class Player {
         return true;
     }
 
+    getControllingSettlement(x, y) {
+        const claimingSettlements = this.settlements.filter(settlement =>
+            settlement.isWithinClaim(x, y)
+        );
+
+        if (claimingSettlements.length === 0) return null;
+        if (claimingSettlements.length === 1) return claimingSettlements[0];
+
+        return claimingSettlements.reduce((highest, current) => {
+            if (current.priority > highest.priority) return current;
+            if (current.priority === highest.priority) {
+                const popCurrent = current.getPopulation();
+                const popHighest = highest.getPopulation();
+                return popCurrent > popHighest ? current : highest;
+            }
+            return highest;
+        });
+    }
+
     addResourceTypes(gains) {
         for (const [resource, amount] of Object.entries(gains)) {
             this.resources[resource] = (this.resources[resource] || 0) + amount;

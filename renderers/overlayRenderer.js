@@ -7,9 +7,18 @@ class OverlayRenderer {
 
     drawSettlementClaim(settlement, cameraX, cameraY) {
         this.ctx.save();
-        this.ctx.globalAlpha = 0.2;
 
         const radius = settlement.claimRadius;
+        const hue = (settlement.id * 137.5) % 360;
+
+        const claimTiles = new Set();
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const tileX = settlement.x + dx;
+                const tileY = settlement.y + dy;
+                claimTiles.add(`${tileX},${tileY}`);
+            }
+        }
 
         for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
@@ -19,7 +28,7 @@ class OverlayRenderer {
                 const screenX = (tileX - tileY) * (this.tileWidth / 2);
                 const screenY = (tileX + tileY) * (this.tileHeight / 2);
 
-                this.ctx.fillStyle = 'rgba(100, 200, 100, 0.3)';
+                this.ctx.fillStyle = `hsla(${hue}, 70%, 60%, 0.15)`;
                 this.ctx.beginPath();
                 this.ctx.moveTo(screenX, screenY - this.tileHeight / 2);
                 this.ctx.lineTo(screenX + this.tileWidth / 2, screenY);
@@ -27,14 +36,48 @@ class OverlayRenderer {
                 this.ctx.lineTo(screenX - this.tileWidth / 2, screenY);
                 this.ctx.closePath();
                 this.ctx.fill();
+            }
+        }
 
-                this.ctx.strokeStyle = 'rgba(150, 255, 150, 0.5)';
-                this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = `hsla(${hue}, 90%, 70%, 0.9)`;
+        this.ctx.lineWidth = 3;
+        this.ctx.lineJoin = 'round';
+
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const tileX = settlement.x + dx;
+                const tileY = settlement.y + dy;
+                const screenX = (tileX - tileY) * (this.tileWidth / 2);
+                const screenY = (tileX + tileY) * (this.tileHeight / 2);
+
+                const top = `${tileX},${tileY - 1}`;
+                const right = `${tileX + 1},${tileY}`;
+                const bottom = `${tileX},${tileY + 1}`;
+                const left = `${tileX - 1},${tileY}`;
+
+                this.ctx.beginPath();
+
+                if (!claimTiles.has(top)) {
+                    this.ctx.moveTo(screenX - this.tileWidth / 2, screenY);
+                    this.ctx.lineTo(screenX, screenY - this.tileHeight / 2);
+                }
+                if (!claimTiles.has(right)) {
+                    this.ctx.moveTo(screenX, screenY - this.tileHeight / 2);
+                    this.ctx.lineTo(screenX + this.tileWidth / 2, screenY);
+                }
+                if (!claimTiles.has(bottom)) {
+                    this.ctx.moveTo(screenX + this.tileWidth / 2, screenY);
+                    this.ctx.lineTo(screenX, screenY + this.tileHeight / 2);
+                }
+                if (!claimTiles.has(left)) {
+                    this.ctx.moveTo(screenX, screenY + this.tileHeight / 2);
+                    this.ctx.lineTo(screenX - this.tileWidth / 2, screenY);
+                }
+
                 this.ctx.stroke();
             }
         }
 
-        this.ctx.globalAlpha = 1;
         this.ctx.restore();
     }
 

@@ -4,6 +4,7 @@ class Settlement {
         this.y = y;
         this.id = id;
         this.settlementType = settlementType;
+        this.priority = Date.now();
         this.name = this.generateSettlementName();
         this.citizens = [];
         this.children = [];
