@@ -531,6 +531,20 @@ body {
     transition: d 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
+.menu-logo {
+    margin: 0 auto 30px;
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.menu-logo svg {
+    filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.6));
+}
+
 #settlement-buildings-list,
 #settlement-citizens-list {
     font-size: 10px;

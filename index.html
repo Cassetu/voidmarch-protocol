@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voidmarch Protocol</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.svg">
+    <meta name="theme-color" content="#1a1f2e">
     <link rel="stylesheet" href="style.css">
 </head>
 <div id="terminal-screen">
@@ -24,10 +27,25 @@
     </div>
 </div>
 
-<div id="start-menu">
-    <div class="start-menu-content">
-        <h1 class="game-title">VOIDMARCH PROTOCOL</h1>
-        <p class="game-subtitle">Survive. Expand. Escape.</p>
+<div class="start-menu-content">
+    <div class="menu-logo">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+            <defs>
+                <linearGradient id="menu-grad" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" style="stop-color:#ff4400;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ff8800;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M 30 80 L 50 60 L 70 80" fill="none" stroke="url(#menu-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 25 55 L 50 30 L 75 55" fill="none" stroke="url(#menu-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 20 30 L 50 5 L 80 30" fill="none" stroke="url(#menu-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 30 80 L 35 85 L 30 90" fill="none" stroke="#ff4400" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+            <path d="M 70 80 L 65 85 L 70 90" fill="none" stroke="#ff4400" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+            <path d="M 45 75 L 50 82 L 55 75" fill="none" stroke="#ff4400" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+        </svg>
+    </div>
+    <h1 class="game-title">VOIDMARCH PROTOCOL</h1>
+    <p class="game-subtitle">Survive. Expand. Escape.</p>
         <div class="menu-buttons">
             <button id="start-game-btn" class="menu-btn">Start Game</button>
             <button id="how-to-play-btn" class="menu-btn">How to Play</button>
@@ -40,7 +58,14 @@
     <canvas id="gameCanvas"></canvas>
     <div id="ui-overlay">
         <div id="top-bar">
-            <h1>Voidmarch Protocol</h1>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <svg width="28" height="28" viewBox="0 0 100 100">
+                    <path d="M 30 80 L 50 60 L 70 80" fill="none" stroke="#ff8800" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 25 55 L 50 30 L 75 55" fill="none" stroke="#ff8800" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 20 30 L 50 5 L 80 30" fill="none" stroke="#ff8800" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>Voidmarch Protocol</h1>
+            </div>
             <div id="stats">
                     <span>
                         Resources
