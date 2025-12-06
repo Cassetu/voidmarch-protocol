@@ -350,6 +350,8 @@ class Game {
             e.stopPropagation();
             this.cycleViewMode();
         });
+        const iconPath = document.getElementById('view-icon-path');
+        iconPath.setAttribute('d', 'M12 2L2 7v10l10 5 10-5V7L12 2z M12 4.5l7 3.5v7l-7 3.5-7-3.5v-7l7-3.5z');
 
         window.addEventListener('resize', () => this.handleResize());
         this.canvas.addEventListener('wheel', (e) => this.handleZoom(e));
@@ -632,13 +634,25 @@ class Game {
         const nextIndex = (currentIndex + 1) % modes.length;
         this.viewMode = modes[nextIndex];
 
-        const displayNames = {
-            'basic': 'Basic',
-            'claims': 'Settlement Claims'
-        };
-        document.getElementById('view-toggle-btn').textContent = `View: ${displayNames[this.viewMode]}`;
+        const iconPath = document.getElementById('view-icon-path');
+        const btn = document.getElementById('view-toggle-btn');
 
-        this.log(`View changed to: ${displayNames[this.viewMode]}`);
+        btn.style.transform = 'scale(0.9) rotate(180deg)';
+
+        setTimeout(() => {
+            if (this.viewMode === 'basic') {
+                iconPath.setAttribute('d', 'M12 2L2 7v10l10 5 10-5V7L12 2z M12 4.5l7 3.5v7l-7 3.5-7-3.5v-7l7-3.5z');
+            } else {
+                iconPath.setAttribute('d', 'M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z');
+            }
+            btn.style.transform = 'scale(1) rotate(0deg)';
+        }, 150);
+
+        const displayNames = {
+            'basic': 'Basic View',
+            'claims': 'Settlement Claims View'
+        };
+        this.log(`View: ${displayNames[this.viewMode]}`);
     }
 
     endTurn() {

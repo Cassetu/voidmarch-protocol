@@ -488,29 +488,47 @@ body {
 
 #view-toggle-container {
     position: absolute;
-    bottom: 225px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 230px;
+    right: 20px;
     z-index: 1000;
     pointer-events: auto;
 }
 
 #view-toggle-btn {
-    padding: 8px 20px;
+    padding: 12px;
     background: rgba(26, 31, 46, 0.95);
     border: 2px solid #4a6a8a;
     color: #8fa3c8;
-    font-size: 11px;
-    font-weight: 600;
     cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s;
+    border-radius: 50%;
+    transition: all 0.3s ease;
     backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 #view-toggle-btn:hover {
     background: rgba(36, 41, 56, 0.95);
     border-color: #6a8aaa;
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(106, 138, 170, 0.4);
+}
+
+#view-toggle-btn svg {
+    fill: #8fa3c8;
+    transition: all 0.3s ease;
+}
+
+#view-toggle-btn:hover svg {
+    fill: #a8c3e8;
+}
+
+#view-icon-path {
+    transition: d 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 #settlement-buildings-list,
