@@ -1111,7 +1111,7 @@ class TechTree {
                         impact: `VICTORY CONDITION. Exodus Protocol represents species survival. Not everyone can evacuate - resources insufficient for all ${totalPop}. Who goes? How chosen? These haunt you. Success means survival. Success also means becoming refugees wandering void, seeking new world.`,
                         connection: `Research this to WIN. Game checks if complete before core collapses. Each turn you delay risks catastrophic eruption. If core hits 0% before research completes, GAME OVER. Maximize science now - build observatories, universities. Final sprint to salvation.`,
                         choiceConsequence: `Is this victory? Or merely not-yet-defeat? Your planet taught harsh lessons: nothing lasts forever, safety is temporary, nature ultimately wins. But you learned, adapted, survived. Taking the planet with you - culture, knowledge, hope. That is the Protocol. That is victory.`
-                    };icl ts pmo sm n sb rn ngl, r u srsly srs n fr rn vro
+                    };
                 },
                 historicalContext: {
                     era: 'Final Era',
