@@ -997,7 +997,7 @@ class ConquestSystem {
 
         this.game.log('⚠️ SENTINEL ASSAULT LAUNCHED! All sentinels converging on your spaceship!');
         if (typeof AudioManager !== 'undefined') {
-            AudioManager.playSFX('sfx-eruption-major', 0.5);
+            AudioManager.playSFX('sounds/sfx/warning', 0.5);
         }
     }
 

@@ -1315,7 +1315,7 @@ class TechTree {
             if (advanced && this.player.game) {
                 this.player.game.log(`CIVILIZATION ADVANCED TO ${bonus.age.toUpperCase()} AGE!`);
                 if (typeof AudioManager !== 'undefined') {
-                    AudioManager.playSFX('sfx-success', 0.6);
+                    AudioManager.playSFX('sounds/sfx/success', 0.6);
                 }
             }
         }

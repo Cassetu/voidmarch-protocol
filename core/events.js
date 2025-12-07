@@ -53,7 +53,7 @@ class EventSystem {
                 this.game.screenShake(3000, 15);
             }
             if (typeof AudioManager !== 'undefined') {
-                AudioManager.playSFX('sfx-eruption-major', 0.7);
+                AudioManager.playSFX('sounds/sfx/major-eruption', 0.7);
             }
         }
 
@@ -66,7 +66,7 @@ class EventSystem {
                 this.game.screenShake(5000, 25);
             }
             if (typeof AudioManager !== 'undefined') {
-                AudioManager.playSFX('sfx-eruption-catastrophic', 0.8);
+                AudioManager.playSFX('sounds/sfx/eruption-catastrophic', 0.8);
             }
         }
 
@@ -82,7 +82,7 @@ class EventSystem {
                 this.game.screenShake(5000, 55);
             }
             if (typeof AudioManager !== 'undefined') {
-                AudioManager.playSFX('sfx-eruption-catastrophic', 1.0);
+                AudioManager.playSFX('sounds/sfx/eruption-catastrophic', 1.0);
             }
             return { gameOver: true, reason: 'planetary_collapse' };
         }
@@ -126,7 +126,7 @@ class EventSystem {
         if (buildingsDamaged > 0 && this.game) {
             this.game.log(`Planetary shockwave damages ${buildingsDamaged} buildings for ${damage} HP!`);
             if (typeof AudioManager !== 'undefined') {
-                AudioManager.playSFX('sfx-building-damage', 0.6);
+                AudioManager.playSFX('sounds/sfx/collapse', 0.6);
             }
         }
     }

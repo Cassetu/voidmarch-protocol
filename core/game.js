@@ -46,7 +46,7 @@ class Game {
         this.shakeIntensity = 0;
         this.gameStarted = false;
         const menuPlaylist = [
-            'sounds/titles.mp3'
+            'sounds/music/titles.mp3'
         ];
         AudioManager.init(menuPlaylist);
 
@@ -525,13 +525,13 @@ class Game {
 
         AudioManager.stopBGM();
         const gamePlaylist = [
-            'sounds/exodus-protocol.mp3',
-            'sounds/magma-layer.mp3',
-            'sounds/retro-protocol.mp3',
-            'sounds/core_ruin.mp3',
-            'sounds/swarm_defense.mp3',
-            'sounds/starlight_memory.mp3',
-            'sounds/sundown_protocol.mp3'
+            'sounds/music/exodus-protocol.mp3',
+            'sounds/music/magma-layer.mp3',
+            'sounds/music/retro-protocol.mp3',
+            'sounds/music/core_ruin.mp3',
+            'sounds/music/swarm_defense.mp3',
+            'sounds/music/starlight_memory.mp3',
+            'sounds/music/sundown_protocol.mp3'
         ];
         AudioManager.init(gamePlaylist);
         AudioManager.playBGM();
@@ -797,7 +797,7 @@ class Game {
                 this.log(`🎉 CIVILIZATION ADVANCED! Welcome to the ${researchResult.newAge.toUpperCase()} AGE!`);
                 this.log(`Research complete: ${techName}`);
                 if (typeof AudioManager !== 'undefined') {
-                    AudioManager.playSFX('sounds/complete.mp3', 0.8);
+                    AudioManager.playSFX('sounds/sfx/complete.mp3', 0.0);
                 }
             } else {
                 this.log(`RESEARCH COMPLETE: ${techName}`);
@@ -1149,7 +1149,7 @@ class Game {
                         this.log(`Eruption at (${result.x}, ${result.y}) - ${result.destroyedBuildings} buildings destroyed!`);
                     }
                     if (typeof AudioManager !== 'undefined') {
-                        AudioManager.playSFX('sfx-eruption-major', 0.7);
+                        AudioManager.playSFX('sounds/sfx/major-eruption', 0.7);
                     }
                     this.eruptionSequence = [];
                     return;
@@ -1877,7 +1877,7 @@ class Game {
         }, 100);
 
         if (typeof AudioManager !== 'undefined') {
-            AudioManager.playSFX('sounds/gameover.mp3', 0.4);
+            AudioManager.playSFX('sounds/sfx/gameover.mp3', 0.4);
         }
     }
 

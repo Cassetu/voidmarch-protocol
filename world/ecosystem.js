@@ -366,12 +366,12 @@ class Ecosystem {
 
     checkForEvents() {
         if (this.creatures.ashworms.length > this.populationMax.ashworms * 0.9 && Math.random() < 0.05) {
-            this.game.log('⚠️ ASHWORM SWARM! Crops being devoured!');
+            this.game.log('ASHWORM SWARM! Crops being devoured!');
             this.game.player.settlements.forEach(s => s.food = Math.max(0, s.food - 15));
         }
 
         if (this.creatures.magmabeetles.length > this.populationMax.magmabeetles * 0.9 && Math.random() < 0.08) {
-            this.game.log('⚠️ BEETLE STAMPEDE! Seismic activity increased!');
+            this.game.log('BEETLE STAMPEDE! Seismic activity increased!');
             if (this.game.eventSystem && Math.random() < 0.3) {
                 this.game.eventSystem.causeEruption();
             }
@@ -379,7 +379,7 @@ class Ecosystem {
 
         const turn = this.game.player.turn;
         if (this.ecosystemHealth >= 80 && turn - this.lastMigrationTurn > 20 && Math.random() < 0.15) {
-            this.game.log('✨ EMBERBIRD MIGRATION! Land enriched across the region!');
+            this.game.log('EMBERBIRD MIGRATION! Land enriched across the region!');
             this.lastMigrationTurn = turn;
             for (let i = 0; i < 8; i++) {
                 const x = Math.floor(Math.random() * this.planet.width);
@@ -394,7 +394,7 @@ class Ecosystem {
         }
 
         if (this.ecosystemHealth <= 25 && Math.random() < 0.03) {
-            this.game.log('💀 ECOSYSTEM CRITICAL! Species struggling to survive!');
+            this.game.log('ECOSYSTEM CRITICAL! Species struggling to survive!');
         }
     }
 
