@@ -703,6 +703,22 @@ class Game {
             totalProduction += tile.yields.production;
             totalScience += tile.yields.science;
 
+            if (building.type === 'greenhouse') {
+                totalFood += 5;
+            }
+            if (building.type === 'hydroponicfarm') {
+                totalFood += 8;
+            }
+            if (building.type === 'verticalfarm') {
+                totalFood += 15;
+            }
+            if (building.type === 'bioreactor') {
+                totalFood += 25;
+            }
+            if (building.type === 'synthesizer') {
+                totalFood += 50;
+            }
+
             if (building.type === 'campfire') {
                 totalScience += 1;
             }
@@ -949,21 +965,23 @@ class Game {
             woodpile: { name: 'Woodpile', desc: 'Stored fuel and materials', age: 'Stone' },
             farm: { name: 'Farm', desc: 'Grows food (+3 Food)', age: 'Stone' },
             warehouse: { name: 'Warehouse', desc: 'Stores resources safely', age: 'Stone' },
-
+            greenhouse: { name: 'Greenhouse', desc: 'Protected farming (+5 Food)', age: 'Bronze' },
+            hydroponicfarm: { name: 'Hydroponic Farm', desc: 'Water-based farming (+8 Food)', age: 'Industrial' },
+            verticalfarm: { name: 'Vertical Farm', desc: 'Multi-level farming (+15 Food)', age: 'Modernization' },
+            bioreactor: { name: 'Bioreactor', desc: 'Bacterial food production (+25 Food)', age: 'Digital' },
+            synthesizer: { name: 'Food Synthesizer', desc: 'Molecular food creation (+50 Food)', age: 'Space' },
             settlement: { name: 'Settlement', desc: 'Small community (Pop: 15, Food: +3)', age: 'Bronze' },
             barracks: { name: 'Barracks', desc: 'Train military units', age: 'Bronze' },
             granary: { name: 'Granary', desc: 'Stores extra food', age: 'Bronze' },
             quarry: { name: 'Quarry', desc: 'Extract stone and minerals', age: 'Bronze' },
             monument: { name: 'Monument', desc: 'Cultural landmark', age: 'Bronze' },
             shrine: { name: 'Shrine', desc: 'Sacred place (+3 Science)', age: 'Bronze' },
-
             township: { name: 'Township', desc: 'Growing town (Pop: 25, Food: +5)', age: 'Iron' },
             temple: { name: 'Temple', desc: 'Spiritual center (+5 Science)', age: 'Iron' },
             forge: { name: 'Forge', desc: 'Craft tools and weapons', age: 'Iron' },
             workshop: { name: 'Workshop', desc: 'Advanced crafting', age: 'Iron' },
             aqueduct: { name: 'Aqueduct', desc: 'Water distribution system', age: 'Iron' },
             watchtower: { name: 'Watchtower', desc: 'Early warning system', age: 'Iron' },
-
             feudaltown: { name: 'Feudal Town', desc: 'Medieval center (Pop: 40, Food: +8)', age: 'Medieval' },
             market: { name: 'Market', desc: 'Trade center', age: 'Medieval' },
             castle: { name: 'Castle', desc: 'Fortified stronghold', age: 'Medieval' },
@@ -972,38 +990,31 @@ class Game {
             arena: { name: 'Arena', desc: 'Entertainment venue', age: 'Medieval' },
             hospital: { name: 'Hospital', desc: 'Medical facility', age: 'Medieval' },
             scriptorium: { name: 'Scriptorium', desc: 'Knowledge copying center (+7 Science)', age: 'Medieval' },
-
             citystate: { name: 'City-State', desc: 'Independent city (Pop: 60, Food: +12)', age: 'Renaissance' },
             library: { name: 'Library', desc: 'Knowledge repository (+8 Science)', age: 'Renaissance' },
             academy: { name: 'Academy', desc: 'Educational institution', age: 'Renaissance' },
             theater: { name: 'Theater', desc: 'Cultural performance hall', age: 'Renaissance' },
             mansion: { name: 'Mansion', desc: 'Luxurious housing', age: 'Renaissance' },
-
             factorytown: { name: 'Factory Town', desc: 'Industrial hub (Pop: 80, Food: +15)', age: 'Industrial' },
             ironworks: { name: 'Ironworks', desc: 'Mass production facility', age: 'Industrial' },
             trainstation: { name: 'Train Station', desc: 'Rail transport hub', age: 'Industrial' },
             coalplant: { name: 'Coal Plant', desc: 'Early power generation', age: 'Industrial' },
-
             steamcity: { name: 'Steamworks City', desc: 'Steam-powered metropolis (Pop: 120, Food: +20)', age: 'Early Modern' },
             steamfactory: { name: 'Steam Factory', desc: 'Advanced manufacturing', age: 'Early Modern' },
             clocktower: { name: 'Clock Tower', desc: 'Time coordination', age: 'Early Modern' },
             gasworks: { name: 'Gasworks', desc: 'Gas lighting infrastructure', age: 'Early Modern' },
-
             metropolis: { name: 'Metropolis', desc: 'Massive urban center (Pop: 180, Food: +30)', age: 'Victorian' },
             parliament: { name: 'Parliament', desc: 'Governing body', age: 'Victorian' },
             gaslamp: { name: 'Gas Lamp', desc: 'Street illumination', age: 'Victorian' },
             telegraph: { name: 'Telegraph', desc: 'Long-distance communication', age: 'Victorian' },
-
             powercity: { name: 'Power City', desc: 'Electrified civilization (Pop: 250, Food: +40)', age: 'Modernization' },
             powerplant: { name: 'Power Plant', desc: 'Electrical generation', age: 'Modernization' },
             skyscraper: { name: 'Skyscraper', desc: 'Vertical housing', age: 'Modernization' },
             subwaystation: { name: 'Subway Station', desc: 'Underground transit', age: 'Modernization' },
-
             technopolis: { name: 'Technopolis', desc: 'High-tech paradise (Pop: 350, Food: +60)', age: 'Digital' },
             datacenter: { name: 'Data Center', desc: 'Information processing', age: 'Digital' },
             cybercafe: { name: 'Cyber Cafe', desc: 'Digital gathering place', age: 'Digital' },
             serverbank: { name: 'Server Bank', desc: 'Massive data storage', age: 'Digital' },
-
             megacity: { name: 'Megacity', desc: 'Planetary capital (Pop: 500, Food: +100)', age: 'Space' },
             university: { name: 'University', desc: 'Advanced research (+12 Science)', age: 'Space' },
             spaceport: { name: 'Spaceport', desc: 'Launch facility', age: 'Space' },
@@ -1013,12 +1024,10 @@ class Game {
             fusionreactor: { name: 'Fusion Reactor', desc: 'Clean infinite energy', age: 'Space' },
             orbitalring: { name: 'Orbital Ring', desc: 'Space elevator system', age: 'Space' },
             quantumlab: { name: 'Quantum Lab', desc: 'Reality research', age: 'Space' },
-
             triworldhub: { name: 'Triworld Hub', desc: 'Multi-planet nexus (Pop: 750, Food: +150)', age: 'Multi-World' },
             warpgate: { name: 'Warp Gate', desc: 'Instant planet travel', age: 'Multi-World' },
             terraformer: { name: 'Terraformer', desc: 'Planet reshaping device', age: 'Multi-World' },
             colonyship: { name: 'Colony Ship', desc: 'Mobile civilization', age: 'Multi-World' },
-
             haven: { name: 'Haven', desc: 'Galactic sanctuary (Pop: 1000, Food: +250)', age: 'Zenith' },
             dysonswarm: { name: 'Dyson Swarm', desc: 'Star energy harvesting', age: 'Zenith' },
             matrixcore: { name: 'Matrix Core', desc: 'Reality simulation', age: 'Zenith' },
@@ -2801,8 +2810,7 @@ class Game {
     }
 
     updateUI() {
-        document.getElementById('resource-count').textContent =
-            `Fe: ${Math.floor(this.player.resources.iron)} Cu: ${Math.floor(this.player.resources.copper)} C: ${Math.floor(this.player.resources.coal)}`;
+        this.updateResourceDisplay();
 
         const totalFood = this.player.settlements.reduce((sum, s) => sum + s.food, 0);
         document.getElementById('food-count').textContent = Math.floor(totalFood);
@@ -2869,6 +2877,132 @@ class Game {
         }
 
         this.updateBuildingUI();
+    }
+
+    updateResourceDisplay() {
+        const pinnedContainer = document.getElementById('pinned-resources');
+        const hoverPanel = document.getElementById('resource-hover-panel');
+
+        const resourceNames = {
+            iron: 'Iron', copper: 'Copper', coal: 'Coal', oil: 'Oil',
+            silicon: 'Silicon', rareMinerals: 'Rare Minerals', gold: 'Gold',
+            silver: 'Silver', titanium: 'Titanium', uranium: 'Uranium',
+            platinum: 'Platinum', aluminum: 'Aluminum', lithium: 'Lithium',
+            cobalt: 'Cobalt', nickel: 'Nickel', zinc: 'Zinc',
+            tungsten: 'Tungsten', chromium: 'Chromium', manganese: 'Manganese',
+            lead: 'Lead', tin: 'Tin', magnesium: 'Magnesium',
+            thorium: 'Thorium', palladium: 'Palladium', neodymium: 'Neodymium'
+        };
+
+        const resourceSymbols = {
+            iron: 'Fe', copper: 'Cu', coal: 'C', oil: 'O',
+            silicon: 'Si', rareMinerals: 'RM', gold: 'Au',
+            silver: 'Ag', titanium: 'Ti', uranium: 'U',
+            platinum: 'Pt', aluminum: 'Al', lithium: 'Li',
+            cobalt: 'Co', nickel: 'Ni', zinc: 'Zn',
+            tungsten: 'W', chromium: 'Cr', manganese: 'Mn',
+            lead: 'Pb', tin: 'Sn', magnesium: 'Mg',
+            thorium: 'Th', palladium: 'Pd', neodymium: 'Nd'
+        };
+
+        pinnedContainer.innerHTML = this.player.pinnedResources
+            .map(key => `${resourceSymbols[key]}: ${Math.floor(this.player.resources[key])}`)
+            .join(' | ');
+
+        pinnedContainer.onmouseenter = () => {
+            hoverPanel.style.display = 'block';
+            this.populateResourcePanel(hoverPanel, resourceNames, resourceSymbols);
+        };
+
+        pinnedContainer.onmouseleave = () => {
+            setTimeout(() => {
+                if (!hoverPanel.matches(':hover')) {
+                    hoverPanel.style.display = 'none';
+                }
+            }, 100);
+        };
+
+        hoverPanel.onmouseleave = () => {
+            hoverPanel.style.display = 'none';
+        };
+    }
+
+    populateResourcePanel(panel, resourceNames, resourceSymbols) {
+        const grid = document.createElement('div');
+        grid.className = 'resource-grid';
+
+        Object.keys(this.player.resources).forEach(key => {
+            const item = document.createElement('div');
+            item.className = 'resource-item';
+
+            const isPinned = this.player.pinnedResources.includes(key);
+            const isAtMax = this.player.pinnedResources.length >= 3 && !isPinned;
+
+            if (isPinned) {
+                item.classList.add('pinned');
+            }
+
+            if (isAtMax) {
+                item.classList.add('disabled');
+                item.style.opacity = '0.5';
+                item.style.cursor = 'not-allowed';
+            }
+
+            item.innerHTML = `
+                <div class="resource-name">${resourceNames[key]} <span class="resource-symbol">(${resourceSymbols[key]})</span></div>
+                <div class="resource-amount">${Math.floor(this.player.resources[key])}</div>
+            `;
+
+            item.onclick = (e) => {
+                e.stopPropagation();
+                if (!isAtMax || isPinned) {
+                    this.togglePinnedResource(key);
+                    this.populateResourcePanel(panel, resourceNames, resourceSymbols);
+                }
+            };
+
+            grid.appendChild(item);
+        });
+
+        panel.innerHTML = '';
+        panel.appendChild(grid);
+    }
+
+    togglePinnedResource(resourceKey) {
+        const index = this.player.pinnedResources.indexOf(resourceKey);
+
+        if (index !== -1) {
+            if (this.player.pinnedResources.length <= 1) {
+                this.log('Must have at least one resource pinned!');
+                return;
+            }
+            this.player.pinnedResources.splice(index, 1);
+        } else {
+            if (this.player.pinnedResources.length >= 3) {
+                this.log('Maximum 3 resources can be pinned! Unpin one first.');
+                return;
+            }
+            this.player.pinnedResources.push(resourceKey);
+        }
+
+        document.getElementById('pinned-resources').innerHTML = this.getPinnedResourcesHTML();
+    }
+
+    getPinnedResourcesHTML() {
+        const resourceSymbols = {
+            iron: 'Fe', copper: 'Cu', coal: 'C', oil: 'O',
+            silicon: 'Si', rareMinerals: 'RM', gold: 'Au',
+            silver: 'Ag', titanium: 'Ti', uranium: 'U',
+            platinum: 'Pt', aluminum: 'Al', lithium: 'Li',
+            cobalt: 'Co', nickel: 'Ni', zinc: 'Zn',
+            tungsten: 'W', chromium: 'Cr', manganese: 'Mn',
+            lead: 'Pb', tin: 'Sn', magnesium: 'Mg',
+            thorium: 'Th', palladium: 'Pd', neodymium: 'Nd'
+        };
+
+        return this.player.pinnedResources
+            .map(key => `${resourceSymbols[key]}: ${Math.floor(this.player.resources[key])}`)
+            .join(' | ');
     }
 
     updateBuildingUI() {

@@ -62,6 +62,9 @@ class Planet {
                 yields.iron = 2;
                 yields.rareMinerals = 1;
                 break;
+            case 'grass':
+                yields.food = 1;
+                break;
             case 'floating':
                 yields.silicon = 2;
                 yields.rareMinerals = 1;
@@ -219,33 +222,139 @@ class Planet {
         if (!this.canPlaceBuilding(gridX, gridY)) return false;
 
         const buildingCosts = {
-            settlement: { resources: 50, food: 10 },
-            farm: { resources: 30, food: 0 },
-            warehouse: { resources: 40, food: 5 },
-            observatory: { resources: 60, food: 10 },
-            barracks: { resources: 60, food: 10 },
-            temple: { resources: 80, food: 15 },
-            forge: { resources: 100, food: 20 },
-            market: { resources: 90, food: 10 },
-            castle: { resources: 150, food: 30 },
-            library: { resources: 120, food: 20 },
-            university: { resources: 180, food: 40 }
+            hut: { iron: 10, copper: 5 },
+            settlement: { iron: 50, copper: 30, coal: 20 },
+            farm: { iron: 20, copper: 10 },
+            warehouse: { iron: 40, copper: 20, coal: 10 },
+            observatory: { iron: 100, copper: 50, silicon: 30, rareMinerals: 20 },
+            barracks: { iron: 80, copper: 40, coal: 30 },
+            temple: { iron: 60, copper: 30, gold: 10 },
+            forge: { iron: 100, copper: 50, coal: 40 },
+            market: { iron: 70, copper: 35, gold: 15 },
+            castle: { iron: 200, copper: 100, coal: 80 },
+            library: { iron: 90, copper: 45, silicon: 20 },
+            university: { iron: 150, copper: 75, silicon: 50, gold: 25 },
+            campfire: { copper: 5 },
+            tent: { copper: 8, coal: 5 },
+            woodpile: { copper: 10 },
+            granary: { iron: 60, copper: 30, coal: 20 },
+            quarry: { iron: 80, copper: 40, coal: 30 },
+            monument: { iron: 100, copper: 50, gold: 20, silver: 10 },
+            school: { iron: 70, copper: 35, coal: 25 },
+            shrine: { iron: 40, copper: 20, gold: 5 },
+            workshop: { iron: 90, copper: 45, coal: 35 },
+            aqueduct: { iron: 120, copper: 60, coal: 40 },
+            watchtower: { iron: 50, copper: 25, coal: 20 },
+            township: { iron: 100, copper: 60, coal: 40 },
+            feudaltown: { iron: 200, copper: 120, coal: 80, gold: 30 },
+            cathedral: { iron: 150, copper: 75, gold: 40, silver: 20 },
+            townhall: { iron: 180, copper: 90, coal: 60, gold: 25 },
+            arena: { iron: 200, copper: 100, coal: 80 },
+            hospital: { iron: 130, copper: 65, coal: 50, silver: 15 },
+            scriptorium: { iron: 100, copper: 50, coal: 40, gold: 20 },
+            citystate: { iron: 300, copper: 180, coal: 120, gold: 50, silver: 30 },
+            academy: { iron: 200, copper: 100, silicon: 60, gold: 35 },
+            theater: { iron: 140, copper: 70, gold: 30 },
+            mansion: { iron: 250, copper: 125, gold: 60, silver: 40 },
+            factorytown: { iron: 400, copper: 240, coal: 160, silicon: 80 },
+            ironworks: { iron: 300, copper: 150, coal: 120 },
+            trainstation: { iron: 350, copper: 175, coal: 140, steel: 80 },
+            coalplant: { iron: 500, copper: 250, coal: 200, silicon: 100 },
+            steamcity: { iron: 600, copper: 360, coal: 240, silicon: 120, gold: 80 },
+            steamfactory: { iron: 450, copper: 225, coal: 180, silicon: 90 },
+            clocktower: { iron: 200, copper: 100, gold: 50, silver: 30 },
+            gasworks: { iron: 400, copper: 200, coal: 160, oil: 80 },
+            metropolis: { iron: 800, copper: 480, coal: 320, silicon: 160, gold: 100 },
+            parliament: { iron: 500, copper: 250, gold: 80, silver: 50 },
+            gaslamp: { iron: 50, copper: 25, oil: 20 },
+            telegraph: { iron: 180, copper: 90, silicon: 60 },
+            powercity: { iron: 1000, copper: 600, silicon: 300, uranium: 50, gold: 150 },
+            powerplant: { iron: 800, copper: 400, silicon: 200, uranium: 100 },
+            skyscraper: { iron: 600, copper: 300, silicon: 150, aluminum: 100 },
+            subwaystation: { iron: 500, copper: 250, silicon: 125, aluminum: 80 },
+            technopolis: { iron: 1500, copper: 900, silicon: 600, uranium: 100, platinum: 80 },
+            datacenter: { iron: 1000, copper: 500, silicon: 400, gold: 100, platinum: 50 },
+            cybercafe: { iron: 300, copper: 150, silicon: 100 },
+            serverbank: { iron: 1200, copper: 600, silicon: 500, gold: 120, platinum: 60 },
+            megacity: { iron: 2000, copper: 1200, silicon: 800, uranium: 150, platinum: 120, gold: 200 },
+            spaceport: { iron: 1500, copper: 750, silicon: 500, titanium: 300, uranium: 200 },
+            laboratory: { iron: 1000, copper: 500, silicon: 400, platinum: 80, uranium: 100 },
+            megafactory: { iron: 1800, copper: 900, silicon: 600, aluminum: 400, titanium: 200 },
+            fusionreactor: { iron: 2000, copper: 1000, silicon: 800, uranium: 300, platinum: 150 },
+            orbitalring: { iron: 3000, copper: 1500, silicon: 1000, titanium: 500, platinum: 200 },
+            quantumlab: { iron: 2500, copper: 1250, silicon: 1000, uranium: 400, neodymium: 150 },
+            triworldhub: { iron: 3000, copper: 1800, silicon: 1200, titanium: 600, platinum: 250, gold: 300 },
+            warpgate: { iron: 4000, copper: 2000, silicon: 1500, uranium: 500, neodymium: 300 },
+            terraformer: { iron: 3500, copper: 1750, silicon: 1250, titanium: 700, platinum: 300 },
+            colonyship: { iron: 5000, copper: 2500, silicon: 2000, titanium: 1000, uranium: 500 },
+            haven: { iron: 5000, copper: 3000, silicon: 2000, titanium: 1000, platinum: 500, gold: 500 },
+            dysonswarm: { iron: 10000, copper: 5000, silicon: 3000, titanium: 2000, uranium: 1000 },
+            matrixcore: { silicon: 5000, platinum: 1000, neodymium: 800, uranium: 600 },
+            ascensiongate: { iron: 8000, silicon: 4000, titanium: 2000, uranium: 1500, platinum: 1000, neodymium: 500 },
+            greenhouse: { iron: 80, copper: 40, silicon: 30 },
+            hydroponicfarm: { iron: 150, copper: 75, silicon: 60, aluminum: 40 },
+            verticalfarm: { iron: 300, copper: 150, silicon: 120, aluminum: 80, titanium: 40 },
+            bioreactor: { iron: 500, copper: 250, silicon: 200, uranium: 50, platinum: 30 },
+            synthesizer: { iron: 800, copper: 400, silicon: 350, platinum: 80, neodymium: 50 }
         };
 
         const cost = buildingCosts[buildingType];
-        if (!cost || !player.spendResources(cost.resources)) return false;
+        if (!cost) {
+            console.warn(`No cost defined for building type: ${buildingType}`);
+            return false;
+        }
+
+        if (!player.hasResources(cost)) {
+            return false;
+        }
+
+        if (!this.checkTileRequirement(gridX, gridY, buildingType)) {
+            return false;
+        }
+
+        if (!player.spendResourceTypes(cost)) {
+            return false;
+        }
 
         if (this.tiles[gridY][gridX].building && this.tiles[gridY][gridX].building.type === 'ruins') {
             this.structures = this.structures.filter(s => s !== this.tiles[gridY][gridX].building);
         }
 
         const building = new Building(gridX, gridY, buildingType);
-        console.log(`Building created at grid (${gridX}, ${gridY}), building.x=${building.x}, building.y=${building.y}`);
         this.tiles[gridY][gridX].building = building;
         this.structures.push(building);
         player.addBuilding(building);
 
         return true;
+    }
+
+    checkTileRequirement(gridX, gridY, buildingType) {
+        const tile = this.tiles[gridY][gridX];
+
+        const tileRequirements = {
+            farm: ['darksoil', 'ash', 'grass'],
+            greenhouse: ['darksoil', 'ash', 'grass', 'rock'],
+            hydroponicfarm: null,
+            verticalfarm: null,
+            forge: null,
+            quarry: ['rock', 'ash'],
+            aqueduct: ['darksoil', 'grass', 'ash'],
+            fishery: ['water'],
+            dockyard: ['water'],
+            harbor: ['water']
+        };
+
+        const required = tileRequirements[buildingType];
+
+        if (required === null) {
+            return true;
+        }
+
+        if (required === undefined) {
+            return true;
+        }
+
+        return required.includes(tile.type);
     }
 
     removeBuilding(gridX, gridY, player) {

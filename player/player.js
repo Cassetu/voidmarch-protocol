@@ -6,8 +6,28 @@ class Player {
             coal: 2000,
             oil: 0,
             silicon: 0,
-            rareMinerals: 0
+            rareMinerals: 0,
+            gold: 0,
+            silver: 0,
+            titanium: 0,
+            uranium: 0,
+            platinum: 0,
+            aluminum: 0,
+            lithium: 0,
+            cobalt: 0,
+            nickel: 0,
+            zinc: 0,
+            tungsten: 0,
+            chromium: 0,
+            manganese: 0,
+            lead: 0,
+            tin: 0,
+            magnesium: 0,
+            thorium: 0,
+            palladium: 0,
+            neodymium: 0
         };
+        this.pinnedResources = ['iron', 'copper', 'coal'];
         this.population = 50;
         this.settlements = [];
         this.nextSettlementId = 0;
@@ -134,16 +154,16 @@ class Player {
     getAvailableBuildings() {
         const buildingsPerAge = {
             stone: ['hut', 'farm', 'warehouse', 'campfire', 'tent', 'woodpile'],
-            bronze: ['hut', 'settlement', 'farm', 'warehouse', 'barracks', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'school', 'shrine'],
+            bronze: ['hut', 'settlement', 'farm', 'warehouse', 'barracks', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'school', 'shrine', 'greenhouse'],
             iron: ['hut', 'settlement', 'township', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'school', 'shrine', 'workshop', 'aqueduct', 'watchtower'],
             medieval: ['hut', 'settlement', 'township', 'feudaltown', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'school', 'shrine', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium'],
             renaissance: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'school', 'shrine', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion'],
-            industrial: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant'],
+            industrial: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'greenhouse', 'hydroponicfarm'],
             earlymodern: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks'],
             victorian: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph'],
-            modernization: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation'],
-            digital: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank'],
-            space: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab'],
+            modernization: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'greenhouse', 'hydroponicfarm', 'verticalfarm'],
+            digital: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'greenhouse', 'hydroponicfarm', 'verticalfarm', 'bioreactor'],
+            space: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'greenhouse', 'hydroponicfarm', 'verticalfarm', 'bioreactor', 'synthesizer'],
             multiworld: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'warpgate', 'terraformer', 'colonyship'],
             zenith: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'warpgate', 'terraformer', 'colonyship', 'dysonswarm', 'matrixcore', 'ascensiongate']
         };

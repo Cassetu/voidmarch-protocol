@@ -29,12 +29,11 @@ class Settlement {
         };
 
         this.resourceStorage = {
-            iron: 0,
-            copper: 0,
-            coal: 0,
-            oil: 0,
-            silicon: 0,
-            rareMinerals: 0
+            iron: 0, copper: 0, coal: 0, oil: 0, silicon: 0, rareMinerals: 0,
+            gold: 0, silver: 0, titanium: 0, uranium: 0, platinum: 0,
+            aluminum: 0, lithium: 0, cobalt: 0, nickel: 0, zinc: 0,
+            tungsten: 0, chromium: 0, manganese: 0, lead: 0, tin: 0,
+            magnesium: 0, thorium: 0, palladium: 0, neodymium: 0
         };
         this.storageCapacity = this.getBaseStorageCapacity();
 

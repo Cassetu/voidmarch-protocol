@@ -1594,3 +1594,99 @@ body {
 .tech-item-enhanced:hover::after {
     opacity: 0.6;
 }
+
+#resource-display {
+    position: relative;
+    display: inline-block;
+}
+
+#pinned-resources {
+    font-size: 10px;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+.resource-hover-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: rgba(20, 25, 36, 0.98);
+    border: 2px solid #4a6a8a;
+    border-radius: 4px;
+    padding: 12px;
+    min-width: 400px;
+    max-height: 500px;
+    overflow-y: auto;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    margin-top: 8px;
+}
+
+.resource-hover-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.resource-hover-panel::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.resource-hover-panel::-webkit-scrollbar-thumb {
+    background: #5a6478;
+    border-radius: 3px;
+}
+
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.resource-item {
+    background: rgba(58, 74, 90, 0.3);
+    padding: 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.resource-item:hover {
+    background: rgba(74, 90, 106, 0.5);
+    border-color: #5a7a8a;
+}
+
+.resource-item.pinned {
+    background: rgba(90, 122, 138, 0.4);
+    border-color: #8fa3c8;
+}
+
+.resource-name {
+    font-size: 9px;
+    color: #8fa3c8;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.resource-amount {
+    font-size: 11px;
+    color: #c0d0e8;
+    font-weight: 500;
+}
+
+.resource-symbol {
+    font-size: 8px;
+    color: #7a8a9a;
+    margin-left: 2px;
+}
+
+.resource-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.resource-item.disabled:hover {
+    background: rgba(58, 74, 90, 0.3);
+    border-color: transparent;
+}
