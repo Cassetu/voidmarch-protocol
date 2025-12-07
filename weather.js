@@ -19,11 +19,11 @@ class WeatherSystem {
         this.nextWeatherChangeTurn = this.getRandomWeatherChangeTurn();
 
         this.weatherTypes = {
-            clear: { name: 'Clear', color: '#88aaff', icon: '☀️' },
-            ashcloud: { name: 'Ash Cloud', color: '#665555', icon: '☁️' },
-            acidrain: { name: 'Acid Rain', color: '#66aa66', icon: '🌧️' },
-            heatwave: { name: 'Heat Wave', color: '#ff8844', icon: '🔥' },
-            volcanicwinter: { name: 'Volcanic Winter', color: '#4455aa', icon: '❄️' }
+            clear: { name: 'Clear', color: '#88aaff', icon: '' },
+            ashcloud: { name: 'Ash Cloud', color: '#665555', icon: '' },
+            acidrain: { name: 'Acid Rain', color: '#66aa66', icon: '' },
+            heatwave: { name: 'Heat Wave', color: '#ff8844', icon: '' },
+            volcanicwinter: { name: 'Volcanic Winter', color: '#4455aa', icon: '' }
         };
 
         this.initializeGeothermalVents();
@@ -132,7 +132,7 @@ class WeatherSystem {
                 foodPenalty = Math.floor(this.weatherIntensity * 10);
                 solarPenalty = Math.floor(this.weatherIntensity * 15);
                 this.player.foodBonus = Math.max(-50, (this.player.foodBonus || 0) - foodPenalty);
-                this.game.log(`☁️ Ash cloud blocks sunlight! Food -${foodPenalty}, Solar reduced by ${solarPenalty}%`);
+                this.game.log(`Ash cloud blocks sunlight! Food -${foodPenalty}, Solar reduced by ${solarPenalty}%`);
                 break;
 
             case 'acidrain':
@@ -144,14 +144,14 @@ class WeatherSystem {
                 this.player.settlements.forEach(settlement => {
                     settlement.foodConsumption = Math.floor(settlement.foodConsumption * 1.3);
                 });
-                this.game.log('🔥 Heat wave! Citizens need 30% more food for cooling');
+                this.game.log('Heat wave! Citizens need 30% more food for cooling');
                 break;
 
             case 'volcanicwinter':
                 this.player.settlements.forEach(settlement => {
                     settlement.foodConsumption = Math.floor(settlement.foodConsumption * 1.5);
                 });
-                this.game.log('❄️ Volcanic winter! Citizens need 50% more food for warmth');
+                this.game.log('Volcanic winter! Citizens need 50% more food for warmth');
                 break;
         }
 
