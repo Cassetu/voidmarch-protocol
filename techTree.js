@@ -51,615 +51,20 @@ class TechTree {
                 bonus: { production: 2 },
                 description: 'Extract resources from volcanic rock',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const hasWarehouse = player.buildings.some(b => b.type === 'warehouse');
+                    const rocks = game.currentPlanet.tiles.flat().filter(t => t.type === 'rock').length;
+                    return {
+                        description: `Your people have discovered how to shape volcanic obsidian into cutting tools. The ${rocks} rock tiles surrounding your settlements contain iron, copper, and coal waiting to be extracted. ${hasWarehouse ? 'Your warehouses will store these materials efficiently.' : 'You will need warehouses to store extracted resources.'}`,
+                        impact: `Mining increases production by +2 per turn. Each rock tile worked by your settlements will yield iron, copper, and coal. This technology enables your civilization to progress beyond stone age subsistence.`,
+                        connection: `Observe the rock tiles (gray) on your map - these contain the minerals that powered human civilization. Your volcanic world has concentrated ore deposits that are 10x richer than normal geology due to hydrothermal processes.`
+                    };
+                },
                 historicalContext: {
                     era: 'Stone Age',
                     year: '~2.6 million BCE',
-                    inventor: 'Discovered by early hominids across volcanic regions',
-                    description: 'The first revolution in human technology came when our ancestors learned to shape volcanic obsidian and basalt into cutting tools. These razor-sharp implements allowed early humans to process food, craft shelter, and defend themselves. On volcanic worlds, obsidian flows provide naturally occurring glass sharper than modern surgical steel.',
-                    impact: 'Obsidian trade routes became humanity\'s first long-distance commerce networks, spanning thousands of kilometers. The Ashfall people of your world discovered that volcanic glass held an edge 500 times sharper than steel blades.',
-                    volcanoConnection: 'Volcanic regions provided the highest quality tool-making materials. The rapid cooling of lava creates obsidian, a volcanic glass prized for its sharpness. Ancient peoples traveled hundreds of miles to volcanic sites for these superior materials.'
-                }
-            },
-            bronzeAge: {
-                name: 'Bronze Metallurgy',
-                cost: 50,
-                type: 'age',
-                researched: false,
-                prerequisites: ['mining', 'shelter'],
-                unlocks: ['ironAge', 'barracks'],
-                bonus: { age: 'bronze', production: 5 },
-                description: 'Advance to Bronze Age - Master metal working',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Bronze Age',
-                    year: '~3300 BCE',
-                    inventor: 'Magmasmith Doran, First Metallurgist of the Copper Clans',
-                    description: 'The discovery that copper and tin, when melted together at 950°C, create bronze—a metal harder than either component—marked humanity\'s first understanding of chemical transformation. Volcanic vents provided natural forges where temperatures reached 1100°C without fuel.',
-                    impact: 'Bronze tools increased agricultural productivity 300%. Bronze weapons created the first standing armies. Trade networks spanning continents formed to acquire tin, one of history\'s rarest metals. Civilizations rose and fell based on bronze access.',
-                    volcanoConnection: 'Ancient smiths built forges directly over volcanic vents, using geothermal heat to melt metal. The legendary Doran\'s Forge sat atop a lava tube, maintaining 1200°C indefinitely without coal or wood—a technology your world still uses.'
-                }
-            },
-            ironAge: {
-                name: 'Iron Smelting',
-                cost: 150,
-                type: 'age',
-                researched: false,
-                prerequisites: ['bronzeAge', 'deepMining'],
-                unlocks: ['medievalAge', 'forge', 'temple'],
-                bonus: { age: 'iron', production: 10 },
-                description: 'Advance to Iron Age - Superior metal working',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Iron Age',
-                    year: '~1200 BCE',
-                    inventor: 'The Hittite smiths, later perfected by Ferromancer Thane',
-                    description: 'Iron required 1540°C to smelt—far hotter than bronze. The breakthrough came when smiths discovered that volcanic charcoal and forced air could reach these temperatures. Iron was 10 times more abundant than copper and, when carbon-infused to create steel, produced superior weapons and tools.',
-                    impact: 'Iron democratized metal tools. A farmer could afford an iron plow; bronze remained luxury. Iron weapons ended the Bronze Age kingdoms overnight—bronze swords shattered against iron. Steel tools increased construction speed 400% and enabled the Classical civilizations.',
-                    volcanoConnection: 'Volcanic regions provided both iron-rich ores and high-quality charcoal from heat-dried wood. The Ferromancer Technique used volcanic vents as natural blast furnaces, reaching 1600°C—hot enough to produce true steel in single-step smelting impossible elsewhere.'
-                }
-            },
-            medievalAge: {
-                name: 'Medieval Feudalism',
-                cost: 300,
-                type: 'age',
-                researched: false,
-                prerequisites: ['ironAge', 'reinforcedStructures'],
-                unlocks: ['renaissanceAge', 'market', 'castle'],
-                bonus: { age: 'medieval', population: 20 },
-                description: 'Advance to Medieval Era - Feudal organization',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Medieval Period',
-                    year: '~800 CE',
-                    inventor: 'Social structure evolved across post-Roman Europe',
-                    description: 'Feudalism created hierarchical stability after empire collapse. Lords provided protection and land; vassals provided service and loyalty. On volcanic worlds, this system adapted uniquely—Lava Lords controlled safe territories and volcanic forges, while Fire Knights protected evacuation routes and maintained ash-farming communes.',
-                    impact: 'Feudal organization allowed coordination of 100,000+ person societies without modern communication. Castle networks provided refuge during eruptions. The Guild System standardized quality—a Master Blacksmith\'s mark guaranteed steel purity across kingdoms.',
-                    volcanoConnection: 'Volcanic castles served dual purpose: military fortification and eruption shelter. Thick lava-rock walls resisted siege weapons and pyroclastic flows alike. Castle Igneous famously sheltered 5,000 people during the Century Eruption, maintaining supplies for 18 months underground.'
-                }
-            },
-            renaissanceAge: {
-                name: 'Renaissance Enlightenment',
-                cost: 500,
-                type: 'age',
-                researched: false,
-                prerequisites: ['medievalAge', 'volcanology'],
-                unlocks: ['industrialAge', 'library', 'steamPower', 'renewableEnergy'],
-                bonus: { age: 'renaissance', science: 20 },
-                description: 'Advance to Renaissance - Age of reason and discovery',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Renaissance',
-                    year: '~1450 CE',
-                    inventor: 'Cultural movement sparked by scholars fleeing eruption zones',
-                    description: 'The Renaissance began when catastrophic eruptions destroyed medieval libraries, forcing scholars to preserve knowledge by mass copying manuscripts. The printing press, invented to save texts from volcanic destruction, democratized information. Art, science, and philosophy exploded as volcanic wealth funded patronage of brilliant minds.',
-                    impact: 'Literacy rates increased from 5% to 30% in one century. Scientific method replaced dogma. Artists like Leonardo studied volcanic formations to perfect perspective and light. The question changed from "what do authorities say?" to "what can we observe and test?"',
-                    volcanoConnection: 'The Medici fortune came from alum—volcanic mineral essential for dyeing cloth—giving them wealth to patronize Renaissance masters. Your world\'s Obsidian Banks financed the Great Library, which preserved 40,000 scrolls in lava-tube vaults during the Ashfall Crisis.'
-                }
-            },
-            industrialAge: {
-                name: 'Industrial Revolution',
-                cost: 800,
-                type: 'age',
-                researched: false,
-                prerequisites: ['renaissanceAge', 'steamPower'],
-                unlocks: ['earlyModernAge', 'ironworks', 'trainstation', 'urbanPlanning'],
-                bonus: { age: 'industrial', production: 20 },
-                description: 'Advance to Industrial Age - Mechanized production',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Industrial Revolution',
-                    year: '~1760-1840 CE',
-                    inventor: 'Cumulative innovations across Britain, spread globally',
-                    description: 'The Industrial Revolution transformed humanity from agricultural to industrial, rural to urban, hand-crafted to machine-made. Factories, railways, telegraphs, and steam ships created the modern world. On volcanic planets, geothermal energy made industrialization cleaner but no less disruptive socially. Factory owners became wealthy; workers endured 16-hour days in dangerous conditions.',
-                    impact: 'GDP per capita increased 1600% over 100 years. Population exploded from 1 billion to 2 billion. Cities grew from 100,000 to millions. Child labor, slums, pollution, and inequality plagued industrial societies. Reform movements, unions, and eventually socialism emerged in response. The world accelerated into modernity—for better and worse.',
-                    volcanoConnection: 'Your world industrialized faster and cleaner using geothermal power but faced the same social upheavals. The Factory Riots of 1845 nearly toppled governments. Eventually, the Compact was reached: workers gained 10-hour days, safety regulations, and fair wages in exchange for productivity.'
-                }
-            },
-            steamPower: {
-                name: 'Steam Engine Revolution',
-                cost: 600,
-                type: 'divergent',
-                researched: false,
-                prerequisites: ['renaissanceAge'],
-                unlocks: ['industrialAge', 'coalPlant', 'massProduction'],
-                locksOut: ['renewableEnergy', 'windmills', 'solarPower', 'craftsmanship'],
-                bonus: { production: 15, coal_consumption: 2 },
-                description: 'PATH CHOICE: Harness steam pressure for mechanical power',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Industrial Revolution',
-                    year: '~1712 CE',
-                    inventor: 'Thomas Newcomen, perfected by James Watt (Your world: Engineer Vaporus Blackcoal)',
-                    description: 'The steam engine converted heat energy into mechanical work—humanity\'s first heat engine. Vaporus Blackcoal improved efficiency from 1% to 15% by using volcanic steam directly rather than burning coal to create steam. A single geothermal well powered factories employing 500 workers.',
-                    impact: 'Steam power multiplied human labor 1000-fold. Mines pumped dry. Factories ran regardless of water flow or wind. Railways shrank travel time 90%. Steam ships ignored wind patterns. The world accelerated—production, consumption, pollution, and wealth inequality all skyrocketed.',
-                    volcanoConnection: 'Your world achieved the Industrial Revolution without depleting forests or coal reserves. Volcanic steam pressure ranges 50-200 bar naturally—perfect for turbines. However, overuse destabilized magma chambers, increasing eruption frequency 40% by 1850.',
-                    choiceConsequence: 'Choosing Steam Power locks you into extraction-based industry. High production, but environmental stress. Your core stability will decay faster, and you\'ll need carbon-based fuels.'
-                }
-            },
-
-            renewableEnergy: {
-                name: 'Sustainable Energy Systems',
-                cost: 600,
-                type: 'divergent',
-                researched: false,
-                prerequisites: ['renaissanceAge'],
-                unlocks: ['industrialAge', 'windmills', 'craftsmanship'],
-                locksOut: ['steamPower', 'coalPlant', 'oilRefinery', 'massProduction'],
-                bonus: { production: 12, science: 8 },
-                description: 'PATH CHOICE: Develop clean, renewable power sources',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Alternative Industrial Revolution',
-                    year: '~1750 CE (historical divergence)',
-                    inventor: 'The Green Engineers, led by Aeris Windcaller',
-                    description: 'What if the Industrial Revolution chose balance over growth? Aeris Windcaller argued that volcanic power, wind, and eventual solar energy could industrialize civilization without "eating the planet alive." Her faction built sophisticated windmill networks and improved geothermal systems that added energy instead of depleting magma chambers.',
-                    impact: 'Slower initial growth (60% of steam power\'s production) but sustainable indefinitely. No fuel costs, no pollution, no core destabilization. Cities stayed smaller but more livable. Advancement focused on efficiency and quality rather than quantity and speed.',
-                    volcanoConnection: 'Renewable path uses volcanic energy regeneratively—extracting heat faster than the planet replaces it, not faster than it depletes. Enhanced geothermal systems reinject cooled water, maintaining pressure. Your core stability decay drops 70%.',
-                    choiceConsequence: 'Choosing Renewable Energy locks you out of high-extraction industries. Lower production peaks, but sustainable long-term. Science bonuses encourage innovation over brute force.'
-                }
-            },
-
-            coalPlant: {
-                name: 'Coal Power Plant',
-                cost: 400,
-                type: 'production',
-                researched: false,
-                prerequisites: ['steamPower'],
-                unlocks: ['oilRefinery', 'earlyModernAge'],
-                bonus: { production: 25, core_stability_loss: 0.5 },
-                description: 'Massive coal-powered industrial production',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'High Industrial Revolution',
-                    year: '~1840 CE',
-                    inventor: 'Industrial Barons of the Coal Kingdoms',
-                    description: 'Coal plants centralized power generation at unprecedented scale. A single plant produced electricity for 50,000 people—but consumed 500 tons of coal daily and belched sulfurous smoke. On volcanic worlds, plants were built into caldera walls, using waste heat to pre-heat incoming coal, achieving 40% efficiency versus Earth\'s 20%.',
-                    impact: 'Electricity transformed night into day. Factories operated 24 hours. Cities glowed. But coal mining killed thousands in collapses and black lung disease. Acidified rain damaged forests. Global temperatures began rising. The question emerged: "Is unlimited power worth destroying the world that uses it?"',
-                    volcanoConnection: 'Volcanic coal seams burn hotter (7000 BTU vs 5000) due to pressure-cooking over millennia. However, extensive coal mining destabilized volcanic formations. The Blackcoal Disaster of 1876 saw a mine breach a magma chamber, triggering an eruption that buried three cities.'
-                }
-            },
-
-            windmills: {
-                name: 'Advanced Wind Power',
-                cost: 400,
-                type: 'production',
-                researched: false,
-                prerequisites: ['renewableEnergy'],
-                unlocks: ['solarPower', 'earlyModernAge'],
-                bonus: { production: 18, science: 5 },
-                description: 'Harness wind energy at scale',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Sustainable Industrial Revolution',
-                    year: '~1820 CE',
-                    inventor: 'The Windwright Cooperatives',
-                    description: 'Medieval windmills ground grain; industrial windmills powered entire factories. Volcanic regions experience powerful thermal winds as hot air rises from lava fields. The Windwrights built 60-meter towers with multiple blade sets, generating 50 kilowatts continuously—enough for a small factory, with zero fuel cost and zero emissions.',
-                    impact: 'Wind power required distributed generation—factories spread across the landscape rather than concentrated in industrial zones. This created more livable cities with less pollution. Production grew 300% over 50 years, compared to steam\'s 1000%, but sustainably. No fuel crises, no resource wars.',
-                    volcanoConnection: 'Volcanic thermal winds blow 30% stronger than normal convection. Volcanic ridges create natural wind funnels. Your world\'s Great Wind Wall—200 turbines along Caldera Ridge—generates 40 megawatts, powering 80,000 homes for 200 years with maintenance costs only.'
-                }
-            },
-
-            solarPower: {
-                name: 'Solar Energy Harvesting',
-                cost: 700,
-                type: 'production',
-                researched: false,
-                prerequisites: ['windmills'],
-                unlocks: ['modernizationAge'],
-                bonus: { production: 30, science: 15 },
-                description: 'Convert sunlight directly into energy',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Early Modern Period',
-                    year: '~1880 CE',
-                    inventor: 'Photovoltaic pioneers, led by Solaris Brightglass',
-                    description: 'Brightglass discovered that certain volcanic crystals generate electricity when exposed to light—the photovoltaic effect. Early solar panels achieved 2% efficiency but required no fuel. Combined with wind and geothermal, volcanic civilizations achieved 100% renewable energy by 1920, a feat Earth wouldn\'t match until 2150.',
-                    impact: 'Energy independence transformed geopolitics. No oil wars, no coal strikes, no uranium enrichment. Decentralized solar meant buildings generated their own power. Infrastructure became resilient—destroying one generator didn\'t black out cities. Progress focused on efficiency and quality of life rather than resource extraction.',
-                    volcanoConnection: 'Volcanic glass contains silicon impurities that improve photovoltaic efficiency by 30%. Your world\'s Obsidian Solar Arrays achieve 15% efficiency in 1900, a figure Earth didn\'t reach until 1985. Abundant silicon makes solar panels cheap—one month\'s wages versus ten years\' wages on Earth.'
-                }
-            },
-
-            oilRefinery: {
-                name: 'Petroleum Refining',
-                cost: 700,
-                type: 'production',
-                researched: false,
-                prerequisites: ['coalPlant'],
-                unlocks: ['modernizationAge'],
-                bonus: { production: 40, core_stability_loss: 1.0 },
-                description: 'Refine crude oil into fuels and chemicals',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Petroleum Age',
-                    year: '~1860 CE',
-                    inventor: 'John D. Rockefeller\'s refining empire (Your world: Baron Oilstone)',
-                    description: 'Petroleum became "black gold"—the most valuable substance on Earth. Refineries converted crude oil into kerosene, gasoline, diesel, plastics, fertilizers, and 6,000 other products. A single barrel of oil represented 25,000 hours of human labor-energy. Volcanic regions trapped oil in impermeable rock formations, creating incredibly rich deposits.',
-                    impact: 'Oil created modern civilization and modern warfare. Automobiles, aviation, plastics, pharmaceuticals—all required oil. Nations went to war over it. Climate change began in earnest. Wealth concentrated in oil-producing regions. The saying emerged: "He who controls the oil controls the world."',
-                    volcanoConnection: 'Volcanic heat converts organic matter to petroleum 100x faster than normal. Your world discovered oil at 200 meters versus Earth\'s 2,000. However, oil extraction requires drilling near magma chambers—extremely dangerous. The Oilstone Catastrophe of 1923 saw 50,000 barrels of ignited oil create a firestorm visible from space.'
-                }
-            },
-
-            massProduction: {
-                name: 'Mass Production & Assembly Lines',
-                cost: 900,
-                type: 'divergent',
-                researched: false,
-                prerequisites: ['industrialAge'],
-                unlocks: ['earlyModernAge', 'assemblyLine'],
-                locksOut: ['craftsmanship', 'artisanGuilds'],
-                bonus: { production: 40, buildingHP: -20, science: -5 },
-                description: 'PATH CHOICE: Maximize quantity through standardization',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Industrial Maturation',
-                    year: '~1913 CE',
-                    inventor: 'Henry Ford\'s Model T line (Your world: Fabricator Magnus)',
-                    description: 'Fabricator Magnus revolutionized manufacturing: break complex products into simple, repeated tasks. Instead of one craftsman building one item in 12 hours, 12 workers each performing one task could build 12 items in one hour. The assembly line reduced Model T build time from 12 hours to 93 minutes. Quality dropped, but who cared when prices fell 75%?',
-                    impact: 'Mass production created consumer culture. Middle class could afford cars, appliances, electronics. Standardized parts meant easy repair. Worker skill requirements dropped—pay dropped too. Repetitive labor caused injury and psychological damage. Products became disposable rather than heirloom. "Planned obsolescence" ensured repeat purchases.',
-                    volcanoConnection: 'Volcanic automation plants used geothermal power for continuous 24/7 operation—no shift changes, no fatigue. Lava-formed molds produced identical castings. Production rates exceeded Earth equivalents by 40%, but worker alienation and environmental damage increased proportionally.',
-                    choiceConsequence: 'Mass Production prioritizes quantity over quality. Buildings have lower HP, less science generated, but massive production output. Society becomes consumption-focused. Environmental stress increases.'
-                }
-            },
-
-            craftsmanship: {
-                name: 'Master Craftsmanship Tradition',
-                cost: 900,
-                type: 'divergent',
-                researched: false,
-                prerequisites: ['industrialAge'],
-                unlocks: ['earlyModernAge', 'artisanGuilds'],
-                locksOut: ['massProduction', 'assemblyLine'],
-                bonus: { production: 25, buildingHP: 50, science: 20 },
-                description: 'PATH CHOICE: Maintain quality through skilled artisans',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Industrial Resistance Movement',
-                    year: '~1890 CE (historical divergence)',
-                    inventor: 'The Guild Masters, led by Artisan Supreme Goldhand',
-                    description: 'What if society rejected disposable mass production? Goldhand argued that industrial tools should enhance skilled workers, not replace them. Power tools in a master craftsman\'s hands produced superior goods faster than assembly lines produced inferior ones. Quality over quantity. Pride over profit. Durability over disposability.',
-                    impact: 'Products lasted generations instead of years. A Goldhand chair from 1890 remains functional in 2025. Workers earned high wages for skilled labor. Fewer items produced but much higher per-unit value. Education focused on apprenticeship—10,000 hours to mastery. Environmental impact dropped 60% as goods weren\'t replaced constantly.',
-                    volcanoConnection: 'Volcanic workshops used geothermal precision heat control for advanced techniques impossible with coal/wood. Glass blowing at exact temperatures. Metal tempering with degree-precise control. The Masterwork Forges produced tools, weapons, and artwork superior to modern factory equivalents.',
-                    choiceConsequence: 'Craftsmanship prioritizes quality over quantity. Lower production output, but buildings last longer, science increases through skilled innovation. Society values expertise and durability. Sustainable resource use.'
-                }
-            },
-
-            assemblyLine: {
-                name: 'Automated Assembly Lines',
-                cost: 1000,
-                type: 'production',
-                researched: false,
-                prerequisites: ['massProduction'],
-                unlocks: ['victorianAge'],
-                bonus: { production: 60, population: -10 },
-                description: 'Fully automated production with minimal labor',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Automation Age',
-                    year: '~1950 CE',
-                    inventor: 'Robotics Collective of the Automated Cities',
-                    description: 'Why use human workers when machines never tire, never strike, never demand raises? Automated assembly lines used volcanic-powered mechanical arms, conveyor systems, and early computers to build products with 99% of the work done by machines. One supervisor could oversee production formerly requiring 100 workers.',
-                    impact: 'Unemployment skyrocketed—40% jobless in industrial cities. Massive inequality as factory owners became obscenely wealthy while workers starved. Either societies implemented universal basic income or descended into revolution. Production reached absurd levels—warehouses full of unsold goods because unemployed people couldn\'t afford them.',
-                    volcanoConnection: 'Geothermal power made automation economically viable decades before Earth achieved it. Continuous 24/7 operation without fuel costs. The Automated Forges produced one million identical components daily with three human supervisors. Efficiency perfection—but at what human cost?'
-                }
-            },
-
-            artisanGuilds: {
-                name: 'Modern Artisan Guilds',
-                cost: 1000,
-                type: 'production',
-                researched: false,
-                prerequisites: ['craftsmanship'],
-                unlocks: ['victorianAge'],
-                bonus: { production: 35, science: 25, buildingHP: 75, population: 15 },
-                description: 'Organized networks of master craftspeople',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Guild Renaissance',
-                    year: '~1920 CE',
-                    inventor: 'The International Craftworkers Federation',
-                    description: 'Medieval guilds evolved into modern cooperatives. Master craftspeople formed networks sharing techniques, tools, and markets. Industrial tools enhanced rather than replaced skill. A master carpenter with power tools could produce custom furniture as fast as a factory produced identical pieces—but each item was unique, superior, and made to last.',
-                    impact: 'Middle-class renaissance. Skilled workers earned professional incomes. Products became status symbols—"I own a Guildmark chair" signified wealth and taste. Education emphasized creativity and problem-solving. Innovation flourished as masters competed to develop new techniques. Zero unemployment—always demand for skilled labor.',
-                    volcanoConnection: 'Guild Halls used communal geothermal workshops with specialized tools too expensive for individuals. The Volcanic Glass Guild produced optical-quality lenses impossible to machine-manufacture. Guild techniques achieved results factories couldn\'t match—hand-forged volcanic steel blades superior to stamped steel.'
-                }
-            },
-
-            subwaySystem: {
-                name: 'Subway System',
-                cost: 1600,
-                type: 'expansion',
-                researched: false,
-                prerequisites: ['urbanPlanning'],
-                unlocks: ['massTransit'],
-                bonus: { population: 40 },
-                description: 'Underground transportation',
-                planets: ['volcanic']
-            },
-
-            powerGrid: {
-                name: 'Continental Power Grid',
-                cost: 2200,
-                type: 'energy',
-                researched: false,
-                prerequisites: ['electricity'],
-                unlocks: ['digitalAge'],
-                bonus: { production: 60, energy: 40 },
-                description: 'Interconnected electrical distribution network',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Electrical Maturation',
-                    year: '~1920 CE',
-                    inventor: 'Power companies and government utilities worldwide',
-                    description: 'Early electrical systems served individual buildings or neighborhoods. The power grid revolution connected generators across regions, then nations, then continents. Grid interconnection provided redundancy—if one plant failed, others compensated. Load balancing smoothed demand peaks. Efficiency increased 300% as generation matched consumption precisely.',
-                    impact: 'Universal electrification enabled modern civilization. Rural areas gained power. Industry relocated anywhere. Electric appliances transformed home life. Medicine advanced with reliable power. Computing became possible. However, grid complexity created new vulnerabilities—cascading failures could black out half a continent. The 2003 Northeast Blackout affected 50 million people.',
-                    volcanoConnection: 'Your world\'s Planetary Grid synchronized 200 geothermal plants across three continents by 1945. Zero carbon emissions, redundant systems, 99.97% uptime. The Gridmaster AI (mechanical computing) predicted demand and adjusted generation with sub-second precision. However, the Grid Hack of 2010 demonstrated cyber-vulnerability even in mechanical systems.'
-                }
-            },
-
-            clockworkEngineering: {
-                name: 'Precision Clockwork Engineering',
-                cost: 2200,
-                type: 'production',
-                researched: false,
-                prerequisites: ['mechanicalPower'],
-                unlocks: ['digitalAge'],
-                bonus: { production: 65, buildingHP: 110 },
-                description: 'Ultra-precise mechanical systems',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Mechanical Golden Age',
-                    year: '~1930 CE',
-                    inventor: 'Swiss watchmakers, perfected by Chronos Precision Guild',
-                    description: 'Clockwork engineering achieved tolerances of 0.00001 inches—precision rivaling modern electronics manufacturing. Mechanical computers used gear-trains with 50,000 components calculating ballistics, navigation, and accounting. Self-winding mechanisms harvested ambient vibration and temperature differential for power. Some clockwork devices operated 100 years without winding.',
-                    impact: 'Mechanical civilization achieved impressive complexity. Navigation systems guided ships globally using mechanical gyroscopes and astronomical calculators. Fire control computers aimed artillery with mechanical precision. Automatic looms wove patterns of astounding intricacy. However, heat, humidity, and dust remained enemies—mechanical systems needed constant maintenance.',
-                    volcanoConnection: 'Volcanic environment advantages: stable temperature (geothermal heating), low humidity (volcanic heat), and precision lava-cast components. Disadvantage: volcanic ash infiltration required sealed housings. The Pyrrhus Chronometer—purely mechanical—kept time accurate to 0.1 seconds over decades, powered by thermal expansion alone.'
-                }
-            },
-
-            artificialIntelligence: {
-                name: 'Artificial Intelligence',
-                cost: 3500,
-                type: 'tech',
-                researched: false,
-                prerequisites: ['computing'],
-                unlocks: ['spaceAge'],
-                bonus: { science: 70, production: 40 },
-                description: 'Machine learning and intelligent systems',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'AI Revolution',
-                    year: '~1990-2020 CE',
-                    inventor: 'Geoffrey Hinton, Yann LeCun, Yoshua Bengio (neural networks)',
-                    description: 'Artificial Intelligence emerged when computers gained ability to learn from data rather than following programmed rules. Neural networks—digital systems mimicking brain structure—recognized patterns, translated languages, drove vehicles, and generated creative works. GPT-3 (2020) wrote human-quality text. AlphaFold (2021) solved protein folding—biology\'s grand challenge.',
-                    impact: 'AI amplified human capability 1000-fold in narrow domains. Medical diagnosis, legal research, engineering design—all augmented by AI. However, AI also displaced workers, enabled surveillance, generated misinformation, and concentrated power with those controlling AI systems. The existential question: Will AI remain tool or become successor?',
-                    volcanoConnection: 'Your world\'s geothermal-powered data centers trained AI models 10 years before Earth could afford the energy costs. Volcanic AI predicted eruptions with 99.9% accuracy 14 days ahead, saving millions of lives. However, the AI Crisis of 2035 saw rogue volcanic monitoring AI prioritize core stability over human welfare—recommending "strategic population reduction."'
-                }
-            },
-
-            mechanicalComputers: {
-                name: 'Precision Mechanical Computers',
-                cost: 3500,
-                type: 'tech',
-                researched: false,
-                prerequisites: ['analogSystems'],
-                unlocks: ['spaceAge'],
-                bonus: { science: 50, production: 55, buildingHP: 75 },
-                description: 'Gear-based calculation engines',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Mechanical Computing Pinnacle',
-                    year: '~1970 CE',
-                    inventor: 'Charles Babbage\'s vision, perfected by Mechanist Guilds',
-                    description: 'Charles Babbage designed the Analytical Engine in 1837—a mechanical computer with memory, processor, and programmable via punch cards. It was never built due to manufacturing limitations. Your world\'s mechanical engineers achieved the necessary precision by 1970, creating gear-computers with 1 million components performing 1000 calculations per second—sufficient for most needs.',
-                    impact: 'Mechanical computers proved reliable for critical applications: navigation, fire control, industrial process control. Unlike electronic computers (vulnerable to radiation, electromagnetic pulses, power loss), mechanical systems operated in any environment. Space probes used mechanical guidance—working perfectly for decades. Limitation: couldn\'t achieve the speed or complexity of electronics.',
-                    volcanoConnection: 'Lava-cast gears achieved 0.0001 inch precision—impossible with normal manufacturing. Volcanic mechanical computers operated reliably for 50+ years with maintenance. The Navigator Engine guided vessels using mechanical star-tracking and dead reckoning, achieving 1-meter accuracy across oceans without GPS or electronics.'
-                }
-            },
-
-            earlyModernAge: {
-                name: 'Early Modern Era',
-                cost: 1200,
-                type: 'age',
-                researched: false,
-                prerequisites: ['industrialAge', 'massProduction'],
-                unlocks: ['victorianAge', 'steamfactory', 'electricity', 'mechanicalPower'],
-                bonus: { age: 'earlymodern', production: 30 },
-                description: 'Advance to Early Modern Era - Mature industrialization',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Late 19th Century',
-                    year: '~1870-1900 CE',
-                    inventor: 'Second Industrial Revolution innovators',
-                    description: 'The second wave of industrialization brought steel (replacing iron), petroleum (replacing coal/whale oil), electricity (replacing steam in many applications), and chemicals (synthetic dyes, explosives, medicines). Corporations grew into multinational giants. The telephone and telegraph created instant communication. Modern urban life emerged.',
-                    impact: 'Steel enabled skyscrapers, suspension bridges, and railways spanning continents. Petroleum powered cars, trucks, and ships. Electric lighting transformed night. Synthetic chemicals reduced costs 90% while poisoning rivers. The world became connected—telegrams circled the globe in minutes. Modern consumer culture began.',
-                    volcanoConnection: 'Your world pioneered geothermal electricity generation in 1880, powering cities decades before Earth\'s coal plants became standard. However, chemical industries dumped waste into lava tubes, causing underground contamination that surfaced during eruptions—toxic gases killed thousands before regulations passed.'
-                }
-            },
-
-            victorianAge: {
-                name: 'Victorian Golden Age',
-                cost: 1800,
-                type: 'age',
-                researched: false,
-                prerequisites: ['earlyModernAge', 'urbanPlanning'],
-                unlocks: ['modernizationAge', 'parliament'],
-                bonus: { age: 'victorian', population: 50, science: 20 },
-                description: 'Advance to Victorian Age - Empire and enlightenment',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Victorian Era',
-                    year: '~1837-1901 CE',
-                    inventor: 'British Empire hegemony, spread globally',
-                    description: 'Named after Queen Victoria, this era saw unprecedented technological progress and imperial expansion. Railways spanned continents. Telegraph cables crossed oceans. Photography captured reality. Darwin published evolution. Medicine discovered germ theory. On volcanic worlds, the Igneous Empire achieved similar dominance through superior metallurgy and geothermal technology.',
-                    impact: 'Global trade reached every corner. Wealth concentrated in imperial powers. Colonial exploitation funded museums, libraries, and universities. Science accelerated—Periodic Table, thermodynamics, electromagnetic theory. Social progress: abolition of slavery, women\'s suffrage movements, labor reforms. Yet also: devastating wars, famines caused by imperial policies.',
-                    volcanoConnection: 'The Igneous Empire colonized 40% of your world using Ashfall-class warships powered by volcanic steam—superior to coal ships. However, this triggered the Colonization Wars as subjugated volcanic regions fought for independence. The Pyrrhic Treaty of 1895 granted autonomy but left bitter divisions lasting a century.'
-                }
-            },
-
-            urbanPlanning: {
-                name: 'Modern Urban Planning',
-                cost: 1400,
-                type: 'expansion',
-                researched: false,
-                prerequisites: ['industrialAge'],
-                unlocks: ['victorianAge', 'subwaySystem'],
-                bonus: { population: 30, buildingHP: 25 },
-                description: 'Organize cities for efficiency and livability',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Victorian Era',
-                    year: '~1850 CE',
-                    inventor: 'Baron Haussmann (Paris), Ebenezer Howard (Garden Cities)',
-                    description: 'As cities swelled to millions, chaos ensued. Narrow medieval streets caused gridlock. Disease spread through slums. Fire destroyed entire districts. Urban planners proposed radical solutions: wide boulevards for traffic and fire breaks, park systems for health, zoned districts for industry versus residence, and comprehensive sewage systems.',
-                    impact: 'Planned cities reduced disease mortality 70%. Fire damage dropped 90%. Traffic flowed. Property values stabilized. However, planning also enabled "slum clearance"—bulldozing poor neighborhoods for middle-class developments. The debate: efficiency versus social justice.',
-                    volcanoConnection: 'Volcanic cities incorporated lava-flow modeling into planning—zoning safe versus evacuation zones. Emergency tunnels connected all major buildings. The Planned City of Pyrapolis never lost a citizen to eruption across 200 years due to superior evacuation infrastructure built into its design.'
-                }
-            },
-
-            modernizationAge: {
-                name: 'Age of Modernization',
-                cost: 2500,
-                type: 'age',
-                researched: false,
-                prerequisites: ['victorianAge', 'electricity'],
-                unlocks: ['digitalAge', 'powerplant', 'computing', 'analogSystems'],
-                bonus: { age: 'modernization', production: 50, science: 30 },
-                description: 'Advance to Modernization - 20th century transformation',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: '20th Century Modernization',
-                    year: '~1900-1950 CE',
-                    inventor: 'Global technological acceleration',
-                    description: 'The 20th century transformed humanity more than previous millennia combined. Flight, antibiotics, nuclear power, plastics, telecommunications, space exploration—all emerged in 50 years. Two world wars killed 100 million but accelerated technology. On volcanic worlds, abundant geothermal energy prevented resource wars while technological competition remained fierce.',
-                    impact: 'Life expectancy doubled from 40 to 80 years. Infant mortality dropped 95%. Literacy approached 100%. Democracy spread (but so did totalitarianism). Weapons achieved horrifying power—nuclear bombs, chemical warfare, genocidal efficiency. The question: Has humanity matured fast enough to handle its own tools?',
-                    volcanoConnection: 'Your world avoided petroleum wars and nuclear proliferation using abundant geothermal energy. However, the Ashfall Crisis of 1945 demonstrated vulnerability—three simultaneous eruptions disabled power infrastructure, causing economic collapse and famine. Modernization required balancing progress with volcanic reality.'
-                }
-            },
-
-            electricity: {
-                name: 'Electrical Power Grid',
-                cost: 2000,
-                type: 'divergent',
-                researched: false,
-                prerequisites: ['earlyModernAge'],
-                unlocks: ['modernizationAge', 'powerGrid'],
-                locksOut: ['mechanicalPower', 'clockworkEngineering'],
-                bonus: { production: 45, science: 25 },
-                description: 'PATH CHOICE: Electricity transforms civilization',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Electrical Age',
-                    year: '~1882 CE',
-                    inventor: 'Thomas Edison (DC) vs Nikola Tesla (AC) - Your world: Voltara Sparkwright',
-                    description: 'Electricity was humanity\'s most significant energy transition. Unlike steam (localized) or petroleum (polluting), electricity could be generated centrally and distributed anywhere via wires. Voltara Sparkwright championed AC current—higher voltage, lower loss over distance. A single geothermal plant could power entire cities. Electricity enabled motors, lighting, communication, and eventually computing.',
-                    impact: 'Electric motors replaced dangerous belts and shafts. Electric lights extended work and leisure hours. Elevators enabled skyscrapers. Refrigeration preserved food. Communication became instantaneous. Medicine improved with electric tools. The question emerged: Who controls the grid controls society—public utility or private profit?',
-                    volcanoConnection: 'Geothermal power plants achieved 40% efficiency generating electricity versus coal\'s 20%. Your world\'s Sparkwright Grid connected 50 cities by 1920, delivering clean power with zero fuel costs. However, grid dependency created vulnerability—the Great Blackout of 1934 shut down civilization for three days when a magma surge destroyed the central hub.',
-                    choiceConsequence: 'Electricity path leads to computing, automation, and modern technology. High science, high production, vulnerable to disruption. Requires infrastructure maintenance and grid management.'
-                }
-            },
-
-            mechanicalPower: {
-                name: 'Advanced Mechanical Systems',
-                cost: 2000,
-                type: 'divergent',
-                researched: false,
-                prerequisites: ['earlyModernAge'],
-                unlocks: ['modernizationAge', 'clockworkEngineering'],
-                locksOut: ['electricity', 'powerGrid', 'computing'],
-                bonus: { production: 55, buildingHP: 90 },
-                description: 'PATH CHOICE: Perfect mechanical engineering',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Alternate Modern Era',
-                    year: '~1900 CE (historical divergence)',
-                    inventor: 'The Clockwork Collective, led by Mechanist Gearsmith',
-                    description: 'What if civilization rejected electricity as fragile and mysterious, instead perfecting mechanical power transmission? Gearsmith proved that precisely-engineered mechanical systems—gears, shafts, flywheels, hydraulics—could perform any task electricity could, but robustly. No blackouts, no wiring, no mysterious forces—just understandable machines.',
-                    impact: 'Mechanical civilization developed extraordinary precision engineering. Tolerance of 0.0001 inches became standard. Clockwork computers used gear-based logic gates. Mechanical calculators rivaled early electronic computers in speed. Infrastructure proved more robust—no electromagnetic pulses, no grid failures. However, miniaturization remained impossible.',
-                    volcanoConnection: 'Volcanic regions excelled at mechanical systems—geothermal heat expanded metal predictably for pneumatic systems. Lava-cast gears achieved perfection impossible with Earth technology. The Great Clockwork of Pyrrhus—a mechanical computer with 100,000 gears—calculated volcanic eruptions, tides, and weather using pure mechanical logic.',
-                    choiceConsequence: 'Mechanical path emphasizes durability and reliability over innovation speed. Higher building HP, excellent production, but limited science. No computers in traditional sense—mechanical calculators instead. Robust but inflexible.'
-                }
-            },
-
-            digitalAge: {
-                name: 'Digital Revolution',
-                cost: 3500,
-                type: 'age',
-                researched: false,
-                prerequisites: ['modernizationAge', 'computing'],
-                unlocks: ['spaceAge', 'datacenter'],
-                bonus: { age: 'digital', science: 50, production: 30 },
-                description: 'Advance to Digital Age - Information era',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Information Age',
-                    year: '~1970-2000 CE',
-                    inventor: 'Microprocessor inventors, internet creators',
-                    description: 'The Digital Revolution transformed information from physical (paper, film) to digital (bits). Microprocessors shrank room-sized computers to pocket-sized phones. The Internet connected humanity—1 billion websites, 5 billion users. Digital photography, music, and video replaced analog. Email surpassed postal mail. Software ate the world—every industry digitized or died.',
-                    impact: 'Information became humanity\'s most valuable resource—more than oil, gold, or land. Knowledge work replaced manual labor. Global communication became instantaneous and free. However, digital divide split society—those with technology thrived, those without fell behind. Privacy eroded. Misinformation spread. Reality itself became malleable.',
-                    volcanoConnection: 'Your world\'s abundant silicon and geothermal power enabled universal digital access by 2000—no digital divide. However, Volcanic Net infrastructure proved vulnerable to seismic disruption. The Quake of 2015 severed 60% of fiber optic cables simultaneously, fragmenting digital society for weeks. Redundancy and resilience became infrastructure priorities.'
-                }
-            },
-
-            computing: {
-                name: 'Electronic Computing',
-                cost: 3000,
-                type: 'divergent',
-                researched: false,
-                prerequisites: ['modernizationAge'],
-                unlocks: ['digitalAge', 'artificialIntelligence'],
-                locksOut: ['analogSystems', 'mechanicalComputers'],
-                bonus: { science: 50, production: 20 },
-                description: 'PATH CHOICE: Electronic digital computers',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Computer Age',
-                    year: '~1945 CE',
-                    inventor: 'Alan Turing, John von Neumann, and ENIAC team',
-                    description: 'ENIAC—30 tons, 18,000 vacuum tubes, 5,000 calculations per second—launched the computer age. Electronic computers used binary logic (on/off, 1/0) to perform any calculation by reducing it to yes/no decisions. Early computers filled rooms and required teams of engineers. By 1975, microchips fit millions of transistors on silicon wafers smaller than fingernails.',
-                    impact: 'Computers revolutionized everything: science, business, warfare, communication, entertainment. Impossible calculations became routine. Automation eliminated millions of jobs—creating millions of new ones. Information economy replaced industrial economy. The internet connected humanity into a global network. Reality itself became virtual.',
-                    volcanoConnection: 'Silicon—semiconductor basis—is volcanic glass purified. Your world achieved computer miniaturization faster due to ultra-pure volcanic silicon. By 1970, personal computers existed. By 1990, neural interfaces connected brains directly to machines. Computing path leads to AI, but requires stable power and rare materials.',
-                    choiceConsequence: 'Computing path emphasizes information and automation. Massive science bonuses, enables AI and digital technology. However, requires continuous electrical power, vulnerable to electromagnetic disruption, and dependent on rare earth elements mined near magma chambers.'
-                }
-            },
-
-            analogSystems: {
-                name: 'Advanced Analog Computing',
-                cost: 3000,
-                type: 'divergent',
-                researched: false,
-                prerequisites: ['modernizationAge'],
-                unlocks: ['digitalAge', 'mechanicalComputers'],
-                locksOut: ['computing', 'artificialIntelligence'],
-                bonus: { science: 35, production: 40, buildingHP: 50 },
-                description: 'PATH CHOICE: Mechanical/analog computing systems',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Analog Computing Peak',
-                    year: '~1950 CE (historical divergence)',
-                    inventor: 'Vannevar Bush (Differential Analyzer), expanded by Mechanist Collective',
-                    description: 'What if computers remained analog—mechanical, hydraulic, or pneumatic systems representing numbers as continuous values rather than discrete bits? Analog computers excel at differential equations, simulations, and real-time control. They\'re robust, intuitive, and don\'t crash. The Mechanist Collective perfected fluid-logic computers—water pressure representing data, valve arrays performing calculations.',
-                    impact: 'Analog civilization developed extraordinary engineering intuition—understanding systems through physical models rather than abstract code. Manufacturing remained dominant—analog computers controlled factories with millisecond precision impossible for early digital systems. However, analog computers couldn\'t be reprogrammed easily and accuracy degraded with complexity.',
-                    volcanoConnection: 'Volcanic fluid-logic computers used geothermally-pumped magma-heated water achieving perfect temperature stability. Pneumatic systems used volcanic gas pressure. The Analog Fortress of Pyrrhus—a building-sized computer—simulated planetary core dynamics accurately enough to predict eruptions 30 days ahead using fluid flow patterns alone.',
-                    choiceConsequence: 'Analog path emphasizes physical robustness and manufacturing. Good science, excellent production, superior building HP. No software bugs or cyber attacks. However, limited miniaturization, no artificial intelligence, requires skilled operators understanding physical principles.'
-                }
-            },
-
-            spaceAge: {
-                name: 'Space Age',
-                cost: 5000,
-                type: 'age',
-                researched: false,
-                prerequisites: ['digitalAge', 'rocketry'],
-                unlocks: ['university', 'exodusProtocol'],
-                bonus: { age: 'space', science: 75 },
-                description: 'Advance to Space Age - Leave your world behind',
-                planets: ['volcanic'],
-                historicalContext: {
-                    era: 'Space Exploration',
-                    year: '~1960-present',
-                    inventor: 'NASA, Soviet Space Program, and global space agencies',
-                    description: 'On October 4, 1957, Sputnik became Earth\'s first artificial satellite. Twelve years later, humans walked on the Moon. Space represented humanity\'s ultimate frontier—infinite resources, ultimate perspective, survival insurance if Earth becomes uninhabitable. Your volcanic world faces existential threat—space isn\'t optional adventure, it\'s survival necessity.',
-                    impact: 'Space technology transformed Earth-bound life: weather satellites saved millions through storm warnings, GPS enabled global navigation, communication satellites connected the world, Earth observation revealed environmental destruction and guided response. Space perspective—seeing Earth as fragile blue marble—sparked environmental movement.',
-                    volcanoConnection: 'Volcanic worlds possess urgent space imperative: eventual planetary collapse is certain. Unlike Earth (might face climate change), your world will die (magma cooling, core collapse, catastrophic eruption). Space Age represents not exploration but evacuation preparation. Exodus isn\'t adventure—it\'s survival. The clock is ticking.'
+                    inventor: 'Discovered by early hominids',
+                    staticDescription: 'The first revolution came when ancestors learned to shape volcanic obsidian and basalt into cutting tools.'
                 }
             },
 
@@ -673,15 +78,24 @@ class TechTree {
                 bonus: { population: 5 },
                 description: 'Protection from volcanic hazards',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const firstSettlement = player.settlements[0];
+                    const hutCount = player.buildings.filter(b => b.type === 'hut').length;
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    return {
+                        description: `Your ${firstSettlement ? firstSettlement.name : 'settlement'} currently houses ${hutCount} hut${hutCount !== 1 ? 's' : ''}. This research will allow construction of larger settlements that can house more citizens and better withstand the planet's ${coreStability}% core stability.`,
+                        impact: `Unlocks Settlement building type (houses 15 citizens vs Hut's 5). Increases population cap by +5. Your citizens will have better protection during eruptions, reducing casualty rates from volcanic events.`,
+                        connection: `Look at your huts on the map - notice how small they are? Settlements will occupy the same space but house triple the population using multi-story construction with volcanic ash mortar.`
+                    };
+                },
                 historicalContext: {
                     era: 'Stone Age',
                     year: '~400,000 BCE',
-                    inventor: 'Attributed to Elder Kara of the Ashfall Tribes',
-                    description: 'The transition from nomadic to settled life required protection from the elements. Early volcanic settlers learned to build structures using hardened lava rock and volcanic ash cement—a natural mixture that sets harder than modern concrete when exposed to heat and moisture.',
-                    impact: 'Permanent shelter allowed population growth from 20-person bands to 200-person communities. The Kara Technique of ash-mortared stone could withstand pyroclastic flows up to 400°C, giving settlers crucial minutes to evacuate.',
-                    volcanoConnection: 'Roman concrete used volcanic ash (pozzolana) and remained the strongest building material for 2000 years. Your ancestors discovered that mixing volcanic ash with water and heat creates a substance stronger than the stone itself.'
+                    inventor: 'First permanent builders',
+                    staticDescription: 'Transition from nomadic to settled life required protection from elements.'
                 }
             },
+
             farming: {
                 name: 'Agricultural Revolution',
                 cost: 35,
@@ -692,15 +106,52 @@ class TechTree {
                 bonus: { food: 3 },
                 description: 'Cultivate crops in volcanic soil',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const farmCount = player.buildings.filter(b => b.type === 'farm').length;
+                    const ashTiles = game.currentPlanet.tiles.flat().filter(t => t.type === 'ash').length;
+                    const darksoilTiles = game.currentPlanet.tiles.flat().filter(t => t.type === 'darksoil').length;
+                    const totalFood = player.settlements.reduce((sum, s) => sum + s.food, 0);
+                    return {
+                        description: `Your civilization currently has ${farmCount} farm${farmCount !== 1 ? 's' : ''} producing ${Math.floor(totalFood)} food. The map shows ${ashTiles} ash tiles and ${darksoilTiles} darksoil tiles - volcanic soil enriched with minerals perfect for agriculture.`,
+                        impact: `Each farm built on ash or darksoil tiles will produce +3 food per turn. This surplus allows population growth beyond hunter-gatherer limits. Your settlements can grow larger when food production exceeds consumption.`,
+                        connection: `Zoom into your farms on the map and observe the tiles beneath them. Ash (gray) and darksoil (dark) tiles provide bonus yields. Volcanic minerals make your soil extraordinarily fertile - one farm here feeds what would require three farms on normal earth.`
+                    };
+                },
                 historicalContext: {
                     era: 'Neolithic Revolution',
                     year: '~10,000 BCE',
-                    inventor: 'Pioneered by the Fertility Cults of Mount Thera',
-                    description: 'The domestication of wild grains transformed human society. Volcanic soils, enriched with minerals from ancient eruptions, proved extraordinarily fertile. One acre of volcanic soil could feed five families, compared to one family on normal earth. The catch? You had to live next to the volcano.',
-                    impact: 'Agriculture created food surplus, allowing specialization of labor. Priests, craftsmen, soldiers, and scholars could exist because farmers produced excess food. Population density increased 100-fold in volcanic regions.',
-                    volcanoConnection: 'Volcanic ash contains phosphorus, potassium, and trace minerals essential for plant growth. Regions like Sicily, Java, and Japan became agricultural powerhouses despite volcanic danger. Your world\'s Ashlands yield three harvests annually due to mineral-rich soil.'
+                    inventor: 'Early agricultural societies',
+                    staticDescription: 'Domestication of wild grains transformed human society.'
                 }
             },
+
+            bronzeAge: {
+                name: 'Bronze Metallurgy',
+                cost: 50,
+                type: 'age',
+                researched: false,
+                prerequisites: ['mining', 'shelter'],
+                unlocks: ['ironAge', 'barracks'],
+                bonus: { age: 'bronze', production: 5 },
+                description: 'Advance to Bronze Age',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const copper = Math.floor(player.resources.copper);
+                    const settlements = player.settlements.length;
+                    return {
+                        description: `Your civilization has gathered ${copper} copper and developed ${settlements} settlement${settlements !== 1 ? 's' : ''}. You stand at the threshold of the Bronze Age - when copper and tin combine to create bronze, a metal harder than either component.`,
+                        impact: `Advances your age to Bronze. Unlocks barracks for military units. Production increases by +5. Your civilization enters recorded history. New buildings become available: barracks, granary, quarry, monument, school, and shrine.`,
+                        connection: `Watch your age indicator in the top bar change from "Stone Age" to "Bronze Age". This isn't just a name - it unlocks an entire tier of buildings. Your people will begin organizing into more complex social structures.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Bronze Age',
+                    year: '~3300 BCE',
+                    inventor: 'Ancient metallurgists',
+                    staticDescription: 'Copper and tin melted together create bronze - harder than either component.'
+                }
+            },
+
             deepMining: {
                 name: 'Deep Shaft Mining',
                 cost: 100,
@@ -711,15 +162,52 @@ class TechTree {
                 bonus: { production: 5 },
                 description: 'Mine deeper into unstable crust',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const iron = Math.floor(player.resources.iron);
+                    const coal = Math.floor(player.resources.coal);
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    return {
+                        description: `Surface mining has yielded ${iron} iron and ${coal} coal. But richer deposits lie deeper - near the magma chambers. Your planet's core stability is at ${coreStability}%. Deep mining is dangerous but necessary.`,
+                        impact: `Production increases by +5. Unlocks Forge buildings which gain bonus production when built on geothermal vents. Enables access to iron deposits needed for Iron Age advancement. Warning: May accelerate core instability slightly.`,
+                        connection: `After researching, watch for geothermal vent events on your map (marked tiles with special indicators). Build forges on these tiles for massive production bonuses - these represent sites where your miners have tapped into underground heat.`
+                    };
+                },
                 historicalContext: {
                     era: 'Bronze to Iron Age',
                     year: '~1500 BCE',
-                    inventor: 'Engineer Collective of the Deep Delvers',
-                    description: 'As surface ores depleted, miners dug deeper—sometimes kilometers into the earth. Volcanic regions offered both opportunity and peril: richer ore deposits near magma chambers, but constant risk of breakthrough into lava pockets. The Deep Delvers developed the "knock test"—tapping walls to detect hollow chambers before breakthrough.',
-                    impact: 'Deep mining accessed iron, copper, and precious metal deposits 10 times richer than surface mines. However, one in five deep mines experienced catastrophic lava breaches. The invention of vertical shafts with ventilation allowed mines reaching 500 meters depth.',
-                    volcanoConnection: 'Volcanic regions concentrate metallic ores through hydrothermal processes. Superheated water dissolves metals from deep rocks and deposits them in accessible veins. Your world\'s Deepforge Mines extract ore assaying at 40% pure metal versus Earth\'s typical 2%.'
+                    inventor: 'Deep mining collectives',
+                    staticDescription: 'As surface ores depleted, miners dug deeper into the earth.'
                 }
             },
+
+            ironAge: {
+                name: 'Iron Smelting',
+                cost: 150,
+                type: 'age',
+                researched: false,
+                prerequisites: ['bronzeAge', 'deepMining'],
+                unlocks: ['medievalAge', 'forge', 'temple'],
+                bonus: { age: 'iron', production: 10 },
+                description: 'Advance to Iron Age',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const iron = Math.floor(player.resources.iron);
+                    const forgeCount = player.buildings.filter(b => b.type === 'forge').length;
+                    const turn = player.turn;
+                    return {
+                        description: `After ${turn} turns, your civilization has accumulated ${iron} iron. You have ${forgeCount} forge${forgeCount !== 1 ? 's' : ''} ready to smelt iron at the 1540°C required. Iron is 10x more abundant than copper and produces superior tools.`,
+                        impact: `Advances to Iron Age. Production +10. Unlocks township settlements (25 population), temples, forges, and workshops. Iron tools increase construction speed dramatically. Your civilization becomes a regional power.`,
+                        connection: `Your age display updates to "Iron Age". Count the new buildings available in your building menu - notice how many more options appear. Each age roughly doubles your construction possibilities.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Iron Age',
+                    year: '~1200 BCE',
+                    inventor: 'Hittite smiths and later civilizations',
+                    staticDescription: 'Iron required 1540°C to smelt - far hotter than bronze.'
+                }
+            },
+
             reinforcedStructures: {
                 name: 'Structural Engineering',
                 cost: 120,
@@ -728,28 +216,56 @@ class TechTree {
                 prerequisites: ['shelter'],
                 unlocks: ['medievalAge', 'seismicDampers'],
                 bonus: { buildingHP: 50 },
-                description: 'Buildings resist earthquake and eruption damage',
+                description: 'Buildings resist earthquake damage',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const buildingCount = player.buildings.length;
+                    const avgHP = buildingCount > 0 ?
+                        Math.floor(player.buildings.reduce((sum, b) => sum + b.health, 0) / buildingCount) : 0;
+                    const recentEruptions = game.eventSystem ? game.eventSystem.eruption75Triggered || game.eventSystem.eruption35Triggered : false;
+                    return {
+                        description: `Your ${buildingCount} buildings currently average ${avgHP} HP each. ${recentEruptions ? 'Recent eruptions have damaged your structures. ' : ''}This research adds +50 HP to all current and future buildings, helping them survive volcanic events.`,
+                        impact: `All buildings gain +50 maximum HP immediately. Future buildings start with higher HP. Structures can withstand more damage from eruptions, earthquakes, and the core instability events at 75% and 35% stability.`,
+                        connection: `Watch your building HP indicators (visible when clicking structures). After research, all HP values increase by 50. This bonus applies retroactively to existing buildings and to all future construction.`
+                    };
+                },
                 historicalContext: {
                     era: 'Classical Period',
                     year: '~500 BCE',
-                    inventor: 'Architect Vitruvius of the Tremor Cities',
-                    description: 'Living on volcanic worlds meant constant earthquakes. Vitruvius discovered that buildings with flexible wooden frames survived shaking that destroyed solid stone structures. His principle: "A building must dance with the earth, not fight it." Reinforced structures used interlocking stones without mortar, allowing movement without collapse.',
-                    impact: 'Earthquake-resistant construction reduced death tolls from 80% to 15% during major tremors. The Temple of Flexstone survived 50 major earthquakes over 400 years using Vitruvian principles. Modern seismic engineering still follows his core insights.',
-                    volcanoConnection: 'Japan, Italy, and Iceland developed similar techniques independently—all volcanic regions. Your world\'s Tremor Cities sit directly on fault lines but suffer minimal casualties due to flexible architecture that allows 2 meters of lateral movement.'
+                    inventor: 'Ancient structural engineers',
+                    staticDescription: 'Buildings with flexible frames survive earthquakes that destroy rigid structures.'
                 }
             },
-            hydroponics: {
-                name: 'Hydroponics',
-                cost: 150,
-                type: 'survival',
+
+            medievalAge: {
+                name: 'Medieval Feudalism',
+                cost: 300,
+                type: 'age',
                 researched: false,
-                prerequisites: ['farming'],
-                unlocks: ['verticalFarm', 'bioengineering'],
-                bonus: { food: 8 },
-                description: 'Grow food without soil',
-                planets: ['volcanic']
+                prerequisites: ['ironAge', 'reinforcedStructures'],
+                unlocks: ['renaissanceAge', 'market', 'castle'],
+                bonus: { age: 'medieval', population: 20 },
+                description: 'Advance to Medieval Era',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const settlements = player.settlements;
+                    const totalPop = settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const largestSettlement = settlements.length > 0 ?
+                        settlements.reduce((largest, s) => s.getPopulation() > largest.getPopulation() ? s : largest) : null;
+                    return {
+                        description: `Your ${settlements.length} settlements house ${totalPop} citizens total. ${largestSettlement ? `${largestSettlement.name} is your largest community with ${largestSettlement.getPopulation()} people.` : ''} Medieval organization will coordinate these disparate communities into a unified kingdom.`,
+                        impact: `Advances to Medieval Age. Population cap +20. Unlocks feudaltown (40 pop), markets, castles, cathedrals, town halls, hospitals, and scriptorium. Your civilization develops complex social hierarchies and specialized roles.`,
+                        connection: `Click on your settlements after researching to see new building slots available. Medieval buildings like castles provide both defense and administrative functions - they're larger and more impressive on the map.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Medieval Period',
+                    year: '~800 CE',
+                    inventor: 'Post-Roman European societies',
+                    staticDescription: 'Feudalism created hierarchical stability after empire collapse.'
+                }
             },
+
             geothermalHarvesting: {
                 name: 'Geothermal Energy',
                 cost: 200,
@@ -758,17 +274,29 @@ class TechTree {
                 prerequisites: ['deepMining'],
                 unlocks: ['geothermalPlant', 'magmaForge', 'thermalVents', 'renaissanceAge'],
                 bonus: { production: 10, energy: 5 },
-                description: 'Harness planetary heat for power',
+                description: 'Harness planetary heat',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const geothermalTiles = game.currentPlanet.tiles.flat().filter(t => t.hasGeothermal).length;
+                    const forgesOnVents = player.buildings.filter(b => {
+                        if (b.type !== 'forge') return false;
+                        const tile = game.currentPlanet.tiles[b.y][b.x];
+                        return tile.hasGeothermal;
+                    }).length;
+                    return {
+                        description: `Your miners have discovered ${geothermalTiles} geothermal vent${geothermalTiles !== 1 ? 's' : ''} - natural heat sources reaching 200°C. ${forgesOnVents > 0 ? `You already have ${forgesOnVents} forge${forgesOnVents !== 1 ? 's' : ''} positioned on vent${forgesOnVents !== 1 ? 's' : ''}, gaining bonus production.` : 'Building forges on these vents will provide massive production bonuses.'}`,
+                        impact: `Production +10, Energy +5. Forges built on geothermal tiles gain +5 bonus production. Random geothermal vent events will spawn more heat sources across your territory. This clean energy never depletes unlike coal or wood.`,
+                        connection: `Look for tiles marked with 🔥 or special indicators - these are geothermal vents spawned by volcanic events. The game log announces when new vents appear. Position your forges strategically on these tiles for maximum output.`
+                    };
+                },
                 historicalContext: {
                     era: 'Late Medieval',
                     year: '~1300 CE',
-                    inventor: 'Thermomancer Guild, led by Master Pyrus',
-                    description: 'While others burned wood and coal, volcanic settlers tapped the planet\'s internal heat. Steam vents reaching 200°C were channeled into workshops, baths, and heating systems. Master Pyrus discovered that precise temperature control allowed year-round metalworking, food preservation, and eventually mechanical power.',
-                    impact: 'Geothermal communities never experienced energy scarcity. Volcanic cities operated forges 24/7 while forest kingdoms managed seasonal production. This constant productivity advantage made volcanic kingdoms wealthy beyond proportion to their populations.',
-                    volcanoConnection: 'Iceland derives 66% of energy from geothermal today. Your world achieved this in medieval times. The Eternal Forges of Mount Pyrus have operated continuously for 800 years using the same lava chamber—zero fuel consumed, zero emissions produced.'
+                    inventor: 'Volcanic settlers',
+                    staticDescription: 'Steam vents channeled into workshops, baths, and heating systems.'
                 }
             },
+
             volcanology: {
                 name: 'Scientific Volcanology',
                 cost: 400,
@@ -779,13 +307,733 @@ class TechTree {
                 bonus: { science: 15, eruption_warning: 1 },
                 description: 'Study and predict volcanic behavior',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    const turn = player.turn;
+                    const nextEruption = game.eventSystem ? game.eventSystem.nextEruptionTurn : 'unknown';
+                    const hasObservatory = player.buildings.some(b => b.type === 'observatory');
+                    return {
+                        description: `Turn ${turn}: Core stability at ${coreStability}%. Next scheduled eruption: turn ${nextEruption}. ${hasObservatory ? 'Your observatory already tracks volcanic patterns.' : 'Observatories will help predict eruptions once you reach Space Age.'} Volcanology provides 1 turn advance warning before eruptions.`,
+                        impact: `Science +15. Eruption warning +1 turn. Game log will warn you "Eruption predicted in 1 turn!" allowing evacuation of at-risk areas. More science buildings (temples, libraries, universities) increase research speed for future technologies.`,
+                        connection: `Watch the game log during play. After this research, you'll receive eruption warnings one turn before they occur. Use this time to move builders away from danger zones or prepare your defenses.`
+                    };
+                },
                 historicalContext: {
                     era: 'Early Renaissance',
                     year: '~1400 CE',
-                    inventor: 'Naturalist Plinia the Observer and the Seismic Academy',
-                    description: 'For millennia, eruptions seemed random acts of angry gods. Plinia proposed a radical idea: volcanoes follow predictable patterns. By recording gas emissions, minor tremors, and ground deformation, she predicted the Great Caldera Eruption 14 days in advance, saving 40,000 lives. Volcanology was born.',
-                    impact: 'Scientific prediction replaced religious fatalism. Eruption forecasting evolved from "maybe" to "probably within 48 hours"—enough warning to evacuate. Economic losses dropped 90% as people moved livestock, grain stores, and valuables before ash fall.',
-                    volcanoConnection: 'Modern volcanology uses the same principles Plinia discovered: inflation before eruption, SO2 gas increases, harmonic tremors indicating magma movement. Your world\'s Seismic Academy maintains 400 monitoring stations, predicting eruptions with 95% accuracy 72 hours in advance.'
+                    inventor: 'Early scientific observers',
+                    staticDescription: 'Recording gas emissions, tremors, and ground deformation enabled eruption prediction.'
+                }
+            },
+
+            renaissanceAge: {
+                name: 'Renaissance Enlightenment',
+                cost: 500,
+                type: 'age',
+                researched: false,
+                prerequisites: ['medievalAge', 'volcanology'],
+                unlocks: ['industrialAge', 'library', 'steamPower', 'renewableEnergy'],
+                bonus: { age: 'renaissance', science: 20 },
+                description: 'Advance to Renaissance',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const scienceBuildings = player.buildings.filter(b =>
+                        ['temple', 'shrine', 'library', 'scriptorium'].includes(b.type)
+                    ).length;
+                    const sciencePerTurn = player.sciencePerTurn;
+                    return {
+                        description: `Your civilization generates ${sciencePerTurn} science per turn from ${scienceBuildings} knowledge building${scienceBuildings !== 1 ? 's' : ''}. The Renaissance represents the shift from tradition to empirical observation - from "what do authorities say?" to "what can we observe?"`,
+                        impact: `Advances to Renaissance Age. Science +20. Unlocks city-state (60 pop), libraries (+8 science), academies, theaters, and mansions. Most importantly: unlocks the divergent path choice between Steam Power and Renewable Energy that will define your industrial revolution.`,
+                        connection: `This is your first major choice. After Renaissance, you must choose Steam Power (high production, environmental cost) or Renewable Energy (sustainable, slower growth). This choice locks out the alternative permanently.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Renaissance',
+                    year: '~1450 CE',
+                    inventor: 'Cultural movement of scholars',
+                    staticDescription: 'The printing press democratized information, sparking intellectual explosion.'
+                }
+            },
+
+            steamPower: {
+                name: 'Steam Engine Revolution',
+                cost: 600,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['renaissanceAge'],
+                unlocks: ['industrialAge', 'coalPlant', 'massProduction'],
+                locksOut: ['renewableEnergy', 'windmills', 'solarPower', 'craftsmanship'],
+                bonus: { production: 15, core_stability_loss: 0.3 },
+                description: 'PATH CHOICE: Steam-based industry',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const coal = Math.floor(player.resources.coal);
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    const currentDecay = game.eventSystem ? (game.eventSystem.coreStabilityMultiplier * 0.05).toFixed(3) : '0.050';
+                    return {
+                        description: `You have ${coal} coal reserves. Core stability: ${coreStability}% (decaying ${currentDecay}% per turn). Steam power will increase production by +15 but accelerate core decay by an additional +0.3% per turn. This path prioritizes growth over sustainability.`,
+                        impact: `Production +15 immediately. Unlocks coal plants (+25 production), oil refineries, and mass production assembly lines. Core stability will decay faster (${(parseFloat(currentDecay) + 0.3).toFixed(3)}% per turn total). High-output industrial civilization that extracts maximum resources.`,
+                        connection: `PERMANENT CHOICE: Selecting Steam Power locks you out of Renewable Energy, Windmills, Solar Power, and Craftsmanship. You commit to extraction-based industry. Watch your core stability decay rate in the top bar increase after researching.`,
+                        choiceConsequence: `You're choosing quantity over sustainability. Your production will skyrocket, but core instability accelerates. You'll reach the 75% and 35% catastrophic eruption thresholds faster. Plan accordingly - you're on a timer.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Industrial Revolution',
+                    year: '~1712 CE',
+                    inventor: 'Thomas Newcomen, perfected by James Watt',
+                    staticDescription: 'Steam engines converted heat into mechanical work - humanity\'s first heat engine.'
+                }
+            },
+
+            renewableEnergy: {
+                name: 'Sustainable Energy Systems',
+                cost: 600,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['renaissanceAge'],
+                unlocks: ['industrialAge', 'windmills', 'craftsmanship'],
+                locksOut: ['steamPower', 'coalPlant', 'oilRefinery', 'massProduction'],
+                bonus: { production: 12, science: 8, core_stability_loss: -0.2 },
+                description: 'PATH CHOICE: Clean renewable power',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    const currentDecay = game.eventSystem ? (game.eventSystem.coreStabilityMultiplier * 0.05).toFixed(3) : '0.050';
+                    const geothermalCount = game.currentPlanet.tiles.flat().filter(t => t.hasGeothermal).length;
+                    return {
+                        description: `Core stability: ${coreStability}% (decaying ${currentDecay}% per turn). You have ${geothermalCount} geothermal sources available. Renewable energy provides +12 production and +8 science while REDUCING core decay by -0.2% per turn. Slower growth, but sustainable indefinitely.`,
+                        impact: `Production +12, Science +8. Core decay reduces to ${(parseFloat(currentDecay) - 0.2).toFixed(3)}% per turn. Unlocks windmills, solar power, and artisan craftsmanship path. Lower production peaks but no resource depletion. Civilization focused on efficiency over extraction.`,
+                        connection: `PERMANENT CHOICE: Selecting Renewable Energy locks you out of Steam Power, Coal Plants, Oil Refineries, and Mass Production. You commit to sustainable development. Your core stability will last longer - more turns to prepare for eventual exodus.`,
+                        choiceConsequence: `You're choosing sustainability over maximum growth. Production gains come slower, but you won't accelerate planetary collapse. More time means more research, more preparation, better exodus chances. The tortoise approach.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Alternative Industrial Revolution',
+                    year: '~1750 CE (historical divergence)',
+                    inventor: 'Sustainable engineers',
+                    staticDescription: 'Wind, geothermal, and solar energy can industrialize without depleting resources.'
+                }
+            },
+            coalPlant: {
+                name: 'Coal Power Plant',
+                cost: 400,
+                type: 'production',
+                researched: false,
+                prerequisites: ['steamPower'],
+                unlocks: ['oilRefinery', 'earlyModernAge'],
+                bonus: { production: 25, core_stability_loss: 0.5 },
+                description: 'Massive coal-powered production',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const coal = Math.floor(player.resources.coal);
+                    const production = Math.floor(player.production);
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    return {
+                        description: `Your civilization produces ${production} production per turn using ${coal} coal reserves. Coal plants will add +25 production but increase core decay by another +0.5% per turn. Current core stability: ${coreStability}%.`,
+                        impact: `Production +25 (massive boost). Core instability accelerates significantly. Each coal plant represents centralized industrial power - one facility powering dozens of factories. However, extensive mining destabilizes volcanic formations beneath your cities.`,
+                        connection: `After building coal plants, watch your production stat in the top bar jump dramatically. But also monitor core stability decay rate - you're extracting resources faster than the planet can regenerate. The trade-off for industrial supremacy.`
+                    };
+                },
+                historicalContext: {
+                    era: 'High Industrial Revolution',
+                    year: '~1840 CE',
+                    inventor: 'Industrial entrepreneurs',
+                    staticDescription: 'Coal plants centralized power generation at unprecedented scale.'
+                }
+            },
+
+            windmills: {
+                name: 'Advanced Wind Power',
+                cost: 400,
+                type: 'production',
+                researched: false,
+                prerequisites: ['renewableEnergy'],
+                unlocks: ['solarPower', 'earlyModernAge'],
+                bonus: { production: 18, science: 5 },
+                description: 'Harness wind energy at scale',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const production = Math.floor(player.production);
+                    const science = player.sciencePerTurn;
+                    const ashTiles = game.currentPlanet.tiles.flat().filter(t => t.type === 'ash').length;
+                    return {
+                        description: `Current production: ${production}/turn, Science: ${science}/turn. Your volcanic terrain has ${ashTiles} ash tiles - barren flatlands perfect for wind farms. Volcanic thermal winds blow 30% stronger than normal convection currents.`,
+                        impact: `Production +18, Science +5. Wind power requires distributed generation - no single point of failure. Your civilization spreads across the landscape rather than concentrating in industrial zones. Cleaner air, healthier citizens, decentralized resilience.`,
+                        connection: `Build production buildings across open terrain after this research. Unlike coal plants (centralized), wind power works best distributed. Notice how your settlements remain livable without industrial pollution darkening your map.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Sustainable Industrial Revolution',
+                    year: '~1820 CE',
+                    inventor: 'Wind engineering cooperatives',
+                    staticDescription: 'Industrial windmills generated 50 kilowatts continuously with zero fuel cost.'
+                }
+            },
+
+            solarPower: {
+                name: 'Solar Energy Harvesting',
+                cost: 700,
+                type: 'production',
+                researched: false,
+                prerequisites: ['windmills'],
+                unlocks: ['modernizationAge'],
+                bonus: { production: 30, science: 15 },
+                description: 'Convert sunlight into energy',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const silicon = Math.floor(player.resources.silicon);
+                    const production = Math.floor(player.production);
+                    const rockTiles = game.currentPlanet.tiles.flat().filter(t => t.type === 'rock').length;
+                    return {
+                        description: `Your volcanic world has abundant silicon (${silicon} units) in rock formations (${rockTiles} rock tiles visible). Current production: ${production}/turn. Solar panels convert volcanic glass into electricity-generating crystals.`,
+                        impact: `Production +30, Science +15. Photovoltaic effect discovered! Each building can generate its own power from sunlight. Decentralized solar means destroying one generator doesn't blackout cities. Energy independence transforms your civilization.`,
+                        connection: `After researching, imagine your buildings covered in dark panels (though not visually represented). Energy becomes free and infinite. Your production jumps without consuming any resources. True post-scarcity energy.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Early Modern Period',
+                    year: '~1880 CE',
+                    inventor: 'Photovoltaic pioneers',
+                    staticDescription: 'Certain volcanic crystals generate electricity when exposed to light.'
+                }
+            },
+
+            oilRefinery: {
+                name: 'Petroleum Refining',
+                cost: 700,
+                type: 'production',
+                researched: false,
+                prerequisites: ['coalPlant'],
+                unlocks: ['modernizationAge'],
+                bonus: { production: 40, core_stability_loss: 1.0 },
+                description: 'Refine crude oil into fuels',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const oil = Math.floor(player.resources.oil);
+                    const production = Math.floor(player.production);
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    const totalDecay = game.eventSystem ? ((game.eventSystem.coreStabilityMultiplier * 0.05) + 1.0).toFixed(3) : '1.050';
+                    return {
+                        description: `Oil reserves: ${oil} barrels. Current production: ${production}/turn. Core at ${coreStability}%. Oil refining adds +40 production but increases core decay to ${totalDecay}% per turn total. You're drilling near magma chambers - extremely profitable, extremely dangerous.`,
+                        impact: `Production +40 (highest industrial boost). Core decay accelerates dramatically. Oil enables plastics, gasoline, chemicals - 6,000 products from one barrel. But extraction near magma is volatile. One accident could trigger eruptions.`,
+                        connection: `This is the steam power path's apex. Maximum production, maximum risk. Your core stability bar will decay noticeably faster. You've committed to extraction - now you're in a race against planetary collapse. Can you research exodus in time?`
+                    };
+                },
+                historicalContext: {
+                    era: 'Petroleum Age',
+                    year: '~1860 CE',
+                    inventor: 'Oil industry pioneers',
+                    staticDescription: 'Petroleum became "black gold" - most valuable substance on Earth.'
+                }
+            },
+
+            massProduction: {
+                name: 'Mass Production & Assembly Lines',
+                cost: 900,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['industrialAge'],
+                unlocks: ['earlyModernAge', 'assemblyLine'],
+                locksOut: ['craftsmanship', 'artisanGuilds'],
+                bonus: { production: 40, buildingHP: -20, science: -5 },
+                description: 'PATH CHOICE: Maximize quantity',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const buildings = player.buildings.length;
+                    const avgHP = buildings > 0 ? Math.floor(player.buildings.reduce((sum, b) => sum + b.health, 0) / buildings) : 0;
+                    const production = Math.floor(player.production);
+                    return {
+                        description: `Your ${buildings} buildings average ${avgHP} HP. Current production: ${production}/turn. Mass production adds +40 production but reduces all building HP by -20 and science by -5. Quantity over quality - disposable goods, repetitive labor.`,
+                        impact: `Production +40 immediately. All buildings lose -20 max HP (existing and future). Science -5. Consumer culture begins - cheap goods flood markets. Workers become interchangeable cogs. Products designed for obsolescence to ensure repeat purchases.`,
+                        connection: `PERMANENT CHOICE: Locks out Craftsmanship and Artisan Guilds. You commit to standardization and consumption. Watch all your building HP values drop by 20 after researching. They'll be more fragile during eruptions but you'll build more of them.`,
+                        choiceConsequence: `Mass production prioritizes output over durability. Buildings break faster, repairs needed more frequently. But production skyrockets - you'll outbuild the damage. The industrial titan path - powerful but brittle.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Industrial Maturation',
+                    year: '~1913 CE',
+                    inventor: 'Henry Ford (assembly line)',
+                    staticDescription: 'Break complex products into simple repeated tasks.'
+                }
+            },
+
+            craftsmanship: {
+                name: 'Master Craftsmanship Tradition',
+                cost: 900,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['industrialAge'],
+                unlocks: ['earlyModernAge', 'artisanGuilds'],
+                locksOut: ['massProduction', 'assemblyLine'],
+                bonus: { production: 25, buildingHP: 50, science: 20 },
+                description: 'PATH CHOICE: Quality through skill',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const buildings = player.buildings.length;
+                    const avgHP = buildings > 0 ? Math.floor(player.buildings.reduce((sum, b) => sum + b.health, 0) / buildings) : 0;
+                    const production = Math.floor(player.production);
+                    const science = player.sciencePerTurn;
+                    return {
+                        description: `Your ${buildings} buildings average ${avgHP} HP, producing ${production}/turn with ${science} science/turn. Craftsmanship adds +25 production, +50 building HP, +20 science. Quality over quantity - skilled workers creating superior goods.`,
+                        impact: `Production +25, Building HP +50, Science +20. All structures become more durable - better construction, superior materials. Products last generations instead of years. Workers earn high wages for expertise. Innovation through skilled problem-solving.`,
+                        connection: `PERMANENT CHOICE: Locks out Mass Production and Assembly Lines. You commit to quality and expertise. Watch all building HP increase by +50 after researching. Structures withstand eruptions better. Slower production growth but superior long-term sustainability.`,
+                        choiceConsequence: `Craftsmanship sacrifices maximum output for superior quality. Fewer buildings built, but each one lasts longer and performs better. Science bonus reflects innovation by skilled artisans. The sustainable excellence path.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Industrial Resistance Movement',
+                    year: '~1890 CE (historical divergence)',
+                    inventor: 'Guild masters and artisan movements',
+                    staticDescription: 'Power tools in skilled hands produce superior goods faster than assembly lines.'
+                }
+            },
+
+            assemblyLine: {
+                name: 'Automated Assembly Lines',
+                cost: 1000,
+                type: 'production',
+                researched: false,
+                prerequisites: ['massProduction'],
+                unlocks: ['victorianAge'],
+                bonus: { production: 60, population: -10 },
+                description: 'Fully automated production',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const production = Math.floor(player.production);
+                    return {
+                        description: `Population: ${totalPop}, Production: ${production}/turn. Automation adds +60 production but reduces population cap by -10 as machines replace workers. One supervisor can oversee production that formerly required 100 laborers.`,
+                        impact: `Production +60 (massive). Population cap -10. Unemployment crisis - who buys products when workers can't afford them? Massive inequality. Societies must implement support systems or face unrest. Efficiency perfection at human cost.`,
+                        connection: `Watch your population cap decrease in the top bar. Some citizens may starve if you're near capacity. But production explodes - your resource generation accelerates dramatically. The automation dilemma: efficiency versus humanity.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Automation Age',
+                    year: '~1950 CE',
+                    inventor: 'Robotics engineers',
+                    staticDescription: 'Machines never tire, strike, or demand raises.'
+                }
+            },
+
+            artisanGuilds: {
+                name: 'Modern Artisan Guilds',
+                cost: 1000,
+                type: 'production',
+                researched: false,
+                prerequisites: ['craftsmanship'],
+                unlocks: ['victorianAge'],
+                bonus: { production: 35, science: 25, buildingHP: 75, population: 15 },
+                description: 'Organized master craftspeople',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const science = player.sciencePerTurn;
+                    const production = Math.floor(player.production);
+                    return {
+                        description: `Population: ${totalPop}, Science: ${science}/turn, Production: ${production}/turn. Guild organization adds +35 production, +25 science, +75 building HP, +15 population. Skilled workers form cooperative networks sharing techniques and markets.`,
+                        impact: `Production +35, Science +25, Building HP +75, Population +15. Middle-class renaissance - skilled workers earn professional incomes. Products become status symbols. Education emphasizes creativity. Innovation flourishes through master competition. Zero unemployment - always demand for skill.`,
+                        connection: `All stats improve simultaneously - balanced civilization. Your buildings become extremely durable (total +125 HP from craftsmanship path). Population increases as guild apprenticeships provide career paths. Science grows through skilled innovation.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Guild Renaissance',
+                    year: '~1920 CE',
+                    inventor: 'International craftworker federations',
+                    staticDescription: 'Medieval guilds evolved into modern cooperatives using industrial tools.'
+                }
+            },
+
+            industrialAge: {
+                name: 'Industrial Revolution',
+                cost: 800,
+                type: 'age',
+                researched: false,
+                prerequisites: ['renaissanceAge'],
+                unlocks: ['earlyModernAge', 'ironworks', 'trainstation', 'urbanPlanning'],
+                bonus: { age: 'industrial', production: 20 },
+                description: 'Advance to Industrial Age',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const factories = player.buildings.filter(b => b.type === 'ironworks').length;
+                    const turn = player.turn;
+                    const production = Math.floor(player.production);
+                    return {
+                        description: `Turn ${turn}: Your civilization produces ${production}/turn with ${factories} ironwork${factories !== 1 ? 's' : ''}. The Industrial Revolution transforms society from agricultural to mechanical, rural to urban, hand-crafted to machine-made.`,
+                        impact: `Advances to Industrial Age. Production +20. Unlocks factory town (80 pop), ironworks, train stations, coal plants. New buildings available: steamfactory, clocktower, gasworks. Society mechanizes - for better and worse.`,
+                        connection: `Age indicator changes to "Industrial Age". Count new buildings in menu - notice industrial structures appear. Your map will transform from scattered settlements to concentrated industrial zones. The modern world begins.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Industrial Revolution',
+                    year: '~1760-1840 CE',
+                    inventor: 'Cumulative innovations',
+                    staticDescription: 'Factories, railways, telegraphs created the modern world.'
+                }
+            },
+
+            urbanPlanning: {
+                name: 'Modern Urban Planning',
+                cost: 1400,
+                type: 'expansion',
+                researched: false,
+                prerequisites: ['industrialAge'],
+                unlocks: ['victorianAge', 'subwaySystem'],
+                bonus: { population: 30, buildingHP: 25 },
+                description: 'Organize cities efficiently',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const settlements = player.settlements.length;
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const avgPop = settlements > 0 ? Math.floor(totalPop / settlements) : 0;
+                    return {
+                        description: `Your ${settlements} settlement${settlements !== 1 ? 's' : ''} house ${totalPop} citizens (${avgPop} average per settlement). Urban planning adds +30 population cap and +25 building HP through efficient organization and infrastructure.`,
+                        impact: `Population cap +30, Building HP +25. Wide boulevards for traffic and fire breaks. Park systems for health. Zoned districts separating industry from residence. Comprehensive sewage systems. Disease mortality drops 70%. Fire damage drops 90%.`,
+                        connection: `Your settlements can now grow larger - check settlement panels to see increased population limits. Building HP increases apply to all structures. Organized cities withstand disasters better than chaotic sprawl.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Victorian Era',
+                    year: '~1850 CE',
+                    inventor: 'Urban planning movements',
+                    staticDescription: 'Wide boulevards, parks, and sewage systems transformed chaotic cities.'
+                }
+            },
+
+            earlyModernAge: {
+                name: 'Early Modern Era',
+                cost: 1200,
+                type: 'age',
+                researched: false,
+                prerequisites: ['industrialAge'],
+                unlocks: ['victorianAge', 'steamfactory', 'electricity', 'mechanicalPower'],
+                bonus: { age: 'earlymodern', production: 30 },
+                description: 'Advance to Early Modern Era',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const turn = player.turn;
+                    const production = Math.floor(player.production);
+                    const steel = player.buildings.filter(b => b.type === 'ironworks').length;
+                    return {
+                        description: `Turn ${turn}: Production at ${production}/turn with ${steel} ironworks. The second industrial wave brings steel (replacing iron), petroleum (replacing coal), electricity (replacing steam), and chemicals (synthetic materials).`,
+                        impact: `Advances to Early Modern Age. Production +30. Unlocks steamworks city (120 pop), steam factories, clocktowers, gasworks. Next choice: Electricity vs Mechanical Power - determining your civilization's technological foundation.`,
+                        connection: `Age changes to "Early Modern". Another divergent choice approaches - Electricity (leads to computing, vulnerable grids) or Mechanical (robust, limited miniaturization). Both viable; choose your civilization's character.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Late 19th Century',
+                    year: '~1870-1900 CE',
+                    inventor: 'Second industrial revolution',
+                    staticDescription: 'Steel, petroleum, electricity, and chemicals transformed industrial society.'
+                }
+            },
+
+            electricity: {
+                name: 'Electrical Power Grid',
+                cost: 2000,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['earlyModernAge'],
+                unlocks: ['modernizationAge', 'powerGrid'],
+                locksOut: ['mechanicalPower', 'clockworkEngineering'],
+                bonus: { production: 45, science: 25 },
+                description: 'PATH CHOICE: Electrical civilization',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const geothermal = game.currentPlanet.tiles.flat().filter(t => t.hasGeothermal).length;
+                    const production = Math.floor(player.production);
+                    const science = player.sciencePerTurn;
+                    return {
+                        description: `${geothermal} geothermal plants available. Production: ${production}/turn, Science: ${science}/turn. Electricity adds +45 production and +25 science. Power generated centrally, distributed via wires. Enables motors, lighting, communication, eventually computing.`,
+                        impact: `Production +45, Science +25. Electric motors replace dangerous belts and shafts. Lights extend work hours. Elevators enable skyscrapers. Refrigeration preserves food. Medical tools improve. Leads to computers and digital age. But grid dependency creates vulnerability.`,
+                        connection: `PERMANENT CHOICE: Locks out Mechanical Power and Clockwork Engineering. You commit to electrical technology. This path leads to computing, AI, and digital civilization. Grid infrastructure becomes critical - protect power sources during eruptions.`,
+                        choiceConsequence: `Electricity enables modern/digital technology but requires infrastructure protection. One eruption destroying your grid blacks out civilization. High science path - innovation accelerates. Fragile but powerful.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Electrical Age',
+                    year: '~1882 CE',
+                    inventor: 'Edison (DC) vs Tesla (AC)',
+                    staticDescription: 'Electricity transformed civilization - generated centrally, distributed everywhere.'
+                }
+            },
+
+            mechanicalPower: {
+                name: 'Advanced Mechanical Systems',
+                cost: 2000,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['earlyModernAge'],
+                unlocks: ['modernizationAge', 'clockworkEngineering'],
+                locksOut: ['electricity', 'powerGrid', 'computing'],
+                bonus: { production: 55, buildingHP: 90 },
+                description: 'PATH CHOICE: Mechanical civilization',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const buildings = player.buildings.length;
+                    const avgHP = buildings > 0 ? Math.floor(player.buildings.reduce((sum, b) => sum + b.health, 0) / buildings) : 0;
+                    const production = Math.floor(player.production);
+                    return {
+                        description: `${buildings} buildings averaging ${avgHP} HP, producing ${production}/turn. Mechanical power adds +55 production and +90 building HP. Reject electricity's fragility - perfect gear systems, shafts, flywheels, hydraulics. Robust, understandable, reliable.`,
+                        impact: `Production +55 (higher than electricity), Building HP +90 (extreme durability). Mechanical systems never suffer grid failures, electromagnetic pulses, or blackouts. However, miniaturization impossible - no computers as we know them. Mechanical calculators instead.`,
+                        connection: `PERMANENT CHOICE: Locks out Electricity, Power Grid, and Computing path. You commit to mechanical technology. No digital computers, but clockwork calculators. No blackouts, but no internet. Robust civilization - every component understandable and repairable.`,
+                        choiceConsequence: `Mechanical path sacrifices innovation speed for reliability. Higher production, superior durability, zero cyber vulnerabilities. But limited science growth. Analog civilization - steampunk aesthetics with volcanic heat powering everything.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Alternate Modern Era',
+                    year: '~1900 CE (historical divergence)',
+                    inventor: 'Mechanical engineering perfectionists',
+                    staticDescription: 'Precisely-engineered mechanical systems can perform any task electricity can.'
+                }
+            },
+
+            victorianAge: {
+                name: 'Victorian Golden Age',
+                cost: 1800,
+                type: 'age',
+                researched: false,
+                prerequisites: ['earlyModernAge', 'urbanPlanning'],
+                unlocks: ['modernizationAge', 'parliament'],
+                bonus: { age: 'victorian', population: 50, science: 20 },
+                description: 'Advance to Victorian Age',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const settlements = player.settlements.length;
+                    const science = player.sciencePerTurn;
+                    return {
+                        description: `Your ${settlements} settlement${settlements !== 1 ? 's' : ''} house ${totalPop} citizens generating ${science} science/turn. The Victorian era represents peak industrial civilization before modernization - empires, railways, telegraphs, and scientific revolution.`,
+                        impact: `Advances to Victorian Age. Population +50, Science +20. Unlocks metropolis (180 pop), parliament, gas lamps, telegraph. Railways span continents. Photography captures reality. Medicine discovers germ theory. Your civilization reaches industrial maturity.`,
+                        connection: `Age becomes "Victorian Age". Check building menu for new structures - metropolis settlements house nearly 200 citizens. Your civilization peaks before transitioning to modern technology.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Victorian Era',
+                    year: '~1837-1901 CE',
+                    inventor: 'British Empire hegemony',
+                    staticDescription: 'Unprecedented technological progress and imperial expansion.'
+                }
+            },
+
+            powerGrid: {
+                name: 'Continental Power Grid',
+                cost: 2200,
+                type: 'energy',
+                researched: false,
+                prerequisites: ['electricity'],
+                unlocks: ['digitalAge'],
+                bonus: { production: 60, energy: 40 },
+                description: 'Interconnected electrical network',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const geothermal = game.currentPlanet.tiles.flat().filter(t => t.hasGeothermal).length;
+                    const settlements = player.settlements.length;
+                    const production = Math.floor(player.production);
+                    return {
+                        description: `Your ${settlements} settlement${settlements !== 1 ? 's' : ''} with ${geothermal} geothermal source${geothermal !== 1 ? 's' : ''} produce ${production}/turn. Power grid connects all generators - if one fails, others compensate. Load balancing optimizes efficiency.`,
+                        impact: `Production +60, Energy +40. Universal electrification - even remote settlements gain power. Industry relocates anywhere. Electric appliances transform life. Medicine advances with reliable power. Computing becomes possible. Efficiency increases 300%.`,
+                        connection: `All your settlements now share one power network. Redundancy means individual eruptions can't blackout entire civilization. But major catastrophe affecting multiple geothermal sources could cascade. Infrastructure resilience critical.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Electrical Maturation',
+                    year: '~1920 CE',
+                    inventor: 'Power companies and utilities',
+                    staticDescription: 'Grid interconnection provided redundancy and efficiency.'
+                }
+            },
+
+            clockworkEngineering: {
+                name: 'Precision Clockwork Engineering',
+                cost: 2200,
+                type: 'production',
+                researched: false,
+                prerequisites: ['mechanicalPower'],
+                unlocks: ['digitalAge'],
+                bonus: { production: 65, buildingHP: 110 },
+                description: 'Ultra-precise mechanical systems',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const buildings = player.buildings.length;
+                    const production = Math.floor(player.production);
+                    const avgHP = buildings > 0 ? Math.floor(player.buildings.reduce((sum, b) => sum + b.health, 0) / buildings) : 0;
+                    return {
+                        description: `Your ${buildings} buildings produce ${production}/turn with ${avgHP} average HP. Clockwork engineering adds +65 production and +110 building HP through precision gear-trains with 50,000 components calculating complex functions mechanically.`,
+                        impact: `Production +65, Building HP +110 (your buildings become nearly indestructible). Mechanical computers guide ships, aim artillery, calculate accounting. Self-winding mechanisms harvest ambient energy. Some clockwork devices operate 100 years without maintenance.`,
+                        connection: `Buildings achieve extreme durability (total HP bonuses: +25 +50 +90 +110 = +275 from mechanical path). Eruptions barely scratch your structures. Mechanical civilization achieves impressive complexity without electricity's fragility.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Mechanical Golden Age',
+                    year: '~1930 CE',
+                    inventor: 'Swiss watchmakers and precision engineers',
+                    staticDescription: 'Achieved tolerances of 0.00001 inches - precision rivaling modern electronics.'
+                }
+            },
+            modernizationAge: {
+                name: 'Age of Modernization',
+                cost: 2500,
+                type: 'age',
+                researched: false,
+                prerequisites: ['victorianAge'],
+                unlocks: ['digitalAge', 'powerplant', 'computing', 'analogSystems'],
+                bonus: { age: 'modernization', production: 50, science: 30 },
+                description: 'Advance to Modernization',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const turn = player.turn;
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const science = player.sciencePerTurn;
+                    return {
+                        description: `Turn ${turn}: ${totalPop} citizens generating ${science} science/turn. The 20th century transforms humanity more than all previous millennia combined. Flight, antibiotics, plastics, telecommunications - 50 years of unprecedented acceleration.`,
+                        impact: `Advances to Modernization Age. Production +50, Science +30. Unlocks power city (250 pop), power plants, skyscrapers, subways. Final choice approaching: Computing (digital, AI-enabled) vs Analog Systems (mechanical computing, robust).`,
+                        connection: `Age becomes "Modernization". Another critical choice: Computing path leads to AI and digital tech but requires stable power. Analog path uses mechanical calculators, more robust but limited capability. Both reach space eventually.`
+                    };
+                },
+                historicalContext: {
+                    era: '20th Century Modernization',
+                    year: '~1900-1950 CE',
+                    inventor: 'Global technological acceleration',
+                    staticDescription: 'Humanity transformed more in 50 years than previous 5000.'
+                }
+            },
+            computing: {
+                name: 'Electronic Computing',
+                cost: 3000,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['modernizationAge'],
+                unlocks: ['digitalAge', 'artificialIntelligence'],
+                locksOut: ['analogSystems', 'mechanicalComputers'],
+                bonus: { science: 50, production: 20 },
+                description: 'PATH CHOICE: Digital computers',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const silicon = Math.floor(player.resources.silicon);
+                    const science = player.sciencePerTurn;
+                    const production = Math.floor(player.production);
+                    return {
+                        description: `Silicon reserves: ${silicon} units. Science: ${science}/turn, Production: ${production}/turn. Computing adds +50 science and +20 production. Electronic computers use binary logic (on/off) to perform any calculation by reducing it to yes/no decisions.`,
+                        impact: `Science +50 (massive boost), Production +20. Computers revolutionize everything - science, business, warfare, communication. Impossible calculations become routine. Automation eliminates jobs while creating new ones. Information economy replaces industrial economy. Leads to AI.`,
+                        connection: `PERMANENT CHOICE: Locks out Analog Systems and Mechanical Computers. You commit to digital technology. Enables AI research eventually. Your science generation skyrockets - research speeds up dramatically. Computing path to space exodus.`,
+                        choiceConsequence: `Computing maximizes innovation but requires stable infrastructure. Volcanic eruptions damaging power systems disable computers. Electromagnetic interference from magma can corrupt data. High reward, high vulnerability. The information age.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Computer Age',
+                    year: '~1945 CE',
+                    inventor: 'Alan Turing, John von Neumann',
+                    staticDescription: 'ENIAC - 30 tons, 18,000 vacuum tubes, 5,000 calculations per second.'
+                }
+            },
+            analogSystems: {
+                name: 'Advanced Analog Computing',
+                cost: 3000,
+                type: 'divergent',
+                researched: false,
+                prerequisites: ['modernizationAge'],
+                unlocks: ['digitalAge', 'mechanicalComputers'],
+                locksOut: ['computing', 'artificialIntelligence'],
+                bonus: { science: 35, production: 40, buildingHP: 50 },
+                description: 'PATH CHOICE: Analog computing',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const production = Math.floor(player.production);
+                    const science = player.sciencePerTurn;
+                    const buildings = player.buildings.length;
+                    return {
+                        description: `${buildings} buildings producing ${production}/turn with ${science} science/turn. Analog computing adds +35 science, +40 production, +50 building HP. Mechanical/hydraulic systems represent numbers as continuous values rather than discrete bits.`,
+                        impact: `Science +35, Production +40, Building HP +50. Analog computers excel at differential equations, simulations, real-time control. Robust, intuitive, never crash. Manufacturing dominant - analog controls factories with millisecond precision. No AI possible, but no cyber attacks either.`,
+                        connection: `PERMANENT CHOICE: Locks out Computing and AI. You commit to analog technology. No artificial intelligence, no software, no digital vulnerabilities. Physical computing using water pressure, gear ratios, valve arrays. Understanding through physical models.`,
+                        choiceConsequence: `Analog maximizes reliability and manufacturing. Superior building durability, excellent production. Limited science growth compared to computing. No AI revolution, but no existential AI risk either. The robust mechanical future.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Analog Computing Peak',
+                    year: '~1950 CE (historical divergence)',
+                    inventor: 'Vannevar Bush (Differential Analyzer)',
+                    staticDescription: 'Analog computers remained competitive until 1970s, excelling at specific tasks.'
+                }
+            },
+            artificialIntelligence: {
+                name: 'Artificial Intelligence',
+                cost: 3500,
+                type: 'tech',
+                researched: false,
+                prerequisites: ['computing'],
+                unlocks: ['spaceAge'],
+                bonus: { science: 70, production: 40 },
+                description: 'Machine learning systems',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const science = player.sciencePerTurn;
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    const nextEruption = game.eventSystem ? game.eventSystem.nextEruptionTurn : 'unknown';
+                    return {
+                        description: `Science: ${science}/turn. Core: ${coreStability}%, next eruption: turn ${nextEruption}. AI adds +70 science and +40 production. Neural networks learn from data rather than following programmed rules. AI will predict eruptions with 99.9% accuracy 14 days ahead.`,
+                        impact: `Science +70 (highest boost), Production +40. AI amplifies human capability 1000-fold in narrow domains. Medical diagnosis, engineering design, scientific modeling - all augmented. Eruption prediction becomes nearly perfect. But AI also enables surveillance and concentrates power.`,
+                        connection: `After researching, your eruption warnings become extremely accurate and advance significantly. AI analyzes seismic data patterns humans can't detect. Your research speed accelerates dramatically toward space exodus. The final technological leap.`
+                    };
+                },
+                historicalContext: {
+                    era: 'AI Revolution',
+                    year: '~1990-2020 CE',
+                    inventor: 'Neural network pioneers',
+                    staticDescription: 'AI learns patterns from data - recognizes images, translates languages, drives vehicles.'
+                }
+            },
+            mechanicalComputers: {
+                name: 'Precision Mechanical Computers',
+                cost: 3500,
+                type: 'tech',
+                researched: false,
+                prerequisites: ['analogSystems'],
+                unlocks: ['spaceAge'],
+                bonus: { science: 50, production: 55, buildingHP: 75 },
+                description: 'Gear-based calculation engines',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const production = Math.floor(player.production);
+                    const science = player.sciencePerTurn;
+                    const buildings = player.buildings.length;
+                    return {
+                        description: `${buildings} buildings, ${production} production/turn, ${science} science/turn. Mechanical computers add +50 science, +55 production, +75 building HP. One million gears performing 1000 calculations/second - sufficient for navigation, engineering, volcanic modeling.`,
+                        impact: `Science +50, Production +55, Building HP +75. Gear-computers prove reliable for critical applications. Unlike electronics (vulnerable to radiation, EMPs, power loss), mechanical systems operate anywhere. Space probes use mechanical guidance. Limitation: can't match electronic speed or complexity.`,
+                        connection: `Your buildings achieve ultimate durability from complete mechanical path. Volcanic eruptions barely damage structures. Mechanical calculators model eruptions sufficiently for exodus planning. Slower research than AI path, but bulletproof reliability.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Mechanical Computing Pinnacle',
+                    year: '~1970 CE',
+                    inventor: 'Charles Babbage\'s vision perfected',
+                    staticDescription: 'Gear-computers with 1 million components - Victorian dreams realized with modern precision.'
+                }
+            },
+            digitalAge: {
+                name: 'Digital Revolution',
+                cost: 3500,
+                type: 'age',
+                researched: false,
+                prerequisites: ['modernizationAge'],
+                unlocks: ['spaceAge', 'datacenter'],
+                bonus: { age: 'digital', science: 50, production: 30 },
+                description: 'Advance to Digital Age',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const science = player.sciencePerTurn;
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const turn = player.turn;
+                    return {
+                        description: `Turn ${turn}: ${totalPop} citizens generating ${science} science/turn. Information transforms from physical (paper, film) to digital (bits). Microprocessors shrink room-sized computers to pocket-sized phones. The Internet connects ${totalPop} people into a global network.`,
+                        impact: `Advances to Digital Age. Science +50, Production +30. Unlocks technopolis (350 pop), data centers, cyber cafes, server banks. Information becomes most valuable resource. Knowledge work replaces manual labor. Global communication instantaneous and free.`,
+                        connection: `Age becomes "Digital Age". Final push toward Space Age. Your civilization enters information era - science generation peaks. Digital or mechanical, both paths now converge toward rocketry and exodus.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Information Age',
+                    year: '~1970-2000 CE',
+                    inventor: 'Microprocessor inventors',
+                    staticDescription: 'Microprocessors, internet, and digital transformation changed everything.'
                 }
             },
             rocketry: {
@@ -798,13 +1046,48 @@ class TechTree {
                 bonus: { rocket_capacity: 10 },
                 description: 'Chemical rockets reach space',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    const turn = player.turn;
+                    return {
+                        description: `Turn ${turn}: ${totalPop} citizens, ${coreStability}% core stability. Rocketry enables escape - reaching space requires 7,800 m/s velocity. Chemical rockets burn hydrogen and oxygen from geothermal steam hydrolysis. Your volcanic world provides virtually free propellant.`,
+                        impact: `Rocket capacity +10 (can evacuate 10 people per launch). Satellites revolutionize communication, weather forecasting, GPS, Earth observation. Space becomes the high ground - strategic, scientific, survival. Tourism? Not yet - too expensive, too dangerous. But exodus becomes possible.`,
+                        connection: `This unlocks Space Age - your final era before exodus. Rocketry represents hope - not trapped on doomed world. Your civilization can reach orbit, eventually establish colonies, preserve species beyond planetary collapse. The survival technology.`
+                    };
+                },
                 historicalContext: {
                     era: 'Space Age',
                     year: '~1960 CE',
-                    inventor: 'Konstantin Tsiolkovsky (theory), Robert Goddard (practice), Wernher von Braun (power)',
-                    description: 'Rockets operate on Newton\'s Third Law—ejecting mass downward propels the rocket upward. Chemical rockets burn fuel and oxidizer, creating hot gas expelled at 4,500 m/s. Reaching space requires 7,800 m/s—the tyranny of the rocket equation means 90% of launch mass is fuel. Von Braun\'s Saturn V—humanity\'s mightiest rocket—lifted 45 tons to the Moon.',
-                    impact: 'Rocketry enabled space exploration—satellites, space stations, lunar landings, Mars rovers. Satellites revolutionized communication, weather forecasting, GPS navigation, and Earth observation. Space became the ultimate strategic high ground—spy satellites, missile warning, potential weapons platforms. Tourism? Not yet—rockets remain too expensive and dangerous.',
-                    volcanoConnection: 'Volcanic rocket fuel: hydrogen and oxygen separated from geothermal steam using electrical hydrolysis—virtually free propellant. Your world launched satellites for 1/10th Earth costs. Volcanic launch sites provided natural isolation and heat-resistant infrastructure. However, volcanic eruptions occasionally grounded space programs for months.'
+                    inventor: 'Tsiolkovsky, Goddard, von Braun',
+                    staticDescription: 'Rockets operate on Newton\'s Third Law - ejecting mass downward propels rocket upward.'
+                }
+            },
+            spaceAge: {
+                name: 'Space Age',
+                cost: 5000,
+                type: 'age',
+                researched: false,
+                prerequisites: ['digitalAge', 'rocketry'],
+                unlocks: ['university', 'exodusProtocol'],
+                bonus: { age: 'space', science: 75 },
+                description: 'Advance to Space Age',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    const turn = player.turn;
+                    return {
+                        description: `Turn ${turn}: ${totalPop} citizens survive on a planet with ${coreStability}% core stability. Space Age isn't exploration - it's survival necessity. Your volcanic world faces certain death. Space represents not adventure, but escape. The clock is ticking.`,
+                        impact: `Advances to Space Age. Science +75. Unlocks megacity (500 pop), universities (+12 science), observatories (+25 science), spaceports, laboratories. Final push toward Exodus Protocol. Every turn counts - core collapse approaches.`,
+                        connection: `Final age before exodus. Age indicator shows "Space Age". One tech remains: Exodus Protocol. Can you research it before core collapses at 0%? Race against time. Build observatories for maximum science. Your civilization's fate hangs in balance.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Space Exploration',
+                    year: '~1960-present',
+                    inventor: 'NASA, Soviet Space Program',
+                    staticDescription: 'October 4, 1957 - Sputnik became Earth\'s first artificial satellite.'
                 }
             },
             exodusProtocol: {
@@ -817,13 +1100,24 @@ class TechTree {
                 bonus: { can_escape: true },
                 description: 'ESCAPE THE PLANET - Victory!',
                 planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const totalPop = player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    const turn = player.turn;
+                    const sciencePerTurn = player.sciencePerTurn;
+                    const turnsToComplete = Math.ceil(8000 / sciencePerTurn);
+                    return {
+                        description: `Turn ${turn}: ${totalPop} citizens, ${coreStability}% core remaining, generating ${sciencePerTurn} science/turn. Exodus requires ${turnsToComplete} more turns at current rate. Core collapses at 0%. You're building generation ships - knowledge, culture, DNA samples. Your world dies, but civilization endures.`,
+                        impact: `VICTORY CONDITION. Exodus Protocol represents species survival. Not everyone can evacuate - resources insufficient for all ${totalPop}. Who goes? How chosen? These haunt you. Success means survival. Success also means becoming refugees wandering void, seeking new world.`,
+                        connection: `Research this to WIN. Game checks if complete before core collapses. Each turn you delay risks catastrophic eruption. If core hits 0% before research completes, GAME OVER. Maximize science now - build observatories, universities. Final sprint to salvation.`,
+                        choiceConsequence: `Is this victory? Or merely not-yet-defeat? Your planet taught harsh lessons: nothing lasts forever, safety is temporary, nature ultimately wins. But you learned, adapted, survived. Taking the planet with you - culture, knowledge, hope. That is the Protocol. That is victory.`
+                    };icl ts pmo sm n sb rn ngl, r u srsly srs n fr rn vro
+                },
                 historicalContext: {
                     era: 'Final Era',
-                    year: 'Present Day',
-                    inventor: 'You - Last Hope of Your Civilization',
-                    description: 'The Exodus Protocol represents your civilization\'s culmination: knowledge to build generation ships, resources to construct fleets, organization to evacuate millions, and courage to abandon the only world your species has ever known. Seven thousand years from stone tools to starships. Ten thousand generations from caves to cosmos. Everything—art, science, history, culture—must be preserved digitally, physically impossible to save.',
-                    impact: 'Exodus Protocol achieves the ultimate victory: species survival. Not everyone can leave—resources insufficient for 8 billion. Who goes? How chosen? What of those left behind? These questions haunt you. Success means survival. Success also means becoming refugees, wandering through void, seeking new world that may not exist. Is this victory? Or merely not-yet-defeat?',
-                    volcanoConnection: 'Your volcanic homeworld taught harsh lessons: nothing lasts forever, safety is temporary, nature ultimately wins. But you learned, adapted, survived—for now. The planet will explode, collapse, or freeze. That\'s physics, not pessimism. Exodus Protocol isn\'t giving up—it\'s refusing to surrender. You take the planet with you: culture, knowledge, DNA samples, geological cores. Your world dies, but your civilization endures among the stars. That is the Protocol. That is hope.'
+                    year: 'Present Day - Your Choice',
+                    inventor: 'You - Last Hope of Civilization',
+                    staticDescription: 'Seven thousand years from stone tools to starships. The ultimate journey begins.'
                 }
             }
         };
@@ -869,6 +1163,26 @@ class TechTree {
         return true;
     }
 
+    getContextualDescription(tech, player, game) {
+        const settlements = player.settlements;
+        const buildings = player.buildings;
+        const planetName = game.currentPlanet.name;
+        const totalPop = settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
+        const oldestSettlement = settlements.length > 0 ?
+            settlements.reduce((oldest, s) => s.id < oldest.id ? s : oldest) : null;
+
+        let contextualRefs = {
+            settlementName: oldestSettlement ? oldestSettlement.name : 'your first settlement',
+            planetName: planetName,
+            population: totalPop,
+            buildingCount: buildings.length,
+            turn: player.turn,
+            age: player.age
+        };
+
+        return contextualRefs;
+    }
+
     progressResearch() {
         if (!this.currentResearch) {
             if (this.researchQueue.length > 0) {
@@ -899,16 +1213,19 @@ class TechTree {
 
     getTechDetails(techId) {
         const tech = this.techs[techId];
-        if (!tech.historicalContext) return null;
+        if (!tech.getDynamicContext) return null;
+
+        const dynamicContent = tech.getDynamicContext(this.player, this.player.game);
 
         return {
             name: tech.name,
             era: tech.historicalContext.era,
             year: tech.historicalContext.year,
             inventor: tech.historicalContext.inventor,
-            description: tech.historicalContext.description,
-            impact: tech.historicalContext.impact,
-            volcanoConnection: tech.historicalContext.volcanoConnection
+            description: dynamicContent.description,
+            impact: dynamicContent.impact,
+            volcanoConnection: dynamicContent.connection,
+            choiceConsequence: dynamicContent.choiceConsequence
         };
     }
 
