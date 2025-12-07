@@ -31,6 +31,7 @@ class Game {
         this.currentPlanet = this.galaxy.planetInstances.get(0);
         this.eventSystem = new EventSystem(this.currentPlanet, this.player, this);
         this.ecosystem = new Ecosystem(this.currentPlanet, this);
+        this.environmentalObjectSystem = new EnvironmentalObjectSystem(this.currentPlanet, this.player, this);
         this.weatherSystem = new WeatherSystem(this.currentPlanet, this.player, this);
         this.turnBased = true;
         this.player.techTree = new TechTree(this.player);
@@ -670,9 +671,7 @@ class Game {
 
         if (this.galaxy.currentPlanetIndex === 0) {
             this.ecosystem.update();
-        }
-
-        if (this.galaxy.currentPlanetIndex === 0) {
+            this.environmentalObjectSystem.update();
             this.weatherSystem.onTurnEnd();
         }
 
@@ -1711,11 +1710,71 @@ class Game {
                             if (tile.building && settlementTypes.includes(tile.building.type) && !tile.building.isFrame) {
                                 this.showSettlementPanel(gridX, gridY);
                             }
+
+                            if (this.environmentalObjectSystem) {
+                                const envObj = this.environmentalObjectSystem.getObjectAt(gridX, gridY);
+                                if (envObj) {
+                                    this.showEnvironmentalObjectInfo(envObj);
+                                    return;
+                                }
+                            }
                             this.showTileInfo(tile, gridX, gridY);
                         }
                     }
                 }
             }
+        }
+    }
+
+    showEnvironmentalObjectInfo(obj) {
+        const infoPanel = document.getElementById('building-info');
+        if (!infoPanel) return;
+
+        const healthPercent = obj.getHealthPercent();
+        let healthColor = '#88ff88';
+        if (healthPercent < 30) healthColor = '#ff5555';
+        else if (healthPercent < 60) healthColor = '#ffaa55';
+
+        let rewardsHTML = '';
+        for (const [resource, amount] of Object.entries(obj.rewards)) {
+            rewardsHTML += `<p style="font-size: 9px; color: #88cc88;">+${amount} ${resource}</p>`;
+        }
+
+        let buttonHTML = '';
+        if (!obj.beingDestroyed) {
+            buttonHTML = `
+                <button id="destroy-object-btn" style="width: 100%; padding: 4px; font-size: 9px; margin-top: 6px; background: #5a3a3a; border: 1px solid #7a5a5a; color: #ffaa88; cursor: pointer; border-radius: 3px;">
+                    Send Worker to Destroy
+                </button>
+            `;
+        } else {
+            buttonHTML = `
+                <p style="font-size: 9px; color: #ffaa00; margin-top: 6px;">Being destroyed...</p>
+            `;
+        }
+
+        infoPanel.innerHTML = `
+            <p style="font-size: 11px; color: #ff8844; margin-bottom: 6px;"><strong>${obj.icon} ${obj.name}</strong></p>
+            <p style="font-size: 9px; color: ${healthColor};">HP: ${Math.floor(obj.health)}/${obj.maxHealth} (${healthPercent}%)</p>
+            <p style="font-size: 9px; color: #8fa3c8; margin-top: 8px; margin-bottom: 4px;"><strong>Rewards:</strong></p>
+            ${rewardsHTML}
+            ${buttonHTML}
+        `;
+
+        const destroyBtn = document.getElementById('destroy-object-btn');
+        if (destroyBtn) {
+            destroyBtn.onclick = (e) => {
+                e.stopPropagation();
+                const nearest = this.player.findNearestSettlement(obj.x, obj.y);
+                if (!nearest) {
+                    this.log('No settlement nearby to send workers from!');
+                    return;
+                }
+
+                if (this.environmentalObjectSystem.sendDestroyerTo(obj.x, obj.y, nearest)) {
+                    this.showEnvironmentalObjectInfo(obj);
+                }
+            };
         }
     }
 
@@ -2714,6 +2773,19 @@ class Game {
 
         if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
             this.renderer.drawCreatures(this.ecosystem, this.cameraX, this.cameraY);
+        }
+
+        if (this.environmentalObjectSystem && this.galaxy.currentPlanetIndex === 0) {
+            this.renderer.drawEnvironmentalObjects(
+                this.environmentalObjectSystem.objects,
+                this.cameraX,
+                this.cameraY
+            );
+            this.renderer.drawDestroyers(
+                this.environmentalObjectSystem.destroyers,
+                this.cameraX,
+                this.cameraY
+            );
         }
 
         this.ctx.restore();

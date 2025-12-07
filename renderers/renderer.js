@@ -54,6 +54,19 @@ class Renderer {
             this.effectsRenderer = new EffectsRenderer(ctx, width, height);
             this.overlayRenderer = new OverlayRenderer(ctx, this.tileWidth, this.tileHeight);
             this.creatureRenderer = new CreatureRenderer(ctx, this.tileWidth, this.tileHeight);
+            this.environmentalRenderer = new EnvironmentalRenderer(ctx, this.tileWidth, this.tileHeight);
+    }
+
+    drawEnvironmentalObjects(objects, cameraX, cameraY) {
+        objects.forEach(obj => {
+            this.environmentalRenderer.drawEnvironmentalObject(obj, cameraX, cameraY);
+        });
+    }
+
+    drawDestroyers(destroyers, cameraX, cameraY) {
+        destroyers.forEach(destroyer => {
+            this.environmentalRenderer.drawDestroyer(destroyer, cameraX, cameraY);
+        });
     }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {

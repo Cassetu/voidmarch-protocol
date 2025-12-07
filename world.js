@@ -144,7 +144,11 @@ class Planet {
 
         const canBuildOver = !tile.building || tile.building.type === 'ruins';
 
-        return canBuildOver && tile.type !== 'water' && tile.type !== 'lava' && tile.type !== 'void';
+        return canBuildOver &&
+               !tile.environmentalObject &&
+               tile.type !== 'water' &&
+               tile.type !== 'lava' &&
+               tile.type !== 'void';
     }
 
     getBuildingSize(buildingType) {
@@ -196,6 +200,10 @@ class Planet {
                 const tile = this.tiles[checkY][checkX];
 
                 if (tile.building && tile.building.type !== 'ruins') {
+                    return false;
+                }
+
+                if (tile.environmentalObject) {
                     return false;
                 }
 
