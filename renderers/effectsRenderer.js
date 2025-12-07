@@ -7,6 +7,9 @@ class EffectsRenderer {
         this.snowParticles = [];
         this.hailstormActive = false;
         this.hailstormEndTime = 0;
+        this.acidRainParticles = [];
+        this.acidRainActive = false;
+        this.acidRainEndTime = 0;
     }
 
     createLavaSpark(gridX, gridY) {
@@ -113,6 +116,70 @@ startHailstorm() {
             this.ctx.beginPath();
             this.ctx.arc(snow.x - snow.size * 0.3, snow.y - snow.size * 0.3, snow.size * 0.5, 0, Math.PI * 2);
             this.ctx.fill();
+        });
+
+        this.ctx.globalAlpha = 1;
+        this.ctx.restore();
+    }
+
+    startAcidRain() {
+        this.acidRainActive = true;
+        this.acidRainEndTime = Date.now() + 10000;
+
+        for (let i = 0; i < 150; i++) {
+            this.createAcidRainDrop();
+        }
+    }
+
+    createAcidRainDrop() {
+        this.acidRainParticles.push({
+            x: Math.random() * this.width,
+            y: Math.random() * -500,
+            vx: (Math.random() - 0.5) * 2,
+            vy: Math.random() * 4 + 3,
+            size: Math.random() * 2 + 1,
+            opacity: Math.random() * 0.6 + 0.4
+        });
+    }
+
+    updateAcidRainParticles() {
+        if (!this.acidRainActive) return;
+
+        if (Date.now() > this.acidRainEndTime) {
+            this.acidRainActive = false;
+            this.acidRainParticles = [];
+            return;
+        }
+
+        for (let i = this.acidRainParticles.length - 1; i >= 0; i--) {
+            const drop = this.acidRainParticles[i];
+            drop.x += drop.vx;
+            drop.y += drop.vy;
+
+            if (drop.y > this.height) {
+                drop.y = -10;
+                drop.x = Math.random() * this.width;
+            }
+        }
+
+        if (this.acidRainParticles.length < 150 && Math.random() < 0.3) {
+            this.createAcidRainDrop();
+        }
+    }
+
+    drawAcidRainParticles() {
+        if (!this.acidRainActive) return;
+
+        this.ctx.save();
+
+        this.acidRainParticles.forEach(drop => {
+            this.ctx.globalAlpha = drop.opacity;
+            this.ctx.strokeStyle = '#88ff88';
+            this.ctx.lineWidth = drop.size;
+            this.ctx.beginPath();
+            this.ctx.moveTo(drop.x, drop.y);
+            this.ctx.lineTo(drop.x + drop.vx * 3, drop.y + drop.vy * 3);
+            this.ctx.stroke();
         });
 
         this.ctx.globalAlpha = 1;

@@ -142,4 +142,16 @@ class Renderer {
         this.creatureRenderer.updateAnimation();
         this.creatureRenderer.drawCreatures(ecosystem, cameraX, cameraY);
     }
+
+    startAcidRain() {
+        this.effectsRenderer.startAcidRain();
+    }
+
+    updateAcidRainParticles() {
+        this.effectsRenderer.updateAcidRainParticles();
+    }
+
+    drawAcidRainParticles() {
+        this.effectsRenderer.drawAcidRainParticles();
+    }
 }

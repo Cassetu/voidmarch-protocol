@@ -31,6 +31,7 @@ class Game {
         this.currentPlanet = this.galaxy.planetInstances.get(0);
         this.eventSystem = new EventSystem(this.currentPlanet, this.player, this);
         this.ecosystem = new Ecosystem(this.currentPlanet, this);
+        this.weatherSystem = new WeatherSystem(this.currentPlanet, this.player, this);
         this.turnBased = true;
         this.player.techTree = new TechTree(this.player);
         this.gameState = 'volcanic';
@@ -669,6 +670,10 @@ class Game {
 
         if (this.galaxy.currentPlanetIndex === 0) {
             this.ecosystem.update();
+        }
+
+        if (this.galaxy.currentPlanetIndex === 0) {
+            this.weatherSystem.onTurnEnd();
         }
 
         const totalPopulation = this.player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
@@ -1419,6 +1424,7 @@ class Game {
         }
 
         this.renderer.updateSnowParticles();
+        this.renderer.updateAcidRainParticles();
     }
 
     handleInput() {
@@ -2717,6 +2723,7 @@ class Game {
         }
 
         this.renderer.drawSnowParticles();
+        this.renderer.drawAcidRainParticles();
 
         this.updateUI();
     }
@@ -2767,6 +2774,11 @@ class Game {
             } else {
                 healthEl.style.color = '#cc6666';
             }
+        }
+
+        if (this.weatherSystem && this.galaxy.currentPlanetIndex === 0) {
+            const weather = this.weatherSystem.getCurrentWeather();
+            document.getElementById('current-weather').textContent = `${weather.icon} ${weather.name} (${weather.duration} turns)`;
         }
 
         const isConquest = this.gameMode === 'conquest' && this.conquestSystem;
