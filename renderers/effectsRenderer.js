@@ -55,7 +55,7 @@ class EffectsRenderer {
         this.ctx.restore();
     }
 
-startHailstorm() {
+    startHailstorm() {
         this.hailstormActive = true;
         this.hailstormEndTime = Date.now() + 10000;
 

@@ -144,19 +144,19 @@ class TerrainRenderer {
         const screenX = (gridX - gridY) * (this.tileWidth / 2);
         const screenY = (gridX + gridY) * (this.tileHeight / 2);
 
-        const time = Date.now() / 1000;
-        const pulse = Math.sin(time * 2) * 0.3 + 0.7;
+        const time = Math.floor(Date.now() / 1000) * 0.3;
+        const pulse = Math.sin(time * 2) * 0.15 + 0.5;
 
         const gradient = this.ctx.createRadialGradient(
             screenX, screenY, 0,
-            screenX, screenY, 80 * pulse
+            screenX, screenY, 60 * pulse
         );
-        gradient.addColorStop(0, `rgba(255, 100, 0, ${0.4 * pulse})`);
-        gradient.addColorStop(0.5, `rgba(255, 68, 0, ${0.2 * pulse})`);
+        gradient.addColorStop(0, `rgba(255, 100, 0, ${0.15 * pulse})`);
+        gradient.addColorStop(0.5, `rgba(255, 68, 0, ${0.08 * pulse})`);
         gradient.addColorStop(1, 'rgba(255, 68, 0, 0)');
 
         this.ctx.fillStyle = gradient;
-        this.ctx.fillRect(screenX - 80, screenY - 80, 160, 160);
+        this.ctx.fillRect(screenX - 60, screenY - 60, 120, 120);
     }
 
     drawWaterAnimation(screenX, screenY) {
