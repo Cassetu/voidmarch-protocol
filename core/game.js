@@ -8,6 +8,9 @@ class Game {
         this.width = this.canvas.width = window.innerWidth;
         this.height = this.canvas.height = window.innerHeight;
         this.unitActionSystem = new UnitActionSystem(this);
+        this.targetCameraX = 0;
+        this.targetCameraY = 0;
+        this.cameraEasing = 0.15;
         this.cheatCodeSequence = [];
         this.cheatCodeTarget = ['q', 'w', 'e', 'r', 't', 'y', 'c', 'a', 's'];
         this.cheatCodeTimeout = null;
@@ -1391,8 +1394,8 @@ class Game {
         const viewW = this.width / this.renderer.zoom;
         const viewH = (this.height - 160 - 75) / this.renderer.zoom;
 
-        this.cameraX = (minX + maxX - viewW) / 2;
-        this.cameraY = (minY + maxY - viewH) / 2;
+        this.targetCameraX = (minX + maxX - viewW) / 2;
+        this.targetCameraY = (minY + maxY - viewH) / 2;
     }
 
 
@@ -1443,16 +1446,16 @@ class Game {
         const unitY = this.renderer.tileHeight / 2;
 
         if (this.input.keys['ArrowUp'] || this.input.keys['w']) {
-            this.cameraY += moveSpeed;
+            this.targetCameraY += moveSpeed;
         }
         if (this.input.keys['ArrowDown'] || this.input.keys['s']) {
-            this.cameraY -= moveSpeed;
+            this.targetCameraY -= moveSpeed;
         }
         if (this.input.keys['ArrowLeft'] || this.input.keys['a']) {
-            this.cameraX += moveSpeed;
+            this.targetCameraX += moveSpeed;
         }
         if (this.input.keys['ArrowRight'] || this.input.keys['d']) {
-            this.cameraX -= moveSpeed;
+            this.targetCameraX -= moveSpeed;
         }
 
         if (this.input.mouseJustPressed) {
@@ -2621,7 +2624,7 @@ class Game {
         const maxY = (w + h - 2) * halfH;
 
         const viewW = this.width / this.renderer.zoom;
-        const viewH = (this.height - 220 - 75) / this.renderer.zoom;
+        const viewH = (this.height - 160 - 75) / this.renderer.zoom;
 
         const padding = 400;
 
@@ -2630,8 +2633,11 @@ class Game {
         const minCameraY = minY - viewH - padding;
         const maxCameraY = maxY + padding;
 
-        this.cameraX = Math.max(minCameraX, Math.min(this.cameraX, maxCameraX));
-        this.cameraY = Math.max(minCameraY, Math.min(this.cameraY, maxCameraY));
+        this.targetCameraX = Math.max(minCameraX, Math.min(this.targetCameraX, maxCameraX));
+        this.targetCameraY = Math.max(minCameraY, Math.min(this.targetCameraY, maxCameraY));
+
+        this.cameraX += (this.targetCameraX - this.cameraX) * this.cameraEasing;
+        this.cameraY += (this.targetCameraY - this.cameraY) * this.cameraEasing;
     }
 
     render() {
