@@ -1398,6 +1398,39 @@ class Game {
         this.targetCameraY = (minY + maxY - viewH) / 2;
     }
 
+    getVisibleTiles() {
+        const topBarHeight = 75;
+        const unitX = this.renderer.tileWidth / 2;
+        const unitY = this.renderer.tileHeight / 2;
+
+        const viewWidth = this.width / this.renderer.zoom;
+        const viewHeight = (this.height - topBarHeight - 220) / this.renderer.zoom;
+
+        const centerGridX = this.currentPlanet.width / 2;
+        const centerGridY = this.currentPlanet.height / 2;
+        const centerWorldX = (centerGridX - centerGridY) * unitX;
+        const centerWorldY = (centerGridX + centerGridY) * unitY;
+
+        const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
+        const targetY = ((this.height - topBarHeight - 220) / 2) / this.renderer.zoom + this.cameraY;
+
+        const translateX = targetX - centerWorldX;
+        const translateY = targetY - centerWorldY;
+
+        const screenLeft = -translateX;
+        const screenRight = screenLeft + viewWidth;
+        const screenTop = -translateY;
+        const screenBottom = screenTop + viewHeight;
+
+        const padding = 10;
+
+        const minX = Math.max(0, Math.floor((screenLeft / unitX + screenTop / unitY) / 2) - padding);
+        const maxX = Math.min(this.currentPlanet.width - 1, Math.ceil((screenRight / unitX + screenBottom / unitY) / 2) + padding);
+        const minY = Math.max(0, Math.floor((screenTop / unitY - screenRight / unitX) / 2) - padding);
+        const maxY = Math.min(this.currentPlanet.height - 1, Math.ceil((screenBottom / unitY - screenLeft / unitX) / 2) + padding);
+
+        return { minX, maxX, minY, maxY };
+    }
 
     handleZoom(e) {
         e.preventDefault();
@@ -2676,24 +2709,27 @@ class Game {
             targetY - centerScreenY
         );
 
-        for (let y = 0; y < this.currentPlanet.height; y++) {
-            for (let x = 0; x < this.currentPlanet.width; x++) {
+        const visibleTiles = this.getVisibleTiles();
+
+        for (let y = visibleTiles.minY; y <= visibleTiles.maxY; y++) {
+            for (let x = visibleTiles.minX; x <= visibleTiles.maxX; x++) {
                 this.renderer.drawTile(x, y, this.currentPlanet.tiles[y][x], this.cameraX, this.cameraY);
             }
         }
 
         if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
-            for (let y = 0; y < this.currentPlanet.height; y++) {
-                for (let x = 0; x < this.currentPlanet.width; x++) {
+            for (let y = visibleTiles.minY; y <= visibleTiles.maxY; y++) {
+                for (let x = visibleTiles.minX; x <= visibleTiles.maxX; x++) {
                     this.renderer.drawTileEnrichment(x, y, this.currentPlanet.tiles[y][x], this.cameraX, this.cameraY);
                 }
             }
         }
 
-        if (Math.random() < 0.05) {
-            for (let y = 0; y < this.currentPlanet.height; y++) {
-                for (let x = 0; x < this.currentPlanet.width; x++) {
-                    if (this.currentPlanet.tiles[y][x].type === 'lava' && Math.random() < 0.1) {
+        if (Math.random() < 0.02 && this.renderer.lavaSparks.length < 50) {
+            const visibleTiles = this.getVisibleTiles();
+            for (let y = visibleTiles.minY; y <= visibleTiles.maxY; y += 3) {
+                for (let x = visibleTiles.minX; x <= visibleTiles.maxX; x += 3) {
+                    if (this.currentPlanet.tiles[y][x].type === 'lava' && Math.random() < 0.05) {
                         this.renderer.createLavaSpark(x, y);
                     }
                 }
@@ -2721,7 +2757,10 @@ class Game {
         }
 
         this.currentPlanet.structures.forEach(building => {
-            this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
+            if (building.x >= visibleTiles.minX && building.x <= visibleTiles.maxX &&
+                building.y >= visibleTiles.minY && building.y <= visibleTiles.maxY) {
+                this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
+            }
         });
 
         if (this.conquestSystem && this.gameMode === 'conquest') {
