@@ -4,6 +4,36 @@ class TerrainRenderer {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.colorMap = colorMap;
+        this.noiseCanvas = this.generateNoiseTexture();
+    }
+
+    generateNoiseTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.createImageData(64, 64);
+
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const noise = Math.random() * 40 - 20;
+            imageData.data[i] = noise;
+            imageData.data[i + 1] = noise;
+            imageData.data[i + 2] = noise;
+            imageData.data[i + 3] = 30;
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        return canvas;
+    }
+
+    applyNoiseTexture(x, y, width, height) {
+        const pattern = this.ctx.createPattern(this.noiseCanvas, 'repeat');
+        this.ctx.fillStyle = pattern;
+        this.ctx.globalCompositeOperation = 'overlay';
+        this.ctx.globalAlpha = 0.3;
+        this.ctx.fillRect(x - width/2, y - height/2, width, height);
+        this.ctx.globalCompositeOperation = 'source-over';
+        this.ctx.globalAlpha = 1.0;
     }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
@@ -17,11 +47,22 @@ class TerrainRenderer {
             [screenX - this.tileWidth / 2, screenY]
         ];
 
-        this.ctx.fillStyle = this.colorMap[tile.type];
+        const baseColor = this.colorMap[tile.type];
+
+        const gradient = this.ctx.createLinearGradient(
+            screenX, screenY - this.tileHeight / 2,
+            screenX, screenY + this.tileHeight / 2
+        );
+        gradient.addColorStop(0, this.lightenColor(baseColor, 0.15));
+        gradient.addColorStop(1, this.darkenColor(baseColor, 0.15));
+
+        this.ctx.fillStyle = gradient;
         this.ctx.beginPath();
         this.ctx.moveTo(points[0][0], points[0][1]);
         points.forEach(p => this.ctx.lineTo(p[0], p[1]));
         this.ctx.fill();
+
+        this.applyNoiseTexture(screenX, screenY, this.tileWidth, this.tileHeight);
 
         if (tile.type === 'rock' || tile.type === 'ash') {
             this.drawRockDetails(tile, screenX, screenY);
@@ -44,6 +85,22 @@ class TerrainRenderer {
         }
 
         this.drawTileBorders(tile, screenX, screenY, points);
+        this.drawEdgeHighlight(screenX, screenY, points);
+    }
+
+    drawEdgeHighlight(screenX, screenY, points) {
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(points[0][0], points[0][1]);
+        this.ctx.lineTo(points[3][0], points[3][1]);
+        this.ctx.stroke();
+
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        this.ctx.beginPath();
+        this.ctx.moveTo(points[0][0], points[0][1]);
+        this.ctx.lineTo(points[1][0], points[1][1]);
+        this.ctx.stroke();
     }
 
     drawRockDetails(tile, screenX, screenY) {
@@ -79,6 +136,27 @@ class TerrainRenderer {
                 this.ctx.fill();
             });
         }
+    }
+
+    drawLavaGlow(gridX, gridY, tile, cameraX, cameraY) {
+        if (tile.type !== 'lava') return;
+
+        const screenX = (gridX - gridY) * (this.tileWidth / 2);
+        const screenY = (gridX + gridY) * (this.tileHeight / 2);
+
+        const time = Date.now() / 1000;
+        const pulse = Math.sin(time * 2) * 0.3 + 0.7;
+
+        const gradient = this.ctx.createRadialGradient(
+            screenX, screenY, 0,
+            screenX, screenY, 80 * pulse
+        );
+        gradient.addColorStop(0, `rgba(255, 100, 0, ${0.4 * pulse})`);
+        gradient.addColorStop(0.5, `rgba(255, 68, 0, ${0.2 * pulse})`);
+        gradient.addColorStop(1, 'rgba(255, 68, 0, 0)');
+
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(screenX - 80, screenY - 80, 160, 160);
     }
 
     drawWaterAnimation(screenX, screenY) {

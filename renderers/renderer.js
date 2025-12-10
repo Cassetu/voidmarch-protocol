@@ -55,6 +55,7 @@ class Renderer {
             this.overlayRenderer = new OverlayRenderer(ctx, this.tileWidth, this.tileHeight);
             this.creatureRenderer = new CreatureRenderer(ctx, this.tileWidth, this.tileHeight);
             this.environmentalRenderer = new EnvironmentalRenderer(ctx, this.tileWidth, this.tileHeight);
+            this.backgroundRenderer = new BackgroundRenderer(ctx, width, height);
     }
 
     drawEnvironmentalObjects(objects, cameraX, cameraY) {
@@ -71,6 +72,10 @@ class Renderer {
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
         this.terrainRenderer.drawTile(gridX, gridY, tile, cameraX, cameraY);
+
+        if (tile.type === 'lava') {
+            this.terrainRenderer.drawLavaGlow(gridX, gridY, tile, cameraX, cameraY);
+        }
     }
 
     drawBuilding(building, cameraX, cameraY) {

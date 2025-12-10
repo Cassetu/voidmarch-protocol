@@ -2635,8 +2635,7 @@ class Game {
     }
 
     render() {
-        this.ctx.fillStyle = '#1a1f2e';
-        this.ctx.fillRect(0, 0, this.width, this.height);
+        this.renderer.backgroundRenderer.draw(this.cameraX, this.cameraY, this.renderer.zoom);
 
         this.ctx.save();
         const topBarHeight = 75;

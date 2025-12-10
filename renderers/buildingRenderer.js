@@ -25,6 +25,49 @@ class BuildingRenderer {
         this.ctx.restore();
     }
 
+    calculateLavaGlow(buildingX, buildingY, planet) {
+        let glowIntensity = 0;
+
+        for (let dy = -3; dy <= 3; dy++) {
+            for (let dx = -3; dx <= 3; dx++) {
+                const checkX = buildingX + dx;
+                const checkY = buildingY + dy;
+
+                if (checkX >= 0 && checkX < planet.width &&
+                    checkY >= 0 && checkY < planet.height) {
+
+                    const tile = planet.tiles[checkY][checkX];
+                    if (tile.type === 'lava') {
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        const contribution = Math.max(0, 1 - distance / 4);
+                        glowIntensity += contribution * 0.3;
+                    }
+                }
+            }
+        }
+
+        return Math.min(glowIntensity, 0.8);
+    }
+
+    drawLavaGlowOnBuilding(x, y, buildingType, intensity) {
+        if (intensity <= 0.05) return;
+
+        const height = this.getBuildingHeight(buildingType);
+        const time = Date.now() / 1000;
+        const pulse = Math.sin(time * 2) * 0.2 + 0.8;
+
+        const gradient = this.ctx.createRadialGradient(
+            x, y - height/2, 0,
+            x, y - height/2, 40
+        );
+        gradient.addColorStop(0, `rgba(255, 100, 0, ${intensity * pulse * 0.4})`);
+        gradient.addColorStop(0.7, `rgba(255, 68, 0, ${intensity * pulse * 0.2})`);
+        gradient.addColorStop(1, 'rgba(255, 68, 0, 0)');
+
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(x - 40, y - height - 20, 80, height + 40);
+    }
+
     drawBuildingFrame(screenX, screenY, building) {
         const size = 16;
 
@@ -3124,6 +3167,10 @@ class BuildingRenderer {
                 this.ctx.fill();
             }
             break;
+
+            if (lavaGlow > 0.05) {
+                this.drawLavaGlowOnBuilding(screenX, screenY, building.type, lavaGlow);
+            }
 
 
 
