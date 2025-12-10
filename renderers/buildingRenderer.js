@@ -46,26 +46,28 @@ class BuildingRenderer {
             }
         }
 
-        return Math.min(glowIntensity, 0.8);
+        return Math.min(glowIntensity, 0.3);
     }
 
-    drawLavaGlowOnBuilding(x, y, buildingType, intensity) {
-        if (intensity <= 0.05) return;
+    drawLavaGlow(gridX, gridY, tile, cameraX, cameraY) {
+        if (tile.type !== 'lava') return;
 
-        const height = this.getBuildingHeight(buildingType);
-        const time = Date.now() / 1000;
-        const pulse = Math.sin(time * 2) * 0.2 + 0.8;
+        const screenX = (gridX - gridY) * (this.tileWidth / 2);
+        const screenY = (gridX + gridY) * (this.tileHeight / 2);
+
+        const time = Math.floor(Date.now() / 500) * 0.5;
+        const pulse = Math.sin(time * 2) * 0.3 + 0.7;
 
         const gradient = this.ctx.createRadialGradient(
-            x, y - height/2, 0,
-            x, y - height/2, 40
+            screenX, screenY, 0,
+            screenX, screenY, 80 * pulse
         );
-        gradient.addColorStop(0, `rgba(255, 100, 0, ${intensity * pulse * 0.4})`);
-        gradient.addColorStop(0.7, `rgba(255, 68, 0, ${intensity * pulse * 0.2})`);
+        gradient.addColorStop(0, `rgba(255, 100, 0, ${0.3 * pulse})`);
+        gradient.addColorStop(0.5, `rgba(255, 68, 0, ${0.15 * pulse})`);
         gradient.addColorStop(1, 'rgba(255, 68, 0, 0)');
 
         this.ctx.fillStyle = gradient;
-        this.ctx.fillRect(x - 40, y - height - 20, 80, height + 40);
+        this.ctx.fillRect(screenX - 80, screenY - 80, 160, 160);
     }
 
     drawBuildingFrame(screenX, screenY, building) {
