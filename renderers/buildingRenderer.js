@@ -7,8 +7,11 @@ class BuildingRenderer {
     }
 
     drawBuilding(building, cameraX, cameraY) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const tile = planet.tiles[building.y][building.x];
         const elevationHeight = 8;
-        const yOffset = -(building.elevation || 0) * elevationHeight;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
 
         const screenX = (building.x - building.y) * (this.tileWidth / 2);
         const screenY = (building.x + building.y) * (this.tileHeight / 2) + yOffset;
@@ -124,8 +127,14 @@ class BuildingRenderer {
     }
 
     drawBuilding(building, cameraX, cameraY) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const tile = planet.tiles[building.y][building.x];
+        const elevationHeight = 8;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
+
         const screenX = (building.x - building.y) * (this.tileWidth / 2);
-        const screenY = (building.x + building.y) * (this.tileHeight / 2);
+        const screenY = (building.x + building.y) * (this.tileHeight / 2) + yOffset - this.tileHeight / 4;
 
         this.ctx.save();
 

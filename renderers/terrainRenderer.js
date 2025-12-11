@@ -37,6 +37,9 @@ class TerrainRenderer {
     }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
+        const game = window.game;
+        const zoom = game.renderer.zoom;
+
         const elevationHeight = 8;
         const yOffset = -(tile.elevation || 0) * elevationHeight;
 
@@ -65,32 +68,41 @@ class TerrainRenderer {
         points.forEach(p => this.ctx.lineTo(p[0], p[1]));
         this.ctx.fill();
 
-        this.applyNoiseTexture(screenX, screenY, this.tileWidth, this.tileHeight);
-
-        if (tile.type === 'rock' || tile.type === 'ash') {
-            this.drawRockDetails(tile, screenX, screenY);
+        if (zoom > 0.6) {
+            this.applyNoiseTexture(screenX, screenY, this.tileWidth, this.tileHeight);
         }
 
-        if (tile.type === 'lava') {
-            this.drawLavaDetails(tile, screenX, screenY);
-        }
+        if (zoom > 0.5) {
+            if (tile.type === 'rock' || tile.type === 'ash') {
+                this.drawRockDetails(tile, screenX, screenY);
+            }
 
-        if (tile.type === 'water') {
-            this.drawWaterAnimation(screenX, screenY);
-        }
+            if (tile.type === 'lava') {
+                this.drawLavaDetails(tile, screenX, screenY);
+            }
 
-        if (tile.type === 'sand') {
-            this.drawSandGrains(gridX, gridY, screenX, screenY);
-        }
+            if (tile.type === 'water') {
+                this.drawWaterAnimation(screenX, screenY);
+            }
 
-        if (tile.type === 'darksoil') {
-            this.drawDarksoilDetails(tile, screenX, screenY);
+            if (tile.type === 'sand') {
+                this.drawSandGrains(gridX, gridY, screenX, screenY);
+            }
+
+            if (tile.type === 'darksoil') {
+                this.drawDarksoilDetails(tile, screenX, screenY);
+            }
         }
 
         this.drawTileBorders(tile, screenX, screenY, points);
-        this.drawEdgeHighlight(screenX, screenY, points);
 
-        this.drawShadow(screenX, screenY, tile.elevation || 0, elevationHeight);
+        if (zoom > 0.7) {
+            this.drawEdgeHighlight(screenX, screenY, points);
+        }
+
+        if (zoom > 0.6) {
+            this.drawShadow(screenX, screenY, tile.elevation || 0, elevationHeight);
+        }
     }
 
     drawShadow(screenX, screenY, elevation, elevationHeight) {

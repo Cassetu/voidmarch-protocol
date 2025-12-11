@@ -1472,7 +1472,8 @@ class Game {
     }
 
     handleInput() {
-        const moveSpeed = 8;
+        const baseSpeed = 8;
+        const moveSpeed = Math.min(baseSpeed * 3, baseSpeed / this.renderer.zoom);
         const canvasTop = 75;
         const canvasBottom = window.innerHeight - 220;
         const unitX = this.renderer.tileWidth / 2;
@@ -2738,6 +2739,18 @@ class Game {
         tilesToRender.forEach(({ x, y, tile }) => {
             this.renderer.drawTile(x, y, tile, this.cameraX, this.cameraY);
             this.renderer.terrainRenderer.drawCliffFace(x, y, tile, this.currentPlanet);
+
+            if (this.environmentalObjectSystem && this.galaxy.currentPlanetIndex === 0) {
+                const envObj = this.environmentalObjectSystem.getObjectAt(x, y);
+                if (envObj) {
+                    this.renderer.environmentalRenderer.drawEnvironmentalObject(envObj, this.cameraX, this.cameraY);
+                }
+            }
+
+            const building = tile.building;
+            if (building && building.x === x && building.y === y) {
+                this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
+            }
         });
 
         if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
@@ -2778,13 +2791,6 @@ class Game {
                 }
             }
         }
-
-        this.currentPlanet.structures.forEach(building => {
-            if (building.x >= visibleTiles.minX && building.x <= visibleTiles.maxX &&
-                building.y >= visibleTiles.minY && building.y <= visibleTiles.maxY) {
-                this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
-            }
-        });
 
         if (this.conquestSystem && this.gameMode === 'conquest') {
             this.conquestSystem.defenseNodes.forEach(node => {
@@ -2852,11 +2858,6 @@ class Game {
         }
 
         if (this.environmentalObjectSystem && this.galaxy.currentPlanetIndex === 0) {
-            this.renderer.drawEnvironmentalObjects(
-                this.environmentalObjectSystem.objects,
-                this.cameraX,
-                this.cameraY
-            );
             this.renderer.drawDestroyers(
                 this.environmentalObjectSystem.destroyers,
                 this.cameraX,
