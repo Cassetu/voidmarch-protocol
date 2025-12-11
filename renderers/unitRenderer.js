@@ -6,8 +6,14 @@ class UnitRenderer {
     }
 
     drawUnit(unit, cameraX, cameraY, color, isSelected) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const tile = planet.tiles[unit.y][unit.x];
+        const elevationHeight = 8;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
+
         const screenX = (unit.x - unit.y) * (this.tileWidth / 2);
-        const screenY = (unit.x + unit.y) * (this.tileHeight / 2);
+        const screenY = (unit.x + unit.y) * (this.tileHeight / 2) + yOffset;
 
         this.ctx.save();
 
@@ -497,8 +503,14 @@ class UnitRenderer {
     }
 
     drawDefenseNode(node, cameraX, cameraY) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const tile = planet.tiles[node.y][node.x];
+        const elevationHeight = 8;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
+
         const screenX = (node.x - node.y) * (this.tileWidth / 2);
-        const screenY = (node.x + node.y) * (this.tileHeight / 2);
+        const screenY = (node.x + node.y) * (this.tileHeight / 2) + yOffset;
 
         this.ctx.save();
 
@@ -625,8 +637,16 @@ class UnitRenderer {
     }
 
     drawBuilder(builder, cameraX, cameraY) {
-        const screenX = (builder.currentX - builder.currentY) * (this.tileWidth / 2);
-        const screenY = (builder.currentX + builder.currentY) * (this.tileHeight / 2);
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const x = builder.currentX;
+        const y = builder.currentY;
+        const tile = planet.tiles[y][x];
+        const elevationHeight = 8;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        const screenX = (x - y) * (this.tileWidth / 2);
+        const screenY = (x + y) * (this.tileHeight / 2) + yOffset;
 
         this.ctx.save();
 

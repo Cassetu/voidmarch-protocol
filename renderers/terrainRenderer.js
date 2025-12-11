@@ -37,8 +37,11 @@ class TerrainRenderer {
     }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
+        const elevationHeight = 8;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
+
         const screenX = (gridX - gridY) * (this.tileWidth / 2);
-        const screenY = (gridX + gridY) * (this.tileHeight / 2);
+        const screenY = (gridX + gridY) * (this.tileHeight / 2) + yOffset;
 
         const points = [
             [screenX, screenY - this.tileHeight / 2],
@@ -86,6 +89,135 @@ class TerrainRenderer {
 
         this.drawTileBorders(tile, screenX, screenY, points);
         this.drawEdgeHighlight(screenX, screenY, points);
+
+        this.drawShadow(screenX, screenY, tile.elevation || 0, elevationHeight);
+    }
+
+    drawShadow(screenX, screenY, elevation, elevationHeight) {
+        if (elevation === 0) return;
+
+        const shadowOffset = elevation * elevationHeight;
+        const shadowAlpha = Math.min(0.4, elevation * 0.12);
+
+        this.ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
+        this.ctx.beginPath();
+        this.ctx.ellipse(
+            screenX,
+            screenY + shadowOffset + this.tileHeight / 2,
+            this.tileWidth / 2.5,
+            this.tileHeight / 4,
+            0, 0, Math.PI * 2
+        );
+        this.ctx.fill();
+    }
+
+    drawCliffFace(gridX, gridY, tile, planet) {
+        const elevationHeight = 8;
+        const currentElevation = tile.elevation || 0;
+
+        const screenX = (gridX - gridY) * (this.tileWidth / 2);
+        const screenY = (gridX + gridY) * (this.tileHeight / 2) - currentElevation * elevationHeight;
+
+        const checkRight = gridX + 1;
+        const checkBottom = gridY + 1;
+
+        if (checkRight < planet.width) {
+            const rightTile = planet.tiles[gridY][checkRight];
+            const rightElevation = rightTile.elevation || 0;
+            const heightDiff = currentElevation - rightElevation;
+
+            if (heightDiff > 0) {
+                this.drawRightCliff(screenX, screenY, heightDiff, elevationHeight, tile);
+            }
+        }
+
+        if (checkBottom < planet.height) {
+            const bottomTile = planet.tiles[checkBottom][gridX];
+            const bottomElevation = bottomTile.elevation || 0;
+            const heightDiff = currentElevation - bottomElevation;
+
+            if (heightDiff > 0) {
+                this.drawBottomCliff(screenX, screenY, heightDiff, elevationHeight, tile);
+            }
+        }
+    }
+
+    drawRightCliff(screenX, screenY, heightDiff, elevationHeight, tile) {
+        const cliffHeight = heightDiff * elevationHeight;
+        const baseColor = this.colorMap[tile.type];
+        const darkColor = this.darkenColor(baseColor, 0.35);
+        const darkerColor = this.darkenColor(baseColor, 0.5);
+
+        const gradient = this.ctx.createLinearGradient(
+            screenX + this.tileWidth / 2, screenY,
+            screenX + this.tileWidth / 2, screenY + cliffHeight
+        );
+        gradient.addColorStop(0, darkColor);
+        gradient.addColorStop(1, darkerColor);
+
+        this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX + this.tileWidth / 2, screenY);
+        this.ctx.lineTo(screenX + this.tileWidth / 2, screenY + cliffHeight);
+        this.ctx.lineTo(screenX, screenY + this.tileHeight / 2 + cliffHeight);
+        this.ctx.lineTo(screenX, screenY + this.tileHeight / 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.strokeStyle = this.darkenColor(baseColor, 0.6);
+        this.ctx.lineWidth = 0.5;
+        this.ctx.stroke();
+
+        if (heightDiff > 1) {
+            for (let i = 1; i < heightDiff; i++) {
+                const y = screenY + i * elevationHeight;
+                this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+                this.ctx.lineWidth = 0.5;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX + this.tileWidth / 2, y);
+                this.ctx.lineTo(screenX, y + this.tileHeight / 2);
+                this.ctx.stroke();
+            }
+        }
+    }
+
+    drawBottomCliff(screenX, screenY, heightDiff, elevationHeight, tile) {
+        const cliffHeight = heightDiff * elevationHeight;
+        const baseColor = this.colorMap[tile.type];
+        const darkerColor = this.darkenColor(baseColor, 0.5);
+        const darkestColor = this.darkenColor(baseColor, 0.65);
+
+        const gradient = this.ctx.createLinearGradient(
+            screenX, screenY + this.tileHeight / 2,
+            screenX, screenY + this.tileHeight / 2 + cliffHeight
+        );
+        gradient.addColorStop(0, darkerColor);
+        gradient.addColorStop(1, darkestColor);
+
+        this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, screenY + this.tileHeight / 2);
+        this.ctx.lineTo(screenX, screenY + this.tileHeight / 2 + cliffHeight);
+        this.ctx.lineTo(screenX - this.tileWidth / 2, screenY + cliffHeight);
+        this.ctx.lineTo(screenX - this.tileWidth / 2, screenY);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.strokeStyle = this.darkenColor(baseColor, 0.75);
+        this.ctx.lineWidth = 0.5;
+        this.ctx.stroke();
+
+        if (heightDiff > 1) {
+            for (let i = 1; i < heightDiff; i++) {
+                const y = screenY + this.tileHeight / 2 + i * elevationHeight;
+                this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                this.ctx.lineWidth = 0.5;
+                this.ctx.beginPath();
+                this.ctx.moveTo(screenX, y);
+                this.ctx.lineTo(screenX - this.tileWidth / 2, y - this.tileHeight / 2);
+                this.ctx.stroke();
+            }
+        }
     }
 
     drawEdgeHighlight(screenX, screenY, points) {

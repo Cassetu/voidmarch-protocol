@@ -1636,6 +1636,7 @@ class Game {
                         const tempBuilding = new Building(gridX, gridY, this.player.selectedBuilding);
                         tempBuilding.isFrame = true;
                         tempBuilding.buildProgress = 0;
+                        tempBuilding.elevation = tile.elevation || 0;
                         if (controllingSettlement) {
                             tempBuilding.settlementIds = [controllingSettlement.id];
                             tempBuilding.isShared = false;
@@ -2545,6 +2546,7 @@ class Game {
         const canvasTop = 75;
         const unitX = this.renderer.tileWidth / 2;
         const unitY = this.renderer.tileHeight / 2;
+        const elevationHeight = 8;
 
         const mouseX = this.input.mouseX;
         const mouseY = this.input.mouseY - canvasTop;
@@ -2605,29 +2607,37 @@ class Game {
                 const tileGridX = gridX + dx;
                 const tileGridY = gridY + dy;
 
-                const tileWorldX = (tileGridX - tileGridY) * unitX;
-                const tileWorldY = (tileGridX + tileGridY) * unitY;
+                if (tileGridX >= 0 && tileGridX < this.currentPlanet.width &&
+                    tileGridY >= 0 && tileGridY < this.currentPlanet.height) {
 
-                const sx = (tileWorldX + translateX) * this.renderer.zoom;
-                const sy = (tileWorldY + translateY) * this.renderer.zoom + canvasTop;
+                    const tile = this.currentPlanet.tiles[tileGridY][tileGridX];
+                    const elevation = tile.elevation || 0;
+                    const yOffset = -elevation * elevationHeight;
 
-                const sxOffset = unitX * this.renderer.zoom;
-                const syOffset = unitY * this.renderer.zoom;
+                    const tileWorldX = (tileGridX - tileGridY) * unitX;
+                    const tileWorldY = (tileGridX + tileGridY) * unitY + yOffset;
 
-                this.ctx.fillStyle = canPlace ? 'rgba(0, 255, 0, 0.4)' : 'rgba(255, 0, 0, 0.4)';
-                this.ctx.beginPath();
-                this.ctx.moveTo(sx, sy - syOffset);
-                this.ctx.lineTo(sx - sxOffset, sy);
-                this.ctx.lineTo(sx, sy + syOffset);
-                this.ctx.lineTo(sx + sxOffset, sy);
-                this.ctx.closePath();
-                this.ctx.fill();
+                    const sx = (tileWorldX + translateX) * this.renderer.zoom;
+                    const sy = (tileWorldY + translateY) * this.renderer.zoom + canvasTop;
 
-                this.ctx.globalAlpha = 1;
-                this.ctx.strokeStyle = canPlace ? 'rgba(100, 255, 100, 1)' : 'rgba(255, 100, 100, 1)';
-                this.ctx.lineWidth = 2;
-                this.ctx.stroke();
-                this.ctx.globalAlpha = 0.5;
+                    const sxOffset = unitX * this.renderer.zoom;
+                    const syOffset = unitY * this.renderer.zoom;
+
+                    this.ctx.fillStyle = canPlace ? 'rgba(0, 255, 0, 0.4)' : 'rgba(255, 0, 0, 0.4)';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(sx, sy - syOffset);
+                    this.ctx.lineTo(sx - sxOffset, sy);
+                    this.ctx.lineTo(sx, sy + syOffset);
+                    this.ctx.lineTo(sx + sxOffset, sy);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    this.ctx.globalAlpha = 1;
+                    this.ctx.strokeStyle = canPlace ? 'rgba(100, 255, 100, 1)' : 'rgba(255, 100, 100, 1)';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                    this.ctx.globalAlpha = 0.5;
+                }
             }
         }
 
@@ -2711,11 +2721,24 @@ class Game {
 
         const visibleTiles = this.getVisibleTiles();
 
+        const tilesToRender = [];
         for (let y = visibleTiles.minY; y <= visibleTiles.maxY; y++) {
             for (let x = visibleTiles.minX; x <= visibleTiles.maxX; x++) {
-                this.renderer.drawTile(x, y, this.currentPlanet.tiles[y][x], this.cameraX, this.cameraY);
+                tilesToRender.push({ x, y, tile: this.currentPlanet.tiles[y][x] });
             }
         }
+
+        tilesToRender.sort((a, b) => {
+            const sumA = a.x + a.y;
+            const sumB = b.x + b.y;
+            if (sumA !== sumB) return sumA - sumB;
+            return a.x - b.x;
+        });
+
+        tilesToRender.forEach(({ x, y, tile }) => {
+            this.renderer.drawTile(x, y, tile, this.cameraX, this.cameraY);
+            this.renderer.terrainRenderer.drawCliffFace(x, y, tile, this.currentPlanet);
+        });
 
         if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
             for (let y = visibleTiles.minY; y <= visibleTiles.maxY; y++) {

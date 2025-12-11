@@ -7,8 +7,11 @@ class BuildingRenderer {
     }
 
     drawBuilding(building, cameraX, cameraY) {
+        const elevationHeight = 8;
+        const yOffset = -(building.elevation || 0) * elevationHeight;
+
         const screenX = (building.x - building.y) * (this.tileWidth / 2);
-        const screenY = (building.x + building.y) * (this.tileHeight / 2);
+        const screenY = (building.x + building.y) * (this.tileHeight / 2) + yOffset;
 
         this.ctx.save();
 

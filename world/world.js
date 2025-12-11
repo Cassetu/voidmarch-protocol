@@ -128,25 +128,47 @@ class Planet {
         let terrain = 'grass';
         let height = continentValue;
         let details = [];
+        let elevation = 0;
 
         if (this.type === 'volcanic') {
             if (continentValue < 0.35) {
                 terrain = 'lava';
+                elevation = 0;
             } else if (continentValue < 0.50) {
                 terrain = detailValue > 0.6 ? 'rock' : 'ash';
+                elevation = 1;
             } else if (continentValue < 0.65) {
                 terrain = detailValue > 0.5 ? 'ash' : 'darksoil';
+                elevation = 2;
             } else {
                 terrain = 'darksoil';
+                elevation = 3;
             }
+
+            if (detailValue > 0.85) elevation += 1;
+            if (detailValue < 0.15) elevation = Math.max(0, elevation - 1);
         } else if (this.type === 'ecosystem') {
-            if (height > 0.6) terrain = 'forest';
-            else if (height > 0.4) terrain = 'grass';
-            else terrain = 'water';
+            if (height > 0.6) {
+                terrain = 'forest';
+                elevation = 2;
+            } else if (height > 0.4) {
+                terrain = 'grass';
+                elevation = 1;
+            } else {
+                terrain = 'water';
+                elevation = 0;
+            }
         } else if (this.type === 'galaxy') {
-            if (height > 0.7) terrain = 'void';
-            else if (height > 0.5) terrain = 'nebula';
-            else terrain = 'stars';
+            if (height > 0.7) {
+                terrain = 'void';
+                elevation = 0;
+            } else if (height > 0.5) {
+                terrain = 'nebula';
+                elevation = 1;
+            } else {
+                terrain = 'stars';
+                elevation = 2;
+            }
         }
 
         if (terrain === 'rock' || terrain === 'ash') {
@@ -176,6 +198,7 @@ class Planet {
 
         return {
             type: terrain,
+            elevation: elevation,
             resourceAmount: Math.random() * 50,
             fertility: Math.random(),
             contamination: 0,
@@ -367,6 +390,7 @@ class Planet {
         }
 
         const building = new Building(gridX, gridY, buildingType);
+        building.elevation = this.tiles[gridY][gridX].elevation || 0;
         this.tiles[gridY][gridX].building = building;
         this.structures.push(building);
         player.addBuilding(building);

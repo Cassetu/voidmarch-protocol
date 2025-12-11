@@ -6,8 +6,14 @@ class EnvironmentalRenderer {
     }
 
     drawEnvironmentalObject(obj, cameraX, cameraY) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const tile = planet.tiles[obj.y][obj.x];
+        const elevationHeight = 8;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
+
         const screenX = (obj.x - obj.y) * (this.tileWidth / 2);
-        const screenY = (obj.x + obj.y) * (this.tileHeight / 2);
+        const screenY = (obj.x + obj.y) * (this.tileHeight / 2) + yOffset;
 
         this.ctx.save();
 
@@ -238,8 +244,16 @@ class EnvironmentalRenderer {
     }
 
     drawDestroyer(destroyer, cameraX, cameraY) {
-        const screenX = (destroyer.currentX - destroyer.currentY) * (this.tileWidth / 2);
-        const screenY = (destroyer.currentY + destroyer.currentX) * (this.tileHeight / 2);
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const x = destroyer.currentX;
+        const y = destroyer.currentY;
+        const tile = planet.tiles[y][x];
+        const elevationHeight = 8;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        const screenX = (x - y) * (this.tileWidth / 2);
+        const screenY = (x + y) * (this.tileHeight / 2) + yOffset;
 
         this.ctx.save();
 

@@ -17,9 +17,16 @@ class CreatureRenderer {
     }
 
     drawAshworms(ashworms, cameraX, cameraY) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const elevationHeight = 8;
+
         ashworms.forEach(worm => {
+            const tile = planet.tiles[worm.y][worm.x];
+            const yOffset = -(tile.elevation || 0) * elevationHeight;
+
             const screenX = (worm.x - worm.y) * (this.tileWidth / 2);
-            const screenY = (worm.x + worm.y) * (this.tileHeight / 2);
+            const screenY = (worm.x + worm.y) * (this.tileHeight / 2) + yOffset;
 
             const wobble = Math.sin(this.animationOffset + worm.x + worm.y) * 2;
 
@@ -45,9 +52,16 @@ class CreatureRenderer {
     }
 
     drawMagmaBeetles(beetles, cameraX, cameraY) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const elevationHeight = 8;
+
         beetles.forEach(beetle => {
+            const tile = planet.tiles[beetle.y][beetle.x];
+            const yOffset = -(tile.elevation || 0) * elevationHeight;
+
             const screenX = (beetle.x - beetle.y) * (this.tileWidth / 2);
-            const screenY = (beetle.x + beetle.y) * (this.tileHeight / 2);
+            const screenY = (beetle.x + beetle.y) * (this.tileHeight / 2) + yOffset;
 
             const pulse = Math.sin(this.animationOffset * 2 + beetle.x) * 0.5 + 0.5;
 
@@ -77,9 +91,16 @@ class CreatureRenderer {
     }
 
     drawEmberbirds(birds, cameraX, cameraY) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const elevationHeight = 8;
+
         birds.forEach(bird => {
+            const tile = planet.tiles[bird.y][bird.x];
+            const yOffset = -(tile.elevation || 0) * elevationHeight;
+
             const screenX = (bird.x - bird.y) * (this.tileWidth / 2);
-            const screenY = (bird.x + bird.y) * (this.tileHeight / 2);
+            const screenY = (bird.x + bird.y) * (this.tileHeight / 2) + yOffset;
 
             const flap = Math.sin(this.animationOffset * 4 + bird.x) * 3;
             const hover = Math.sin(this.animationOffset + bird.y) * 4;
