@@ -1460,7 +1460,14 @@ class Game {
                     const tile = this.currentPlanet.tiles[gridY][gridX];
                     const elevation = tile.elevation || 0;
                     const elevationHeight = 8;
-                    const elevationOffset = elevation * elevationHeight;
+                    let elevationOffset = elevation * elevationHeight;
+
+                    if (tile.isFloating) {
+                        const floatAmplitude = 6;
+                        const floatSpeed = 0.8;
+                        const floatOffset = Math.sin(Date.now() / 1000 * floatSpeed) * floatAmplitude;
+                        elevationOffset += floatOffset - 20;
+                    }
 
                     const adjustedWorldY = worldY + elevationOffset;
 

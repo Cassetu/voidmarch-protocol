@@ -10,7 +10,14 @@ class UnitRenderer {
         const planet = game.currentPlanet;
         const tile = planet.tiles[unit.y][unit.x];
         const elevationHeight = 8;
-        const yOffset = -(tile.elevation || 0) * elevationHeight;
+        let yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        if (tile.isFloating) {
+            const floatAmplitude = 6;
+            const floatSpeed = 0.8;
+            const floatOffset = Math.sin(Date.now() / 1000 * floatSpeed) * floatAmplitude;
+            yOffset += floatOffset - 20;
+        }
 
         const screenX = (unit.x - unit.y) * (this.tileWidth / 2);
         const screenY = (unit.x + unit.y) * (this.tileHeight / 2) + yOffset;
@@ -507,7 +514,14 @@ class UnitRenderer {
         const planet = game.currentPlanet;
         const tile = planet.tiles[node.y][node.x];
         const elevationHeight = 8;
-        const yOffset = -(tile.elevation || 0) * elevationHeight;
+        let yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        if (tile.isFloating) {
+            const floatAmplitude = 6;
+            const floatSpeed = 0.8;
+            const floatOffset = Math.sin(Date.now() / 1000 * floatSpeed) * floatAmplitude;
+            yOffset += floatOffset - 20;
+        }
 
         const screenX = (node.x - node.y) * (this.tileWidth / 2);
         const screenY = (node.x + node.y) * (this.tileHeight / 2) + yOffset;
@@ -643,7 +657,14 @@ class UnitRenderer {
         const y = builder.currentY;
         const tile = planet.tiles[y][x];
         const elevationHeight = 8;
-        const yOffset = -(tile.elevation || 0) * elevationHeight;
+        let yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        if (tile.isFloating) {
+            const floatAmplitude = 6;
+            const floatSpeed = 0.8;
+            const floatOffset = Math.sin(Date.now() / 1000 * floatSpeed) * floatAmplitude;
+            yOffset += floatOffset - 20;
+        }
 
         const screenX = (x - y) * (this.tileWidth / 2);
         const screenY = (x + y) * (this.tileHeight / 2) + yOffset;

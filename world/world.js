@@ -216,6 +216,15 @@ class Planet {
 
         const canBuildOver = !tile.building || tile.building.type === 'ruins';
 
+        if (tile.isFloating) {
+            const player = window.game ? window.game.player : null;
+            const hasFloatingTech = player && player.techTree && player.techTree.techs['floatingIslands'] && player.techTree.techs['floatingIslands'].researched;
+
+            if (!hasFloatingTech) {
+                return false;
+            }
+        }
+
         return canBuildOver &&
                !tile.environmentalObject &&
                tile.type !== 'water' &&

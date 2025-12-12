@@ -10,7 +10,14 @@ class EnvironmentalRenderer {
         const planet = game.currentPlanet;
         const tile = planet.tiles[obj.y][obj.x];
         const elevationHeight = 8;
-        const yOffset = -(tile.elevation || 0) * elevationHeight;
+        let yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        if (tile.isFloating) {
+            const floatAmplitude = 6;
+            const floatSpeed = 0.8;
+            const floatOffset = Math.sin(Date.now() / 1000 * floatSpeed) * floatAmplitude;
+            yOffset += floatOffset - 20;
+        }
 
         const screenX = (obj.x - obj.y) * (this.tileWidth / 2);
         const screenY = (obj.x + obj.y) * (this.tileHeight / 2) + yOffset;

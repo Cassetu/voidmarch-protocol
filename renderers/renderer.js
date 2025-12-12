@@ -71,6 +71,7 @@ class Renderer {
     }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
+        this.terrainRenderer.floatingTime = Date.now() / 1000;
         this.terrainRenderer.drawTile(gridX, gridY, tile, cameraX, cameraY);
 
         if (tile.type === 'lava') {

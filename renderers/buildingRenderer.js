@@ -6,31 +6,6 @@ class BuildingRenderer {
         this.buildingColors = buildingColors;
     }
 
-    drawBuilding(building, cameraX, cameraY) {
-        const game = window.game;
-        const planet = game.currentPlanet;
-        const tile = planet.tiles[building.y][building.x];
-        const elevationHeight = 8;
-        const yOffset = -(tile.elevation || 0) * elevationHeight;
-
-        const screenX = (building.x - building.y) * (this.tileWidth / 2);
-        const screenY = (building.x + building.y) * (this.tileHeight / 2) + yOffset;
-
-        this.ctx.save();
-
-        if (building.isFrame) {
-            this.drawBuildingFrame(screenX, screenY, building);
-        } else {
-            this.drawSpecificBuilding(screenX, screenY, building.type);
-        }
-
-        if (building.health < building.maxHealth && building.type !== 'ruins') {
-            this.drawHealthBar(screenX, screenY + 15, building.health, building.maxHealth, 30);
-        }
-
-        this.ctx.restore();
-    }
-
     calculateLavaGlow(buildingX, buildingY, planet) {
         let glowIntensity = 0;
 
@@ -131,7 +106,14 @@ class BuildingRenderer {
         const planet = game.currentPlanet;
         const tile = planet.tiles[building.y][building.x];
         const elevationHeight = 8;
-        const yOffset = -(tile.elevation || 0) * elevationHeight;
+        let yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        if (tile.isFloating) {
+            const floatAmplitude = 6;
+            const floatSpeed = 0.8;
+            const floatOffset = Math.sin(Date.now() / 1000 * floatSpeed) * floatAmplitude;
+            yOffset += floatOffset - 20;
+        }
 
         const screenX = (building.x - building.y) * (this.tileWidth / 2);
         const screenY = (building.x + building.y) * (this.tileHeight / 2) + yOffset - this.tileHeight / 4;

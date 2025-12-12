@@ -5,6 +5,7 @@ class TerrainRenderer {
         this.tileHeight = tileHeight;
         this.colorMap = colorMap;
         this.noiseCanvas = this.generateNoiseTexture();
+        this.floatingTime = 0;
     }
 
     generateNoiseTexture() {
@@ -41,7 +42,15 @@ class TerrainRenderer {
         const zoom = game.renderer.zoom;
 
         const elevationHeight = 8;
-        const yOffset = -(tile.elevation || 0) * elevationHeight;
+        let yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        if (tile.isFloating) {
+            const floatAmplitude = 6;
+            const floatSpeed = 0.8;
+            const phase = (gridX * 0.3 + gridY * 0.5);
+            const floatOffset = Math.sin(this.floatingTime * floatSpeed + phase) * floatAmplitude;
+            yOffset += floatOffset - 20;
+        }
 
         const screenX = (gridX - gridY) * (this.tileWidth / 2);
         const screenY = (gridX + gridY) * (this.tileHeight / 2) + yOffset;
@@ -124,6 +133,10 @@ class TerrainRenderer {
     }
 
     drawCliffFace(gridX, gridY, tile, planet) {
+        if (tile.isFloating) {
+            return;
+        }
+
         const elevationHeight = 8;
         const currentElevation = tile.elevation || 0;
 
@@ -367,14 +380,39 @@ class TerrainRenderer {
         }
 
         if (tile.isFloating) {
+            const pulse = (Math.sin(this.floatingTime * 1.5) + 1) / 2;
+            const glowAlpha = 0.3 + pulse * 0.2;
+
+            this.ctx.save();
+            const gradient = this.ctx.createRadialGradient(
+                screenX, screenY + 35, 0,
+                screenX, screenY + 35, 40
+            );
+            gradient.addColorStop(0, `rgba(150, 200, 255, ${glowAlpha})`);
+            gradient.addColorStop(1, 'rgba(150, 200, 255, 0)');
+            this.ctx.fillStyle = gradient;
+            this.ctx.fillRect(screenX - 40, screenY, 80, 60);
+            this.ctx.restore();
+
             this.ctx.save();
             this.ctx.strokeStyle = 'rgba(200, 220, 255, 0.6)';
             this.ctx.lineWidth = 2;
             this.ctx.setLineDash([4, 4]);
             this.ctx.stroke();
             this.ctx.restore();
+            return;
         }
+
         this.ctx.stroke();
+    }
+
+    getFloatingOffset(tile) {
+        if (!tile.isFloating) return 0;
+
+        const floatAmplitude = 6;
+        const floatSpeed = 0.8;
+        const phase = 0;
+        return Math.sin(this.floatingTime * floatSpeed + phase) * floatAmplitude - 20;
     }
 
     darkenColor(color, amount) {
