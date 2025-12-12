@@ -297,7 +297,7 @@ class Settlement {
         if (!planet || !planet.structures) return;
 
         planet.structures.forEach(building => {
-            if (building.isFrame || building.type === 'ruins') return;
+            if (building.type === 'ruins') return;
 
             const game = window.game;
             if (!game || !game.player) return;
