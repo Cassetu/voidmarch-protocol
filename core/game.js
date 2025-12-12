@@ -1511,8 +1511,25 @@ class Game {
                 const worldX = (mouseX / this.renderer.zoom) - translateX;
                 const worldY = (mouseY / this.renderer.zoom) - translateY;
 
-                const gridX = Math.round((worldX / unitX + worldY / unitY) / 2);
-                const gridY = Math.round((worldY / unitY - worldX / unitX) / 2);
+                let gridX = Math.round((worldX / unitX + worldY / unitY) / 2);
+                let gridY = Math.round((worldY / unitY - worldX / unitX) / 2);
+
+                if (gridX >= 0 && gridX < this.currentPlanet.width &&
+                    gridY >= 0 && gridY < this.currentPlanet.height) {
+
+                    const tile = this.currentPlanet.tiles[gridY][gridX];
+                    const elevation = tile.elevation || 0;
+                    const elevationHeight = 8;
+                    const elevationOffset = elevation * elevationHeight;
+
+                    const adjustedWorldY = worldY + elevationOffset;
+
+                    gridX = Math.round((worldX / unitX + adjustedWorldY / unitY) / 2);
+                    gridY = Math.round((adjustedWorldY / unitY - worldX / unitX) / 2);
+
+                    gridX = Math.max(0, Math.min(this.currentPlanet.width - 1, gridX));
+                    gridY = Math.max(0, Math.min(this.currentPlanet.height - 1, gridY));
+                }
 
                 if (this.gameMode === 'conquest' && this.conquestSystem) {
                     if (this.conquestSystem.hackingMiniGame) {
@@ -2566,8 +2583,25 @@ class Game {
         const worldX = (mouseX / this.renderer.zoom) - translateX;
         const worldY = (mouseY / this.renderer.zoom) - translateY;
 
-        const gridX = Math.round((worldX / unitX + worldY / unitY) / 2);
-        const gridY = Math.round((worldY / unitY - worldX / unitX) / 2);
+        let gridX = Math.round((worldX / unitX + worldY / unitY) / 2);
+        let gridY = Math.round((worldY / unitY - worldX / unitX) / 2);
+
+        if (gridX >= 0 && gridX < this.currentPlanet.width &&
+            gridY >= 0 && gridY < this.currentPlanet.height) {
+
+            const tile = this.currentPlanet.tiles[gridY][gridX];
+            const elevation = tile.elevation || 0;
+            const elevationHeight = 8;
+            const elevationOffset = elevation * elevationHeight;
+
+            const adjustedWorldY = worldY + elevationOffset;
+
+            gridX = Math.round((worldX / unitX + adjustedWorldY / unitY) / 2);
+            gridY = Math.round((adjustedWorldY / unitY - worldX / unitX) / 2);
+
+            gridX = Math.max(0, Math.min(this.currentPlanet.width - 1, gridX));
+            gridY = Math.max(0, Math.min(this.currentPlanet.height - 1, gridY));
+        }
 
         const size = this.currentPlanet.getBuildingSize(this.player.selectedBuilding);
         let canPlace = this.currentPlanet.canPlaceBuildingOfSize(gridX, gridY, size.w, size.h);
