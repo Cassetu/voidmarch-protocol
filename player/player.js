@@ -1,9 +1,9 @@
 class Player {
     constructor() {
         this.resources = {
-            iron: 5000,
-            copper: 3000,
-            coal: 2000,
+            iron: 50,
+            copper: 30,
+            coal: 20,
             oil: 0,
             silicon: 0,
             rareMinerals: 0,
@@ -41,6 +41,7 @@ class Player {
         this.production = 0;
         this.turn = 0;
         this.hasEscaped = false;
+        this.lastResourceGains = {};
         this.techTree = null;
         this.productionBonus = 0;
         this.foodBonus = 0;

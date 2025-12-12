@@ -791,6 +791,8 @@ class Game {
             }
         });
 
+        this.player.lastResourceGains = resourceYields;
+
         const researchResult = this.player.techTree.progressResearch();
 
         if (researchResult && researchResult.completed) {
@@ -961,91 +963,12 @@ class Game {
         const grid = document.getElementById('buildings-grid');
         grid.innerHTML = '';
 
-        const buildingInfo = {
-            hut: { name: 'Hut', desc: 'Basic shelter (Pop: 5, Food: +1)', age: 'Stone' },
-            campfire: { name: 'Campfire', desc: 'Basic warmth and light (+1 Science)', age: 'Stone' },
-            tent: { name: 'Tent', desc: 'Temporary shelter (+2 Science)', age: 'Stone' },
-            woodpile: { name: 'Woodpile', desc: 'Stored fuel and materials', age: 'Stone' },
-            farm: { name: 'Farm', desc: 'Grows food (+3 Food)', age: 'Stone' },
-            warehouse: { name: 'Warehouse', desc: 'Stores resources safely', age: 'Stone' },
-            greenhouse: { name: 'Greenhouse', desc: 'Protected farming (+5 Food)', age: 'Bronze' },
-            hydroponicfarm: { name: 'Hydroponic Farm', desc: 'Water-based farming (+8 Food)', age: 'Industrial' },
-            verticalfarm: { name: 'Vertical Farm', desc: 'Multi-level farming (+15 Food)', age: 'Modernization' },
-            bioreactor: { name: 'Bioreactor', desc: 'Bacterial food production (+25 Food)', age: 'Digital' },
-            synthesizer: { name: 'Food Synthesizer', desc: 'Molecular food creation (+50 Food)', age: 'Space' },
-            settlement: { name: 'Settlement', desc: 'Small community (Pop: 15, Food: +3)', age: 'Bronze' },
-            barracks: { name: 'Barracks', desc: 'Train military units', age: 'Bronze' },
-            granary: { name: 'Granary', desc: 'Stores extra food', age: 'Bronze' },
-            quarry: { name: 'Quarry', desc: 'Extract stone and minerals', age: 'Bronze' },
-            monument: { name: 'Monument', desc: 'Cultural landmark', age: 'Bronze' },
-            shrine: { name: 'Shrine', desc: 'Sacred place (+3 Science)', age: 'Bronze' },
-            township: { name: 'Township', desc: 'Growing town (Pop: 25, Food: +5)', age: 'Iron' },
-            temple: { name: 'Temple', desc: 'Spiritual center (+5 Science)', age: 'Iron' },
-            forge: { name: 'Forge', desc: 'Craft tools and weapons', age: 'Iron' },
-            workshop: { name: 'Workshop', desc: 'Advanced crafting', age: 'Iron' },
-            aqueduct: { name: 'Aqueduct', desc: 'Water distribution system', age: 'Iron' },
-            watchtower: { name: 'Watchtower', desc: 'Early warning system', age: 'Iron' },
-            feudaltown: { name: 'Feudal Town', desc: 'Medieval center (Pop: 40, Food: +8)', age: 'Medieval' },
-            market: { name: 'Market', desc: 'Trade center', age: 'Medieval' },
-            castle: { name: 'Castle', desc: 'Fortified stronghold', age: 'Medieval' },
-            cathedral: { name: 'Cathedral', desc: 'Grand religious structure', age: 'Medieval' },
-            townhall: { name: 'Town Hall', desc: 'Administrative center', age: 'Medieval' },
-            arena: { name: 'Arena', desc: 'Entertainment venue', age: 'Medieval' },
-            hospital: { name: 'Hospital', desc: 'Medical facility', age: 'Medieval' },
-            scriptorium: { name: 'Scriptorium', desc: 'Knowledge copying center (+7 Science)', age: 'Medieval' },
-            citystate: { name: 'City-State', desc: 'Independent city (Pop: 60, Food: +12)', age: 'Renaissance' },
-            library: { name: 'Library', desc: 'Knowledge repository (+8 Science)', age: 'Renaissance' },
-            academy: { name: 'Academy', desc: 'Educational institution', age: 'Renaissance' },
-            theater: { name: 'Theater', desc: 'Cultural performance hall', age: 'Renaissance' },
-            mansion: { name: 'Mansion', desc: 'Luxurious housing', age: 'Renaissance' },
-            factorytown: { name: 'Factory Town', desc: 'Industrial hub (Pop: 80, Food: +15)', age: 'Industrial' },
-            ironworks: { name: 'Ironworks', desc: 'Mass production facility', age: 'Industrial' },
-            trainstation: { name: 'Train Station', desc: 'Rail transport hub', age: 'Industrial' },
-            coalplant: { name: 'Coal Plant', desc: 'Early power generation', age: 'Industrial' },
-            steamcity: { name: 'Steamworks City', desc: 'Steam-powered metropolis (Pop: 120, Food: +20)', age: 'Early Modern' },
-            steamfactory: { name: 'Steam Factory', desc: 'Advanced manufacturing', age: 'Early Modern' },
-            clocktower: { name: 'Clock Tower', desc: 'Time coordination', age: 'Early Modern' },
-            gasworks: { name: 'Gasworks', desc: 'Gas lighting infrastructure', age: 'Early Modern' },
-            metropolis: { name: 'Metropolis', desc: 'Massive urban center (Pop: 180, Food: +30)', age: 'Victorian' },
-            parliament: { name: 'Parliament', desc: 'Governing body', age: 'Victorian' },
-            gaslamp: { name: 'Gas Lamp', desc: 'Street illumination', age: 'Victorian' },
-            telegraph: { name: 'Telegraph', desc: 'Long-distance communication', age: 'Victorian' },
-            powercity: { name: 'Power City', desc: 'Electrified civilization (Pop: 250, Food: +40)', age: 'Modernization' },
-            powerplant: { name: 'Power Plant', desc: 'Electrical generation', age: 'Modernization' },
-            skyscraper: { name: 'Skyscraper', desc: 'Vertical housing', age: 'Modernization' },
-            subwaystation: { name: 'Subway Station', desc: 'Underground transit', age: 'Modernization' },
-            technopolis: { name: 'Technopolis', desc: 'High-tech paradise (Pop: 350, Food: +60)', age: 'Digital' },
-            datacenter: { name: 'Data Center', desc: 'Information processing', age: 'Digital' },
-            cybercafe: { name: 'Cyber Cafe', desc: 'Digital gathering place', age: 'Digital' },
-            serverbank: { name: 'Server Bank', desc: 'Massive data storage', age: 'Digital' },
-            megacity: { name: 'Megacity', desc: 'Planetary capital (Pop: 500, Food: +100)', age: 'Space' },
-            university: { name: 'University', desc: 'Advanced research (+12 Science)', age: 'Space' },
-            spaceport: { name: 'Spaceport', desc: 'Launch facility', age: 'Space' },
-            laboratory: { name: 'Laboratory', desc: 'Scientific research', age: 'Space' },
-            megafactory: { name: 'Megafactory', desc: 'Mass production facility', age: 'Space' },
-            observatory: { name: 'Observatory', desc: 'Study the stars (+25 Science)', age: 'Space' },
-            fusionreactor: { name: 'Fusion Reactor', desc: 'Clean infinite energy', age: 'Space' },
-            orbitalring: { name: 'Orbital Ring', desc: 'Space elevator system', age: 'Space' },
-            quantumlab: { name: 'Quantum Lab', desc: 'Reality research', age: 'Space' },
-            triworldhub: { name: 'Triworld Hub', desc: 'Multi-planet nexus (Pop: 750, Food: +150)', age: 'Multi-World' },
-            warpgate: { name: 'Warp Gate', desc: 'Instant planet travel', age: 'Multi-World' },
-            terraformer: { name: 'Terraformer', desc: 'Planet reshaping device', age: 'Multi-World' },
-            colonyship: { name: 'Colony Ship', desc: 'Mobile civilization', age: 'Multi-World' },
-            haven: { name: 'Haven', desc: 'Galactic sanctuary (Pop: 1000, Food: +250)', age: 'Zenith' },
-            dysonswarm: { name: 'Dyson Swarm', desc: 'Star energy harvesting', age: 'Zenith' },
-            matrixcore: { name: 'Matrix Core', desc: 'Reality simulation', age: 'Zenith' },
-            ascensiongate: { name: 'Ascension Gate', desc: 'Transcendence portal', age: 'Zenith' }
-        };
-
-        console.log('buildingInfo keys:', Object.keys(buildingInfo).length);
+        const buildingData = BuildingInfo.getAllBuildingData();
         const availableBuildings = this.player.getAvailableBuildings();
-        console.log('Missing buildings:', availableBuildings.filter(b => !buildingInfo[b]));
-        console.log('Current age:', this.player.age);
-        console.log('Available buildings:', availableBuildings);
-        console.log('Observatory included?', availableBuildings.includes('observatory'));
-        const allBuildings = Object.keys(buildingInfo);
+
+        const allBuildings = Object.keys(buildingData);
         allBuildings.forEach(buildingType => {
-            const info = buildingInfo[buildingType];
+            const info = buildingData[buildingType];
             const isAvailable = availableBuildings.includes(buildingType);
 
             const card = document.createElement('div');
@@ -1057,15 +980,18 @@ class Game {
             canvas.style.margin = '0 auto 4px';
             canvas.style.display = 'block';
 
+            const canAfford = BuildingInfo.canAfford(info.cost, this.player.resources);
+            const costDisplay = BuildingInfo.formatCost(info.cost);
+
             card.innerHTML = `
                 <div class="building-icon">
                     <span class="building-age-badge">${info.age}</span>
                 </div>
                 <div class="building-name">${info.name}</div>
-                <div class="building-cost">Cost: Varies by distance</div>
+                <div class="building-cost">${costDisplay}</div>
                 <div class="building-desc">${info.desc}</div>
                 <button class="building-build-btn" ${isAvailable ? '' : 'disabled'}>
-                    ${isAvailable ? 'Select to Build' : 'Locked'}
+                    ${isAvailable ? (canAfford ? 'Select to Build' : 'Cannot Afford') : 'Locked'}
                 </button>
             `;
 
@@ -1079,6 +1005,21 @@ class Game {
                 const btn = card.querySelector('.building-build-btn');
                 btn.onclick = (e) => {
                     e.stopPropagation();
+
+                    if (!canAfford) {
+                        btn.style.background = '#aa0000';
+                        btn.style.borderColor = '#ff0000';
+                        btn.style.animation = 'blink-red 0.5s';
+
+                        setTimeout(() => {
+                            btn.style.background = '#3a5a4a';
+                            btn.style.borderColor = '#5a7a6a';
+                            btn.style.animation = '';
+                        }, 500);
+
+                        this.log(`Cannot afford ${info.name} - Need: ${costDisplay}`);
+                        return;
+                    }
 
                     const canPlaceAnywhere = this.checkIfBuildingCanBePlaced(buildingType);
 
@@ -1102,7 +1043,6 @@ class Game {
                 };
             }
 
-            console.log('Adding card for:', buildingType, 'info:', info);
             grid.appendChild(card);
         });
     }
@@ -3007,8 +2947,14 @@ class Game {
             thorium: 'Th', palladium: 'Pd', neodymium: 'Nd'
         };
 
+        const lastGains = this.player.lastResourceGains || {};
         pinnedContainer.innerHTML = this.player.pinnedResources
-            .map(key => `${resourceSymbols[key]}: ${Math.floor(this.player.resources[key])}`)
+            .map(key => {
+                const current = Math.floor(this.player.resources[key]);
+                const gain = Math.floor(lastGains[key] || 0);
+                const gainStr = gain > 0 ? ` (+${gain})` : '';
+                return `${resourceSymbols[key]}: ${current}${gainStr}`;
+            })
             .join(' | ');
 
         pinnedContainer.onmouseenter = () => {
@@ -3033,6 +2979,8 @@ class Game {
         const grid = document.createElement('div');
         grid.className = 'resource-grid';
 
+        const lastGains = this.player.lastResourceGains || {};
+
         Object.keys(this.player.resources).forEach(key => {
             const item = document.createElement('div');
             item.className = 'resource-item';
@@ -3050,9 +2998,14 @@ class Game {
                 item.style.cursor = 'not-allowed';
             }
 
+            const current = Math.floor(this.player.resources[key]);
+            const gain = Math.floor(lastGains[key] || 0);
+            const gainColor = gain > 0 ? '#88cc88' : '#7a8a9a';
+            const gainStr = gain > 0 ? ` <span style="color: ${gainColor};">(+${gain}/turn)</span>` : '';
+
             item.innerHTML = `
                 <div class="resource-name">${resourceNames[key]} <span class="resource-symbol">(${resourceSymbols[key]})</span></div>
-                <div class="resource-amount">${Math.floor(this.player.resources[key])}</div>
+                <div class="resource-amount">${current}${gainStr}</div>
             `;
 
             item.onclick = (e) => {
