@@ -677,7 +677,9 @@ class Game {
         this.player.processTurnForSettlements(this.currentPlanet);
         this.updateBuilders();
 
-        this.player.settlements.forEach(settlement => {
+        this.player.processShipyardConstruction();
+
+        player.settlements.forEach(settlement => {
             settlement.recalculateBuildingCounts(this.currentPlanet);
         });
 
@@ -1674,6 +1676,14 @@ class Game {
                 if (this.gameMode === 'conquest' && this.conquestSystem) {
                     if (this.conquestSystem.hackingMiniGame) {
                         return;
+                    }
+
+                    if (this.player.selectedBuilding === 'exodus_shipyard') {
+                        if (this.player.shipyards.length >= 3) {
+                            this.log('Maximum 3 shipyards allowed!');
+                            this.player.selectedBuilding = null;
+                            return;
+                        }
                     }
 
                     if (this.player.selectedBuilding) {

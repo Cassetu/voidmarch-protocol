@@ -63,6 +63,83 @@ class Player {
         this.eruptionChanceModifier = 0;
         this.builders = [];
         this.buildingQueue = [];
+        this.shipyards = [];
+        this.generationShips = [
+            { id: 0, assignedYard: null, segment: 0, progress: 0, complete: false },
+            { id: 1, assignedYard: null, segment: 0, progress: 0, complete: false },
+            { id: 2, assignedYard: null, segment: 0, progress: 0, complete: false },
+            { id: 3, assignedYard: null, segment: 0, progress: 0, complete: false },
+            { id: 4, assignedYard: null, segment: 0, progress: 0, complete: false }
+        ];
+        this.shipConstructionActive = false;
+    }
+
+    processShipyardConstruction() {
+        if (this.shipyards.length === 0) return;
+
+        const resourceCostPerTurn = {
+            iron: 50,
+            copper: 30,
+            silicon: 25,
+            titanium: 15,
+            uranium: 8
+        };
+
+        this.shipyards.forEach(yard => {
+            if (!yard.assignedShip) {
+                const nextShip = this.generationShips.find(s => !s.complete && !s.assignedYard);
+                if (nextShip) {
+                    nextShip.assignedYard = yard.id;
+                    yard.assignedShip = nextShip.id;
+                    if (window.game) {
+                        window.game.log(`Shipyard ${yard.id + 1} begins construction on Generation Ship ${nextShip.id + 1}`);
+                    }
+                }
+            }
+
+            if (yard.assignedShip !== null) {
+                if (!this.hasResources(resourceCostPerTurn)) {
+                    if (window.game && !yard.stalled) {
+                        window.game.log(`Shipyard ${yard.id + 1} stalled - insufficient resources!`);
+                        yard.stalled = true;
+                    }
+                    return;
+                }
+
+                yard.stalled = false;
+                this.spendResourceTypes(resourceCostPerTurn);
+
+                const ship = this.generationShips[yard.assignedShip];
+                ship.progress += 1;
+
+                const segmentThresholds = [30, 60, 90, 120, 150];
+                const segmentNames = ['Frame & Hull', 'Engine Arrays', 'Habitation Rings', 'Agricultural Domes', 'Cryobay Modules'];
+
+                for (let i = 0; i < segmentThresholds.length; i++) {
+                    if (ship.progress >= segmentThresholds[i] && ship.segment === i) {
+                        ship.segment = i + 1;
+                        if (window.game) {
+                            window.game.log(`🚀 Ship ${ship.id + 1}: ${segmentNames[i]} completed!`);
+                            if (typeof AudioManager !== 'undefined') {
+                                AudioManager.playSFX('sounds/sfx/complete.mp3', 0.6);
+                            }
+                        }
+                    }
+                }
+
+                if (ship.progress >= 150 && !ship.complete) {
+                    ship.complete = true;
+                    ship.assignedYard = null;
+                    yard.assignedShip = null;
+                    if (window.game) {
+                        window.game.log(`⭐ GENERATION SHIP ${ship.id + 1} COMPLETE! ${this.generationShips.filter(s => s.complete).length}/5 ships ready.`);
+                        if (typeof AudioManager !== 'undefined') {
+                            AudioManager.playSFX('sounds/sfx/success', 0.8);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     advanceAge(newAge) {
@@ -164,9 +241,9 @@ class Player {
             victorian: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph'],
             modernization: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'greenhouse', 'hydroponicfarm', 'verticalfarm'],
             digital: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'greenhouse', 'hydroponicfarm', 'verticalfarm', 'bioreactor'],
-            space: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'greenhouse', 'hydroponicfarm', 'verticalfarm', 'bioreactor', 'synthesizer', 'planetary_orbital_ring', 'planetary_defense_grid', 'orbital_spaceport'],
-            multiworld: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'warpgate', 'terraformer', 'colonyship', 'planetary_orbital_ring', 'planetary_defense_grid', 'orbital_spaceport'],
-            zenith: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'warpgate', 'terraformer', 'colonyship', 'dysonswarm', 'matrixcore', 'ascensiongate', 'planetary_orbital_ring', 'planetary_defense_grid', 'orbital_spaceport']
+            space: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'greenhouse', 'hydroponicfarm', 'verticalfarm', 'bioreactor', 'synthesizer', 'planetary_orbital_ring', 'planetary_defense_grid', 'orbital_spaceport', 'exodus_shipyard'],
+            multiworld: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'warpgate', 'terraformer', 'colonyship', 'planetary_orbital_ring', 'planetary_defense_grid', 'orbital_spaceport', 'exodus_shipyard'],
+            zenith: ['hut', 'settlement', 'township', 'feudaltown', 'citystate', 'factorytown', 'steamcity', 'metropolis', 'powercity', 'technopolis', 'megacity', 'triworldhub', 'haven', 'observatory', 'farm', 'warehouse', 'barracks', 'temple', 'forge', 'market', 'castle', 'library', 'university', 'spaceport', 'laboratory', 'megafactory', 'campfire', 'tent', 'woodpile', 'granary', 'quarry', 'monument', 'workshop', 'aqueduct', 'watchtower', 'cathedral', 'townhall', 'arena', 'hospital', 'scriptorium', 'academy', 'theater', 'mansion', 'mineshaft', 'ironworks', 'trainstation', 'coalplant', 'steamfactory', 'clocktower', 'gasworks', 'parliament', 'gaslamp', 'telegraph', 'powerplant', 'skyscraper', 'subwaystation', 'datacenter', 'cybercafe', 'serverbank', 'fusionreactor', 'orbitalring', 'quantumlab', 'warpgate', 'terraformer', 'colonyship', 'dysonswarm', 'matrixcore', 'ascensiongate', 'planetary_orbital_ring', 'planetary_defense_grid', 'orbital_spaceport', 'exodus_shipyard']
         };
         return buildingsPerAge[this.age] || buildingsPerAge.stone;
     }

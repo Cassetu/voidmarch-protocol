@@ -1786,3 +1786,26 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(90, 90, 106, 0.4);
 }
+
+.shipyard-status {
+    background: rgba(26, 31, 46, 0.95);
+    border: 2px solid #4a6a8a;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 4px;
+}
+
+.ship-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #2a3a4a;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 4px 0;
+}
+
+.ship-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4488ff 0%, #88aaff 100%);
+    transition: width 0.3s ease;
+}

@@ -20,6 +20,7 @@ class OrbitalRenderer {
         this.rotation = { x: 0, y: 0 };
         this.autoRotate = true;
         this.initThreeJS();
+        this.generationShips = [];
         setTimeout(() => {
             this.targetZoom = 3.5;
         }, 100);
@@ -54,6 +55,142 @@ class OrbitalRenderer {
         this.createPlanet();
         this.createStarfield();
         this.setupControls();
+    }
+
+    createGenerationShip(shipData) {
+        const group = new THREE.Group();
+        const baseRadius = 1.9 + (shipData.id * 0.1);
+        const angle = (shipData.id / 5) * Math.PI * 2;
+
+        group.position.x = Math.cos(angle) * baseRadius;
+        group.position.z = Math.sin(angle) * baseRadius;
+        group.userData = { shipId: shipData.id, segments: [] };
+
+        if (shipData.segment >= 1) {
+            const frameGeometry = new THREE.CylinderGeometry(0.08, 0.12, 0.8, 16);
+            const frameMaterial = new THREE.MeshPhongMaterial({
+                color: 0x666666,
+                emissive: 0x222222,
+                emissiveIntensity: 0.3
+            });
+            const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+            frame.rotation.x = Math.PI / 2;
+            group.add(frame);
+            group.userData.segments.push(frame);
+        }
+
+        if (shipData.segment >= 2) {
+            const engineGeometry = new THREE.CylinderGeometry(0.15, 0.08, 0.3, 8);
+            const engineMaterial = new THREE.MeshPhongMaterial({
+                color: 0x4488ff,
+                emissive: 0x2244ff,
+                emissiveIntensity: 0.7
+            });
+            const engine1 = new THREE.Mesh(engineGeometry, engineMaterial);
+            engine1.rotation.x = Math.PI / 2;
+            engine1.position.z = -0.5;
+            group.add(engine1);
+
+            const engine2 = engine1.clone();
+            engine2.position.z = 0.5;
+            group.add(engine2);
+
+            group.userData.segments.push(engine1, engine2);
+        }
+
+        if (shipData.segment >= 3) {
+            const ringGeometry = new THREE.TorusGeometry(0.25, 0.05, 16, 32);
+            const ringMaterial = new THREE.MeshPhongMaterial({
+                color: 0x88aacc,
+                emissive: 0x4466aa,
+                emissiveIntensity: 0.4
+            });
+            const ring1 = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring1.rotation.x = Math.PI / 2;
+            ring1.position.x = -0.3;
+            group.add(ring1);
+
+            const ring2 = ring1.clone();
+            ring2.position.x = 0.3;
+            group.add(ring2);
+
+            group.userData.segments.push(ring1, ring2);
+            group.userData.rotatingRings = [ring1, ring2];
+        }
+
+        if (shipData.segment >= 4) {
+            const domeGeometry = new THREE.SphereGeometry(0.12, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+            const domeMaterial = new THREE.MeshPhongMaterial({
+                color: 0x44aa44,
+                emissive: 0x22ff22,
+                emissiveIntensity: 0.5,
+                transparent: true,
+                opacity: 0.6
+            });
+            const dome = new THREE.Mesh(domeGeometry, domeMaterial);
+            dome.position.y = 0.3;
+            group.add(dome);
+            group.userData.segments.push(dome);
+        }
+
+        if (shipData.segment >= 5) {
+            const cryoGeometry = new THREE.BoxGeometry(0.2, 0.15, 0.4);
+            const cryoMaterial = new THREE.MeshPhongMaterial({
+                color: 0x88ccff,
+                emissive: 0x4488ff,
+                emissiveIntensity: 0.6
+            });
+            const cryo1 = new THREE.Mesh(cryoGeometry, cryoMaterial);
+            cryo1.position.y = -0.2;
+            cryo1.position.x = -0.15;
+            group.add(cryo1);
+
+            const cryo2 = cryo1.clone();
+            cryo2.position.x = 0.15;
+            group.add(cryo2);
+
+            group.userData.segments.push(cryo1, cryo2);
+        }
+
+        if (shipData.progress > 0 && shipData.segment < 5) {
+            const glowGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffaa00,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            for (let i = 0; i < 3; i++) {
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                glow.position.set(
+                    (Math.random() - 0.5) * 0.6,
+                    (Math.random() - 0.5) * 0.3,
+                    (Math.random() - 0.5) * 0.6
+                );
+                group.add(glow);
+                group.userData.constructionGlows = group.userData.constructionGlows || [];
+                group.userData.constructionGlows.push(glow);
+            }
+        }
+
+        this.scene.add(group);
+        return group;
+    }
+
+    updateGenerationShips(player) {
+        this.generationShips.forEach(shipMesh => {
+            this.scene.remove(shipMesh);
+        });
+        this.generationShips = [];
+
+        if (!player.shipConstructionActive) return;
+
+        player.generationShips.forEach(shipData => {
+            if (shipData.segment > 0 || shipData.progress > 0) {
+                const shipMesh = this.createGenerationShip(shipData);
+                this.generationShips.push(shipMesh);
+            }
+        });
     }
 
     updateCameraZoom() {
@@ -466,6 +603,7 @@ class OrbitalRenderer {
             this.scene.remove(this.orbitals.spaceport);
             this.orbitals.spaceport = null;
         }
+        this.updateGenerationShips(player);
     }
 
     createOrbitalRing() {
@@ -645,6 +783,25 @@ class OrbitalRenderer {
             this.orbitals.spaceport.rotation.x = this.rotation.x;
             this.orbitals.spaceport.rotation.y = this.rotation.y;
         }
+
+        this.generationShips.forEach(shipMesh => {
+            shipMesh.rotation.y += 0.001;
+
+            if (shipMesh.userData.rotatingRings) {
+                shipMesh.userData.rotatingRings.forEach(ring => {
+                    ring.rotation.z += 0.02;
+                });
+            }
+
+            if (shipMesh.userData.constructionGlows) {
+                const time = Date.now() * 0.003;
+                shipMesh.userData.constructionGlows.forEach((glow, i) => {
+                    glow.material.opacity = 0.5 + Math.sin(time + i) * 0.3;
+                });
+            }
+
+            shipMesh.rotation.x = this.rotation.x;
+        });
 
         this.renderer.render(this.scene, this.camera);
     }

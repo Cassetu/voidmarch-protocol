@@ -1106,8 +1106,11 @@ class TechTree {
                     const turn = player.turn;
                     const sciencePerTurn = player.sciencePerTurn;
                     const turnsToComplete = Math.ceil(8000 / sciencePerTurn);
+                    const shipsComplete = player.generationShips.filter(s => s.complete).length;
+                    const shipsNeeded = 5;
+                    const canResearch = shipsComplete >= shipsNeeded;
                     return {
-                        description: `Turn ${turn}: ${totalPop} citizens, ${coreStability}% core remaining, generating ${sciencePerTurn} science/turn. Exodus requires ${turnsToComplete} more turns at current rate. Core collapses at 0%. You're building generation ships - knowledge, culture, DNA samples. Your world dies, but civilization endures.`,
+                        description: `Generation Ships: ${shipsComplete}/${shipsNeeded} complete. ${canResearch ? 'Ready for exodus!' : `Build ${shipsNeeded - shipsComplete} more ships at Exodus Shipyards.`}`,
                         impact: `VICTORY CONDITION. Exodus Protocol represents species survival. Not everyone can evacuate - resources insufficient for all ${totalPop}. Who goes? How chosen? These haunt you. Success means survival. Success also means becoming refugees wandering void, seeking new world.`,
                         connection: `Research this to WIN. Game checks if complete before core collapses. Each turn you delay risks catastrophic eruption. If core hits 0% before research completes, GAME OVER. Maximize science now - build observatories, universities. Final sprint to salvation.`,
                         choiceConsequence: `Is this victory? Or merely not-yet-defeat? Your planet taught harsh lessons: nothing lasts forever, safety is temporary, nature ultimately wins. But you learned, adapted, survived. Taking the planet with you - culture, knowledge, hope. That is the Protocol. That is victory.`
@@ -1126,6 +1129,13 @@ class TechTree {
     canResearch(techId) {
         const tech = this.techs[techId];
         if (!tech || tech.researched || this.lockedPaths.has(techId)) return false;
+
+        if (techId === 'exodusProtocol') {
+            const shipsComplete = this.player.generationShips.filter(s => s.complete).length;
+            if (shipsComplete < 5) {
+                return false;
+            }
+        }
 
         for (let prereq of tech.prerequisites) {
             if (!this.techs[prereq].researched) {

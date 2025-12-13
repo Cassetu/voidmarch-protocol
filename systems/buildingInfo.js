@@ -480,6 +480,12 @@ class BuildingInfo {
                 cost: { iron: 3500, copper: 2000, silicon: 1500, titanium: 1000, platinum: 300, aluminum: 800 },
                 desc: 'Launch platform (+50 Science)',
                 age: 'Space'
+            },
+            exodus_shipyard: {
+                name: 'Exodus Shipyard',
+                cost: { iron: 5000, copper: 3000, silicon: 2500, titanium: 1500, uranium: 800 },
+                desc: 'Orbital construction facility for generation ships',
+                age: 'Space'
             }
         };
     }
