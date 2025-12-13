@@ -774,10 +774,15 @@ class Game {
         this.currentPlanet.structures.forEach(building => {
             if (building.isFrame || building.type === 'ruins' || building.type === 'defense_node') return;
 
-            const tile = this.currentPlanet.tiles[building.y][building.x];
+            if (building.type === 'mineshaft') {
+                const tile = this.currentPlanet.tiles[building.y][building.x];
+                const mineshaftYields = this.currentPlanet.getMineshaftYields(tile.type);
 
-            for (const resource in resourceYields) {
-                resourceYields[resource] += tile.yields[resource] || 0;
+                for (const resource in mineshaftYields) {
+                    if (mineshaftYields[resource] > 0) {
+                        resourceYields[resource] = (resourceYields[resource] || 0) + mineshaftYields[resource];
+                    }
+                }
             }
         });
 

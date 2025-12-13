@@ -216,6 +216,12 @@ class BuildingInfo {
                 desc: 'Industrial hub (Pop: 80, Food: +15)',
                 age: 'Industrial'
             },
+            mineshaft: {
+                name: 'Mineshaft',
+                cost: { iron: 120, copper: 80, coal: 60, silicon: 30 },
+                desc: 'Deep mining extracts rare minerals',
+                age: 'Industrial'
+            },
             ironworks: {
                 name: 'Ironworks',
                 cost: { iron: 180, copper: 100, coal: 80 },

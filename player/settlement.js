@@ -12,7 +12,7 @@ class Settlement {
         this.foodPerTurn = 0;
         this.foodConsumption = 0;
         this.growthProgress = 0;
-        this.growthRequired = 15;
+        this.growthRequired = 8;
         this.claimRadius = 3;
         this.buildings = new Map();
         this.buildingLimits = {
@@ -41,7 +41,7 @@ class Settlement {
         this.lastDeaths = 0;
         this.demographicHistory = [];
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 8; i++) {
             this.citizens.push(this.generateCitizen());
         }
 
@@ -236,11 +236,11 @@ class Settlement {
 
     tryCreateFamilies() {
         this.lastBirths = 0;
-        const eligibleAdults = this.citizens.filter(c => c.age >= 20 && c.age <= 50 && !c.hasChildren);
+        const eligibleAdults = this.citizens.filter(c => c.age >= 20 && c.age <= 50);
 
         eligibleAdults.forEach(citizen => {
-            if (Math.random() < 0.6) {
-                const numChildren = Math.floor(Math.random() * 2) + 1;
+            if (Math.random() < 0.7) {
+                const numChildren = Math.floor(Math.random() * 3) + 1;
                 const maxPop = this.getMaxPopulation();
                 const totalPop = this.citizens.length + this.children.length;
 
@@ -254,7 +254,7 @@ class Settlement {
 
                 if (actualChildren > 0) {
                     citizen.hasChildren = true;
-                    citizen.childrenCount = actualChildren;
+                    citizen.childrenCount = (citizen.childrenCount || 0) + actualChildren;
                 }
             }
         });
@@ -599,20 +599,29 @@ class Settlement {
         const totalPop = this.citizens.length + this.children.length;
 
         const foodPerPerson = this.food / Math.max(1, totalPop);
-        const wellFed = foodPerPerson >= 10;
+        const wellFed = foodPerPerson >= 8;
+        const veryWellFed = foodPerPerson >= 15;
 
-        if (wellFed && netFood >= this.foodConsumption * 0.5 && totalPop < maxPop) {
-            this.growthProgress += netFood;
-        } else if (netFood < 0) {
-            this.growthProgress = Math.max(0, this.growthProgress + netFood * 2);
-        } else {
-            this.growthProgress = Math.max(0, this.growthProgress - 5);
+        if (totalPop < maxPop) {
+            if (veryWellFed && netFood > 0) {
+                this.growthProgress += netFood * 3;
+            } else if (wellFed && netFood > 0) {
+                this.growthProgress += netFood * 2;
+            } else if (netFood > 0) {
+                this.growthProgress += netFood;
+            } else if (netFood < 0) {
+                this.growthProgress = Math.max(0, this.growthProgress + netFood * 2);
+            }
         }
 
-        if (wellFed && Math.random() < 0.15 && totalPop < maxPop) {
-            this.tryCreateFamilies();
-        } else if (!wellFed && Math.random() < 0.05) {
-            this.tryCreateFamilies();
+        if (totalPop < maxPop) {
+            if (veryWellFed && Math.random() < 0.35) {
+                this.tryCreateFamilies();
+            } else if (wellFed && Math.random() < 0.20) {
+                this.tryCreateFamilies();
+            } else if (Math.random() < 0.05) {
+                this.tryCreateFamilies();
+            }
         }
     }
 

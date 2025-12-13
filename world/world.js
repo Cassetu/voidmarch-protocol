@@ -74,6 +74,66 @@ class Planet {
         return yields;
     }
 
+    getMineshaftYields(terrain) {
+        const yields = {
+            gold: 0,
+            silver: 0,
+            titanium: 0,
+            uranium: 0,
+            platinum: 0,
+            aluminum: 0,
+            lithium: 0,
+            cobalt: 0,
+            nickel: 0,
+            zinc: 0,
+            tungsten: 0,
+            chromium: 0,
+            manganese: 0,
+            lead: 0,
+            tin: 0,
+            magnesium: 0,
+            thorium: 0,
+            palladium: 0,
+            neodymium: 0
+        };
+
+        switch(terrain) {
+            case 'rock':
+                yields.zinc = 2;
+                yields.nickel = 1.5;
+                yields.chromium = 1.2;
+                yields.tungsten = 0.8;
+                yields.tin = 1.4;
+                yields.uranium = 0.4;
+                yields.thorium = 0.4;
+                yields.lead = 0.6;
+                break;
+            case 'ash':
+                yields.aluminum = 2;
+                yields.lithium = 1;
+                yields.cobalt = 0.8;
+                yields.manganese = 1.2;
+                yields.silver = 0.6;
+                yields.magnesium = 1;
+                break;
+            case 'floating':
+                yields.titanium = 3;
+                yields.platinum = 1;
+                yields.neodymium = 1.6;
+                yields.palladium = 0.6;
+                yields.gold = 0.8;
+                yields.rareMinerals = 2;
+                break;
+            case 'darksoil':
+                yields.magnesium = 1;
+                yields.lead = 0.8;
+                yields.silver = 0.3;
+                break;
+        }
+
+        return yields;
+    }
+
     generateTerrain() {
         const continentNoise = this.createNoiseMap(this.width, this.height, 0.05);
         const detailNoise = this.createNoiseMap(this.width, this.height, 0.15);
@@ -340,6 +400,7 @@ class Planet {
             mansion: { iron: 130, copper: 75, gold: 35, silver: 20 },
 
             factorytown: { iron: 250, copper: 150, coal: 100, silicon: 50 },
+            mineshaft: { iron: 120, copper: 80, coal: 60, silicon: 30 },
             ironworks: { iron: 180, copper: 100, coal: 80 },
             trainstation: { iron: 200, copper: 120, coal: 90, silicon: 40 },
             coalplant: { iron: 300, copper: 180, coal: 150, silicon: 60 },
@@ -504,7 +565,8 @@ class Building {
             market: 100,
             castle: 300,
             library: 120,
-            university: 150
+            university: 150,
+            mineshaft: 140
         };
 
         const baseHealth = healthMap[type] || 100;
