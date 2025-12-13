@@ -462,6 +462,24 @@ class BuildingInfo {
                 cost: { iron: 6800, silicon: 3800, titanium: 1900, uranium: 1400, platinum: 950, neodymium: 480 },
                 desc: 'Transcendence portal',
                 age: 'Zenith'
+            },
+            planetary_orbital_ring: {
+                name: 'Planetary Orbital Ring',
+                cost: { iron: 5000, copper: 3000, silicon: 2000, titanium: 1500, platinum: 500, neodymium: 300 },
+                desc: 'Massive space habitat (+2000 Pop)',
+                age: 'Space'
+            },
+            planetary_defense_grid: {
+                name: 'Planetary Defense Grid',
+                cost: { iron: 4000, copper: 2500, silicon: 1800, titanium: 1200, uranium: 400, platinum: 350 },
+                desc: 'Shields against asteroids & ships',
+                age: 'Space'
+            },
+            orbital_spaceport: {
+                name: 'Orbital Spaceport',
+                cost: { iron: 3500, copper: 2000, silicon: 1500, titanium: 1000, platinum: 300, aluminum: 800 },
+                desc: 'Launch platform (+50 Science)',
+                age: 'Space'
             }
         };
     }

@@ -213,6 +213,7 @@
 </audio>
 
 <script src="core/audioManager.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="systems/builder.js"></script>
 <script src="player/player.js"></script>
 <script src="world/world.js"></script>
@@ -224,6 +225,7 @@
 <script src="renderers/overlayRenderer.js"></script>
 <script src="renderers/creatureRenderer.js"></script>
 <script src="renderers/backgroundRenderer.js"></script>
+<script src="renderers/orbitalRenderer.js"></script>
 <script src="renderers/renderer.js"></script>
 <script src="core/input.js"></script>
 <script src="core/events.js"></script>
@@ -237,5 +239,16 @@
 <script src="systems/unitActions.js"></script>
 <script src="player/settlement.js"></script>
 <script src="core/game.js"></script>
+
+<div id="view-transition-modal" style="display: none;">
+    <div class="view-transition-content">
+        <h2 id="transition-question">Transfer to Orbital View?</h2>
+        <p id="transition-description">View your planet from space and manage orbital structures.</p>
+        <div class="transition-buttons">
+            <button id="transition-confirm" class="transition-btn confirm">Yes</button>
+            <button id="transition-cancel" class="transition-btn cancel">No</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

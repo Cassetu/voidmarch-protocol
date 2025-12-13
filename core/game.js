@@ -26,6 +26,15 @@ class Game {
         this.player = new Player();
         this.player.game = this;
         this.world = new World(this.player);
+        this.orbitalView = false;
+        this.orbitalRenderer = null;
+        this.zoomThreshold = 0.3;
+        this.transitionProgress = 0;
+        this.isTransitioning = false;
+        this.transitionDuration = 1.5;
+        this.transitionStartTime = 0;
+        this.pendingTransition = null;
+        this.lastZoomDirection = 0;
 
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
@@ -1380,13 +1389,29 @@ class Game {
     handleZoom(e) {
         e.preventDefault();
 
+        if (this.isTransitioning) return;
+
         const zoomSpeed = 0.1;
         const oldZoom = this.renderer.zoom;
 
         if (e.deltaY > 0) {
-            this.renderer.zoom = Math.max(0.5, this.renderer.zoom - zoomSpeed);
+            this.renderer.zoom = Math.max(0.1, this.renderer.zoom - zoomSpeed);
+            this.lastZoomDirection = -1;
         } else {
             this.renderer.zoom = Math.min(3, this.renderer.zoom + zoomSpeed);
+            this.lastZoomDirection = 1;
+        }
+
+        if (!this.orbitalView && this.renderer.zoom <= this.zoomThreshold && this.lastZoomDirection === -1) {
+            if (!this.pendingTransition) {
+                this.renderer.zoom = this.zoomThreshold + 0.01;
+                this.showTransitionPrompt('orbital');
+            }
+        } else if (this.orbitalView && this.renderer.zoom > this.zoomThreshold && this.lastZoomDirection === 1) {
+            if (!this.pendingTransition) {
+                this.renderer.zoom = this.zoomThreshold - 0.01;
+                this.showTransitionPrompt('surface');
+            }
         }
 
         const zoomRatio = this.renderer.zoom / oldZoom;
@@ -1396,11 +1421,174 @@ class Game {
         this.updateCamera();
     }
 
+    showTransitionPrompt(type) {
+        this.pendingTransition = type;
 
+        const modal = document.getElementById('view-transition-modal');
+        const question = document.getElementById('transition-question');
+        const description = document.getElementById('transition-description');
+
+        if (type === 'orbital') {
+            question.textContent = 'Transfer to Orbital View?';
+            description.textContent = 'View your planet from space and manage orbital structures.';
+        } else {
+            question.textContent = 'Return to Surface?';
+            description.textContent = 'Return to the planetary surface map view.';
+        }
+
+        modal.style.display = 'flex';
+
+        const confirmBtn = document.getElementById('transition-confirm');
+        const cancelBtn = document.getElementById('transition-cancel');
+
+        const handleConfirm = () => {
+            this.confirmTransition();
+            cleanup();
+        };
+
+        const handleCancel = () => {
+            this.cancelTransition();
+            cleanup();
+        };
+
+        const cleanup = () => {
+            confirmBtn.removeEventListener('click', handleConfirm);
+            cancelBtn.removeEventListener('click', handleCancel);
+        };
+
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+    }
+
+    confirmTransition() {
+        const modal = document.getElementById('view-transition-modal');
+        modal.style.display = 'none';
+
+        if (this.pendingTransition === 'orbital') {
+            this.enterOrbitalView();
+        } else if (this.pendingTransition === 'surface') {
+            this.exitOrbitalView();
+        }
+
+        this.pendingTransition = null;
+    }
+
+    cancelTransition() {
+        const modal = document.getElementById('view-transition-modal');
+        modal.style.display = 'none';
+        this.pendingTransition = null;
+    }
+
+    enterOrbitalView() {
+        if (this.isTransitioning) return;
+
+        this.isTransitioning = true;
+        this.transitionStartTime = Date.now();
+        this.transitionProgress = 0;
+
+        this.log('Entering orbital view...');
+
+        if (!this.orbitalRenderer) {
+            const orbitalCanvas = document.createElement('canvas');
+            orbitalCanvas.id = 'orbital-canvas';
+            orbitalCanvas.width = window.innerWidth;
+            orbitalCanvas.height = window.innerHeight;
+            orbitalCanvas.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 5;
+                opacity: 0;
+                transition: opacity 1.5s ease-in-out;
+            `;
+            document.body.appendChild(orbitalCanvas);
+
+            this.orbitalRenderer = new OrbitalRenderer(orbitalCanvas, this.currentPlanet);
+        } else {
+            const orbitalCanvas = document.getElementById('orbital-canvas');
+            orbitalCanvas.style.display = 'block';
+            orbitalCanvas.style.opacity = '0';
+        }
+
+        setTimeout(() => {
+            document.getElementById('orbital-canvas').style.opacity = '1';
+        }, 50);
+
+        setTimeout(() => {
+            this.canvas.style.opacity = '0';
+            this.canvas.style.transition = 'opacity 1.5s ease-in-out';
+        }, 100);
+
+        setTimeout(() => {
+            this.orbitalView = true;
+            this.isTransitioning = false;
+            this.canvas.style.display = 'none';
+            document.getElementById('bottom-panel').style.display = 'none';
+            document.getElementById('view-toggle-container').style.display = 'none';
+            document.getElementById('top-bar').style.opacity = '0.3';
+        }, 1500);
+    }
+
+    exitOrbitalView() {
+        if (this.isTransitioning) return;
+
+        this.isTransitioning = true;
+        this.transitionStartTime = Date.now();
+        this.transitionProgress = 0;
+
+        this.log('Returning to surface...');
+
+        if (this.orbitalRenderer) {
+            this.orbitalRenderer.targetZoom = 7;
+        }
+
+        setTimeout(() => {
+            const orbitalCanvas = document.getElementById('orbital-canvas');
+            if (orbitalCanvas) {
+                orbitalCanvas.style.opacity = '0';
+                orbitalCanvas.style.transition = 'opacity 1.5s ease-in-out';
+            }
+
+            this.canvas.style.display = 'block';
+            this.canvas.style.opacity = '0';
+
+            setTimeout(() => {
+                this.canvas.style.opacity = '1';
+                this.canvas.style.transition = 'opacity 1.5s ease-in-out';
+            }, 100);
+        }, 500);
+
+        setTimeout(() => {
+            this.orbitalView = false;
+            this.isTransitioning = false;
+            const orbitalCanvas = document.getElementById('orbital-canvas');
+            if (orbitalCanvas) {
+                orbitalCanvas.style.display = 'none';
+            }
+            if (this.orbitalRenderer) {
+                this.orbitalRenderer.currentZoom = 5;
+                this.orbitalRenderer.targetZoom = 3.5;
+            }
+            document.getElementById('bottom-panel').style.display = 'flex';
+            document.getElementById('view-toggle-container').style.display = 'block';
+            document.getElementById('top-bar').style.opacity = '1';
+        }, 2000);
+    }
 
     handleResize() {
         this.width = this.canvas.width = window.innerWidth;
         this.height = this.canvas.height = window.innerHeight;
+
+        if (this.orbitalRenderer) {
+            const orbitalCanvas = document.getElementById('orbital-canvas');
+            if (orbitalCanvas) {
+                orbitalCanvas.width = window.innerWidth;
+                orbitalCanvas.height = window.innerHeight;
+                this.orbitalRenderer.resize(window.innerWidth, window.innerHeight);
+            }
+        }
     }
 
     update(deltaTime) {
@@ -2671,6 +2859,14 @@ class Game {
     }
 
     render() {
+        if (this.orbitalView) {
+            if (this.orbitalRenderer) {
+                this.orbitalRenderer.updateOrbitalBuildings(this.player);
+                this.orbitalRenderer.animate();
+            }
+            return;
+        }
+
         this.renderer.backgroundRenderer.draw(this.cameraX, this.cameraY, this.renderer.zoom);
 
         this.ctx.save();
