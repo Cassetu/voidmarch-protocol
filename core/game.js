@@ -674,8 +674,8 @@ class Game {
 
     endTurn() {
         this.player.nextTurn();
-        this.player.updateExpertCount();
         this.player.processTurnForSettlements(this.currentPlanet);
+        this.player.updateExpertCount();
         this.updateBuilders();
 
         this.player.processShipyardConstruction();
@@ -3077,6 +3077,12 @@ class Game {
         document.getElementById('food-count').textContent = Math.floor(totalFood);
         const totalPop = this.player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
         document.getElementById('population-count').textContent = totalPop;
+
+        const totalExperts = this.player.settlements.reduce((sum, s) => {
+            const eduStats = s.getEducationStats();
+            return sum + (eduStats.expert || 0);
+        }, 0);
+        document.getElementById('experts-count').textContent = totalExperts;
 
         const ageNames = {
             stone: 'Stone Age',
