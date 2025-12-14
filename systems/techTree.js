@@ -30,11 +30,18 @@ class TechTree {
         const tech = this.techs[techId];
         if (!tech || tech.researched) return;
 
+        if (tech.type === 'age') {
+            return;
+        }
+
         this.lockedPaths.add(techId);
 
         if (tech.unlocks) {
             tech.unlocks.forEach(childId => {
-                this.lockPathRecursive(childId);
+                const childTech = this.techs[childId];
+                if (childTech && childTech.type !== 'age') {
+                    this.lockPathRecursive(childId);
+                }
             });
         }
     }
