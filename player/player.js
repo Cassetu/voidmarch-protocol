@@ -44,6 +44,9 @@ class Player {
         this.lastResourceGains = {};
         this.techTree = null;
         this.productionBonus = 0;
+        this.totalExperts = 0;
+        this.researchSlots = 1;
+        this.activeResearch = [];
         this.foodBonus = 0;
         this.scienceBonus = 0;
         this.populationCap = 100;
@@ -72,6 +75,23 @@ class Player {
             { id: 4, assignedYard: null, segment: 0, progress: 0, complete: false }
         ];
         this.shipConstructionActive = false;
+    }
+
+    updateExpertCount() {
+        this.totalExperts = 0;
+        this.settlements.forEach(settlement => {
+            this.totalExperts += settlement.getExpertCount();
+        });
+
+        this.researchSlots = 1 + Math.floor(this.totalExperts / 5);
+    }
+
+    getEducatedCitizenScienceBonus() {
+        let bonus = 0;
+        this.settlements.forEach(settlement => {
+            bonus += settlement.getEducatedCitizenBonus();
+        });
+        return bonus;
     }
 
     processShipyardConstruction() {

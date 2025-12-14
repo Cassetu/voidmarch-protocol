@@ -674,6 +674,7 @@ class Game {
 
     endTurn() {
         this.player.nextTurn();
+        this.player.updateExpertCount();
         this.player.processTurnForSettlements(this.currentPlanet);
         this.updateBuilders();
 
@@ -3287,7 +3288,8 @@ class Game {
             researchBtn.onclick = null;
 
             if (researchInfo) {
-                researchBtn.textContent = `${researchInfo.name} (${Math.floor(researchInfo.progress)}/${researchInfo.totalTurns}, ~${researchInfo.turnsRemaining} turns)`;
+                const efficiency = researchInfo.sciencePerTurn >= researchInfo.optimalScience ? '⚡' : '🐌';
+                researchBtn.textContent = `${researchInfo.name} (${Math.floor(researchInfo.progress)}%, ~${researchInfo.turnsRemaining}t ${efficiency})`;
                 researchBtn.disabled = true;
             } else if (availableTechs.length > 0) {
                 researchBtn.textContent = 'Choose Research';
@@ -3367,6 +3369,11 @@ class Game {
         modal.innerHTML = `
             <div class="tech-modal-content">
                 <h2>Research Technology</h2>
+                <div style="background: rgba(90, 122, 138, 0.2); padding: 8px; border-radius: 4px; margin-bottom: 15px; font-size: 11px;">
+                    <strong>Science/Turn:</strong> ${Math.floor(this.player.sciencePerTurn + this.player.getEducatedCitizenScienceBonus())}
+                    (${Math.floor(this.player.sciencePerTurn)} base + ${Math.floor(this.player.getEducatedCitizenScienceBonus())} from educated citizens)<br>
+                    <strong>Experts:</strong> ${this.player.totalExperts} (Productivity: +${this.player.totalExperts * 3}x)
+                </div>
                 <div id="tech-list"></div>
                 <button id="close-tech-modal">Close</button>
             </div>
@@ -3387,7 +3394,30 @@ class Game {
             currentDetailTech = techId;
             const tech = this.player.techTree.techs[techId];
 
+            const optimalScience = tech.cost / 10;
+            const currentScience = this.player.sciencePerTurn + this.player.getEducatedCitizenScienceBonus();
+
+            let timeEstimate;
+            if (currentScience >= optimalScience) {
+                timeEstimate = '~50 turns (optimal speed)';
+            } else if (currentScience > 0) {
+                const efficiency = currentScience / optimalScience;
+                const adjustedTurns = Math.ceil(50 / Math.pow(efficiency, 0.7));
+                timeEstimate = `~${adjustedTurns} turns (${Math.floor(efficiency * 100)}% efficiency)`;
+            } else {
+                timeEstimate = '~250 turns (minimal progress - need more science!)';
+            }
+
             let bonusHTML = '<div class="tech-detail-stats">';
+            bonusHTML += `
+                <div class="tech-detail-stat" style="grid-column: 1/-1;">
+                    <div class="tech-detail-stat-label">Research Time</div>
+                    <div class="tech-detail-stat-value" style="color: ${currentScience >= optimalScience ? '#88ff88' : '#ffaa44'};">
+                        ${timeEstimate}
+                    </div>
+                </div>
+            `;
+
             if (tech.bonus.production) {
                 bonusHTML += `
                     <div class="tech-detail-stat">
@@ -3405,42 +3435,6 @@ class Game {
                         <div class="tech-detail-stat-value ${tech.bonus.science < 0 ? 'negative' : ''}">
                             ${tech.bonus.science > 0 ? '+' : ''}${tech.bonus.science}
                         </div>
-                    </div>
-                `;
-            }
-            if (tech.bonus.buildingHP) {
-                bonusHTML += `
-                    <div class="tech-detail-stat">
-                        <div class="tech-detail-stat-label">Building HP</div>
-                        <div class="tech-detail-stat-value ${tech.bonus.buildingHP < 0 ? 'negative' : ''}">
-                            ${tech.bonus.buildingHP > 0 ? '+' : ''}${tech.bonus.buildingHP}
-                        </div>
-                    </div>
-                `;
-            }
-            if (tech.bonus.population) {
-                bonusHTML += `
-                    <div class="tech-detail-stat">
-                        <div class="tech-detail-stat-label">Population</div>
-                        <div class="tech-detail-stat-value ${tech.bonus.population < 0 ? 'negative' : ''}">
-                            ${tech.bonus.population > 0 ? '+' : ''}${tech.bonus.population}
-                        </div>
-                    </div>
-                `;
-            }
-            if (tech.bonus.food) {
-                bonusHTML += `
-                    <div class="tech-detail-stat">
-                        <div class="tech-detail-stat-label">Food</div>
-                        <div class="tech-detail-stat-value">+${tech.bonus.food}</div>
-                    </div>
-                `;
-            }
-            if (tech.bonus.energy) {
-                bonusHTML += `
-                    <div class="tech-detail-stat">
-                        <div class="tech-detail-stat-label">Energy</div>
-                        <div class="tech-detail-stat-value">+${tech.bonus.energy}</div>
                     </div>
                 `;
             }
@@ -3497,11 +3491,10 @@ class Game {
 
         availableTechs.forEach(techId => {
             const tech = this.player.techTree.techs[techId];
-            const canAfford = this.player.sciencePerTurn >= tech.cost;
             const isLocked = this.player.techTree.lockedPaths.has(techId);
 
             const techDiv = document.createElement('div');
-            techDiv.className = 'tech-item tech-item-enhanced' + (canAfford && !isLocked ? '' : ' tech-disabled');
+            techDiv.className = 'tech-item tech-item-enhanced';
 
             if (isLocked) {
                 techDiv.style.borderColor = '#aa3333';
@@ -3518,9 +3511,14 @@ class Game {
                 techDiv.style.boxShadow = '0 0 10px rgba(136, 136, 255, 0.3)';
             }
 
+            const optimalScience = tech.cost / 10;
+            const currentScience = this.player.sciencePerTurn + this.player.getEducatedCitizenScienceBonus();
+            const efficiencyPercent = Math.min(100, Math.floor((currentScience / optimalScience) * 100));
+
             techDiv.innerHTML = `
                 <div class="tech-name">${tech.name}${tech.type === 'divergent' ? ' ⚡' : ''}${tech.type === 'age' ? ' 👑' : ''}</div>
-                <div class="tech-cost">Cost: ${tech.cost} Science</div>
+                <div class="tech-cost">Optimal: ${Math.floor(optimalScience)} Science/turn</div>
+                <div class="tech-cost" style="color: ${efficiencyPercent >= 100 ? '#88ff88' : '#ffaa44'};">Your Rate: ${Math.floor(currentScience)} (${efficiencyPercent}%)</div>
                 <div class="tech-desc">${tech.description}</div>
                 <div class="tech-type">${tech.type.toUpperCase()}</div>
                 ${isLocked ? '<div style="color: #ff5555; font-size: 9px; margin-top: 4px;">LOCKED BY CHOICE</div>' : ''}
@@ -3534,7 +3532,7 @@ class Game {
                 }
             };
 
-            if (canAfford && !isLocked) {
+            if (!isLocked) {
                 techDiv.onclick = (e) => {
                     e.stopPropagation();
 

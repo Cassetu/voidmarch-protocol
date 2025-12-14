@@ -56,12 +56,14 @@ class Settlement {
         const educationCapacity = {
             basic: schoolCount * 10 + academyCount * 5,
             advanced: universityCount * 8 + academyCount * 4,
-            expert: universityCount * 3
+            expert: universityCount * 3 + academyCount * 5
         };
 
         let basicSlots = educationCapacity.basic;
         let advancedSlots = educationCapacity.advanced;
         let expertSlots = educationCapacity.expert;
+
+        this.expertSlots = expertSlots;
 
         this.children.forEach(child => {
             if (child.age >= 6) {
@@ -84,10 +86,10 @@ class Settlement {
         this.citizens.forEach(citizen => {
             if (citizen.education === 'uneducated') {
                 if (basicSlots > 0) {
-                    citizen.educationProgress += 8;
+                    citizen.educationProgress = (citizen.educationProgress || 0) + 8;
                     basicSlots--;
                 } else {
-                    citizen.educationProgress += 1;
+                    citizen.educationProgress = (citizen.educationProgress || 0) + 1;
                 }
 
                 if (citizen.educationProgress >= 100) {
@@ -96,7 +98,7 @@ class Settlement {
                 }
             } else if (citizen.education === 'basic') {
                 if (advancedSlots > 0) {
-                    citizen.educationProgress += 6;
+                    citizen.educationProgress = (citizen.educationProgress || 0) + 6;
                     advancedSlots--;
 
                     if (citizen.educationProgress >= 150) {
@@ -106,12 +108,16 @@ class Settlement {
                 }
             } else if (citizen.education === 'advanced') {
                 if (expertSlots > 0) {
-                    citizen.educationProgress += 4;
+                    citizen.educationProgress = (citizen.educationProgress || 0) + 4;
                     expertSlots--;
 
                     if (citizen.educationProgress >= 200) {
                         citizen.education = 'expert';
                         citizen.educationProgress = 0;
+
+                        if (window.game) {
+                            window.game.log(`🎓 ${this.name}: ${citizen.name} became an Expert!`);
+                        }
                     }
                 }
             }
@@ -554,18 +560,58 @@ class Settlement {
         this.citizens.forEach(citizen => {
             citizenCount++;
 
+            let baseModifier = 1.0;
+
             if (citizen.age < 25) {
-                totalModifier += 1.05;
+                baseModifier = 1.05;
             } else if (citizen.age >= 25 && citizen.age < 40) {
-                totalModifier += 1.10;
+                baseModifier = 1.10;
             } else if (citizen.age >= 40 && citizen.age < 65) {
-                totalModifier += 1.20;
+                baseModifier = 1.20;
             } else {
-                totalModifier += 0.90;
+                baseModifier = 0.90;
             }
+
+            switch(citizen.education) {
+                case 'basic':
+                    baseModifier *= 1.5;
+                    break;
+                case 'advanced':
+                    baseModifier *= 2.0;
+                    break;
+                case 'expert':
+                    baseModifier *= 3.0;
+                    break;
+                default:
+                    baseModifier *= 1.0;
+            }
+
+            totalModifier += baseModifier;
         });
 
         return citizenCount > 0 ? totalModifier / citizenCount : 1.0;
+    }
+
+    getExpertCount() {
+        return this.citizens.filter(c => c.education === 'expert').length;
+    }
+
+    getEducatedCitizenBonus() {
+        let bonus = 0;
+        this.citizens.forEach(citizen => {
+            switch(citizen.education) {
+                case 'basic':
+                    bonus += 0.5;
+                    break;
+                case 'advanced':
+                    bonus += 1;
+                    break;
+                case 'expert':
+                    bonus += 3;
+                    break;
+            }
+        });
+        return bonus;
     }
 
     processTurn(planet) {

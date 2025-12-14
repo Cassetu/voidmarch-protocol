@@ -1150,11 +1150,7 @@ class TechTree {
             }
         }
 
-        if (this.player.game && this.player.game.instantResearchMode) {
-            return true;
-        }
-
-        return this.player.sciencePerTurn >= tech.cost;
+        return true;
     }
 
     startResearch(techId) {
@@ -1164,10 +1160,6 @@ class TechTree {
 
         if (this.player.game && this.player.game.instantResearchMode) {
             return this.completeTech(techId);
-        }
-
-        if (this.player.sciencePerTurn < tech.cost) {
-            return false;
         }
 
         if (this.currentResearch) {
@@ -1203,25 +1195,37 @@ class TechTree {
     progressResearch() {
         if (!this.currentResearch) {
             if (this.researchQueue.length > 0) {
-                const nextTech = this.researchQueue[0];
-                if (this.player.sciencePerTurn >= this.techs[nextTech].cost) {
-                    this.currentResearch = this.researchQueue.shift();
-                    this.researchProgress = 0;
-                } else {
-                    return null;
-                }
+                const nextTech = this.researchQueue.shift();
+                this.currentResearch = nextTech;
+                this.researchProgress = 0;
             } else {
                 return null;
             }
         }
 
         const tech = this.techs[this.currentResearch];
-        const baseTurns = Math.ceil(tech.cost / 5);
-        const scienceMultiplier = Math.max(0.5, this.player.sciencePerTurn / 15);
+        const sciencePerTurn = this.player.sciencePerTurn;
 
-        this.researchProgress += scienceMultiplier;
+        const educatedBonus = this.player.getEducatedCitizenScienceBonus();
+        const effectiveScience = sciencePerTurn + educatedBonus;
 
-        if (this.researchProgress >= baseTurns) {
+        const baseTurnsNeeded = 50;
+        const optimalScience = tech.cost / 10;
+
+        let progressThisTurn;
+        if (effectiveScience >= optimalScience) {
+            progressThisTurn = 100 / baseTurnsNeeded;
+        } else if (effectiveScience > 0) {
+            const efficiency = effectiveScience / optimalScience;
+            const adjustedTurns = baseTurnsNeeded / Math.pow(efficiency, 0.7);
+            progressThisTurn = 100 / adjustedTurns;
+        } else {
+            progressThisTurn = 100 / (baseTurnsNeeded * 5);
+        }
+
+        this.researchProgress += progressThisTurn;
+
+        if (this.researchProgress >= 100) {
             return this.completeTech(this.currentResearch);
         }
 
@@ -1364,15 +1368,30 @@ class TechTree {
         if (!this.currentResearch) return null;
 
         const tech = this.techs[this.currentResearch];
-        const baseTurns = Math.ceil(tech.cost / 2);
-        const scienceMultiplier = Math.max(1, this.player.sciencePerTurn / 10);
-        const turnsRemaining = Math.ceil((baseTurns - this.researchProgress) / scienceMultiplier);
+        const sciencePerTurn = this.player.sciencePerTurn;
+        const educatedBonus = this.player.getEducatedCitizenScienceBonus();
+        const effectiveScience = sciencePerTurn + educatedBonus;
+
+        const baseTurnsNeeded = 50;
+        const optimalScience = tech.cost / 10;
+
+        let turnsRemaining;
+        if (effectiveScience >= optimalScience) {
+            turnsRemaining = Math.ceil((100 - this.researchProgress) / (100 / baseTurnsNeeded));
+        } else if (effectiveScience > 0) {
+            const efficiency = effectiveScience / optimalScience;
+            const adjustedTurns = baseTurnsNeeded / Math.pow(efficiency, 0.7);
+            turnsRemaining = Math.ceil((100 - this.researchProgress) / (100 / adjustedTurns));
+        } else {
+            turnsRemaining = Math.ceil((100 - this.researchProgress) / (100 / (baseTurnsNeeded * 5)));
+        }
 
         return {
             name: tech.name,
             progress: Math.floor(this.researchProgress),
             turnsRemaining: turnsRemaining,
-            totalTurns: baseTurns
+            sciencePerTurn: Math.floor(effectiveScience),
+            optimalScience: Math.floor(optimalScience)
         };
     }
 }
