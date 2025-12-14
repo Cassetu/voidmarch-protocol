@@ -8,7 +8,7 @@ class Settlement {
         this.name = this.generateSettlementName();
         this.citizens = [];
         this.children = [];
-        this.food = 20;
+        this.food = 50;
         this.foodPerTurn = 0;
         this.foodConsumption = 0;
         this.growthProgress = 0;
@@ -544,8 +544,8 @@ class Settlement {
         const farmCount = this.buildings.get('farm') || 0;
         const aqueductCount = this.buildings.get('aqueduct') || 0;
 
-        production += farmCount * 3;
-        production += aqueductCount * 2;
+        production += farmCount * 5;
+        production += aqueductCount * 20;
 
         const productionModifier = this.getProductionModifier();
         production = Math.floor(production * productionModifier);
@@ -621,8 +621,8 @@ class Settlement {
         this.foodPerTurn = this.calculateFoodProduction(planet);
 
         const currentPop = this.getPopulation();
-        const adultConsumption = this.citizens.length * 2;
-        const childConsumption = this.children.length * 1;
+        const adultConsumption = this.citizens.length * 1;
+        const childConsumption = this.children.length * 0.5;
         this.foodConsumption = adultConsumption + childConsumption;
 
         const netFood = this.foodPerTurn - this.foodConsumption;
