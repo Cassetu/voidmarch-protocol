@@ -680,7 +680,7 @@ class Game {
 
         this.player.processShipyardConstruction();
 
-        player.settlements.forEach(settlement => {
+        this.player.settlements.forEach(settlement => {
             settlement.recalculateBuildingCounts(this.currentPlanet);
         });
 
