@@ -35,6 +35,7 @@ class Game {
         this.transitionStartTime = 0;
         this.pendingTransition = null;
         this.lastZoomDirection = 0;
+        this.floatingNumbers = [];
 
         this.renderer = new Renderer(this.ctx, this.width, this.height);
         this.input = new Input();
@@ -713,25 +714,53 @@ class Game {
         this.currentPlanet.structures.forEach(building => {
             if (building.isFrame || building.type === 'ruins' || building.type === 'defense_node') return;
 
-            const tile = this.currentPlanet.tiles[building.y][building.x];
-            totalFood += tile.yields.food;
-            totalProduction += tile.yields.production;
-            totalScience += tile.yields.science;
+            if (building.type === 'mineshaft') {
+                const tile = this.currentPlanet.tiles[building.y][building.x];
+                const mineshaftYields = this.currentPlanet.getMineshaftYields(tile.type);
 
-            if (building.type === 'greenhouse') {
-                totalFood += 5;
+                for (const resource in mineshaftYields) {
+                    if (mineshaftYields[resource] > 0) {
+                        resourceYields[resource] = (resourceYields[resource] || 0) + mineshaftYields[resource];
+                    }
+                }
+
+                let totalYield = 0;
+                for (const resource in mineshaftYields) {
+                    totalYield += mineshaftYields[resource] || 0;
+                }
+                if (totalYield > 0) {
+                    this.createFloatingNumber(building.x, building.y, `+${totalYield}`, '#ffaa00');
+                }
             }
-            if (building.type === 'hydroponicfarm') {
-                totalFood += 8;
+
+            if (building.type === 'quarry') {
+                resourceYields.iron = (resourceYields.iron || 0) + 2;
+                resourceYields.gold = (resourceYields.gold || 0) + 1;
+                let quarryYield = 3;
+                if (Math.random() < 0.3) {
+                    resourceYields.rareMinerals = (resourceYields.rareMinerals || 0) + 1;
+                    quarryYield = 4;
+                }
+                this.createFloatingNumber(building.x, building.y, `+${quarryYield}`, '#ffaa00');
             }
-            if (building.type === 'verticalfarm') {
-                totalFood += 15;
-            }
-            if (building.type === 'bioreactor') {
-                totalFood += 25;
-            }
-            if (building.type === 'synthesizer') {
-                totalFood += 50;
+
+            const foodBuildings = ['farm', 'aqueduct', 'greenhouse', 'hydroponicfarm', 'verticalfarm', 'bioreactor', 'synthesizer'];
+            if (foodBuildings.includes(building.type)) {
+                const tile = this.currentPlanet.tiles[building.y][building.x];
+                const foodYield = tile.yields.food || 0;
+
+                let bonusFood = 0;
+                if (building.type === 'greenhouse') bonusFood = 5;
+                if (building.type === 'hydroponicfarm') bonusFood = 8;
+                if (building.type === 'verticalfarm') bonusFood = 15;
+                if (building.type === 'bioreactor') bonusFood = 25;
+                if (building.type === 'synthesizer') bonusFood = 50;
+                if (building.type === 'aqueduct') bonusFood = 2;
+
+                const totalFood = foodYield + bonusFood;
+                if (totalFood > 0) {
+                    this.createFloatingNumber(building.x, building.y, `+${totalFood}`, '#88ff88');
+                }
             }
 
             if (building.type === 'campfire') {
@@ -759,7 +788,7 @@ class Game {
                 totalScience += 25;
             }
 
-            if (tile.hasGeothermal && building.type === 'forge') {
+            if (building.type === 'forge') {
                 totalProduction += 5;
             }
         });
@@ -794,6 +823,14 @@ class Game {
                     if (mineshaftYields[resource] > 0) {
                         resourceYields[resource] = (resourceYields[resource] || 0) + mineshaftYields[resource];
                     }
+                }
+            }
+
+            if (building.type === 'quarry') {
+                resourceYields.iron = (resourceYields.iron || 0) + 2;
+                resourceYields.gold = (resourceYields.gold || 0) + 1;
+                if (Math.random() < 0.3) {
+                    resourceYields.rareMinerals = (resourceYields.rareMinerals || 0) + 1;
                 }
             }
         });
@@ -1598,6 +1635,7 @@ class Game {
         this.handleInput();
         this.input.update();
         this.updateCamera();
+        this.updateFloatingNumbers();
 
         if (this.eventSystem.activeEruption) {
             this.eventSystem.updateEruption();
@@ -1941,6 +1979,31 @@ class Game {
         }
     }
 
+    createFloatingNumber(x, y, text, color) {
+        this.floatingNumbers.push({
+            worldX: x,
+            worldY: y,
+            text: text,
+            color: color,
+            opacity: 1,
+            offsetY: 0,
+            duration: 60
+        });
+    }
+
+    updateFloatingNumbers() {
+        for (let i = this.floatingNumbers.length - 1; i >= 0; i--) {
+            const float = this.floatingNumbers[i];
+            float.offsetY -= 1;
+            float.opacity -= 0.016;
+            float.duration--;
+
+            if (float.duration <= 0) {
+                this.floatingNumbers.splice(i, 1);
+            }
+        }
+    }
+
     showEnvironmentalObjectInfo(obj) {
         const infoPanel = document.getElementById('building-info');
         if (!infoPanel) return;
@@ -2131,7 +2194,7 @@ class Game {
                 if (healthPercent < 30) healthColor = '#ff5555';
                 else if (healthPercent < 60) healthColor = '#ffaa55';
 
-                html += `<p style="font-size: 11px; color: #88ff88; margin-bottom: 6px;"><strong>🎖️ ${playerUnit.type.toUpperCase()}</strong></p>`;
+                html += `<p style="font-size: 11px; color: #88ff88; margin-bottom: 6px;"><strong> ${playerUnit.type.toUpperCase()}</strong></p>`;
                 html += `<p style="font-size: 9px; color: ${healthColor};">HP: ${Math.floor(playerUnit.health)}/${playerUnit.maxHealth} (${healthPercent}%)</p>`;
                 html += `<p style="font-size: 9px; color: #8fa3c8;">Damage: ${playerUnit.damage}</p>`;
                 html += `<p style="font-size: 9px; color: #8fa3c8;">Range: ${playerUnit.range}</p>`;
@@ -2144,10 +2207,10 @@ class Game {
                     html += `<p style="font-size: 9px; color: #999;">✓ Attacked</p>`;
                 }
                 if (playerUnit.overwatchActive) {
-                    html += `<p style="font-size: 9px; color: #ffaa00;">⚠️ Overwatch Active</p>`;
+                    html += `<p style="font-size: 9px; color: #ffaa00;">Overwatch Active</p>`;
                 }
                 if (playerUnit.tauntTurns) {
-                    html += `<p style="font-size: 9px; color: #ffaa00;">🛡️ Taunt (${playerUnit.tauntTurns} turns)</p>`;
+                    html += `<p style="font-size: 9px; color: #ffaa00;">Taunt (${playerUnit.tauntTurns} turns)</p>`;
                 }
 
                 html += `<hr style="border: 0; border-top: 1px solid #3a4a5a; margin: 6px 0;">`;
@@ -2159,7 +2222,7 @@ class Game {
                 if (healthPercent < 30) healthColor = '#ff3333';
                 else if (healthPercent < 60) healthColor = '#ff6666';
 
-                html += `<p style="font-size: 11px; color: #ff8888; margin-bottom: 6px;"><strong>⚠️ SENTINEL ${sentinel.type.toUpperCase()}</strong></p>`;
+                html += `<p style="font-size: 11px; color: #ff8888; margin-bottom: 6px;"><strong>SENTINEL ${sentinel.type.toUpperCase()}</strong></p>`;
                 html += `<p style="font-size: 9px; color: ${healthColor};">HP: ${Math.floor(sentinel.health)}/${sentinel.maxHealth} (${healthPercent}%)</p>`;
                 html += `<p style="font-size: 9px; color: #ff9999;">Damage: ${sentinel.damage}</p>`;
                 html += `<p style="font-size: 9px; color: #ff9999;">Range: ${sentinel.range}</p>`;
@@ -2171,7 +2234,7 @@ class Game {
                 if (sentinel.aggroTarget !== undefined) {
                     const targetUnit = this.conquestSystem.armies.find(a => a.id === sentinel.aggroTarget);
                     if (targetUnit) {
-                        html += `<p style="font-size: 9px; color: #ffaa00;">🎯 Chasing ${targetUnit.type}</p>`;
+                        html += `<p style="font-size: 9px; color: #ffaa00;">Chasing ${targetUnit.type}</p>`;
                     }
                 }
 
@@ -2188,15 +2251,15 @@ class Game {
         `;
 
         if (tile.hasGeothermal) {
-            html += `<p style="font-size: 9px; color: #ff8800;">🔥 Geothermal Vent</p>`;
+            html += `<p style="font-size: 9px; color: #ff8800;">Geothermal Vent</p>`;
         }
 
         if (tile.isFloating) {
-            html += `<p style="font-size: 9px; color: #88ccff;">☁️ Floating Terrain</p>`;
+            html += `<p style="font-size: 9px; color: #88ccff;">Floating Terrain</p>`;
         }
 
         if (tile.type === 'lava') {
-            html += `<p style="font-size: 9px; color: #ff4400;">⚠️ Impassable</p>`;
+            html += `<p style="font-size: 9px; color: #ff4400;">Impassable</p>`;
         }
 
         if (tile.building) {
@@ -2366,7 +2429,7 @@ class Game {
         const panel = document.getElementById('settlement-panel');
         panel.style.display = 'block';
 
-        const controlIcon = settlement.priority === Math.max(...this.player.settlements.map(s => s.priority)) ? ' 👑' : '';
+        const controlIcon = settlement.priority === Math.max(...this.player.settlements.map(s => s.priority)) ? '[|' : '';
         document.getElementById('settlement-title').textContent = settlement.name + controlIcon;
         document.getElementById('settlement-population').textContent = settlement.getPopulation();
         document.getElementById('settlement-food').textContent = Math.floor(settlement.food);
@@ -3058,6 +3121,19 @@ class Game {
             );
         }
 
+        this.floatingNumbers.forEach(float => {
+            const screenX = (float.worldX - float.worldY) * (this.renderer.tileWidth / 2);
+            const screenY = (float.worldX + float.worldY) * (this.renderer.tileHeight / 2) + float.offsetY;
+
+            this.ctx.save();
+            this.ctx.globalAlpha = float.opacity;
+            this.ctx.fillStyle = float.color;
+            this.ctx.font = 'bold 12px monospace';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(float.text, screenX, screenY);
+            this.ctx.restore();
+        });
+
         this.ctx.restore();
 
         if (this.player.selectedBuilding && this.gameMode === 'building') {
@@ -3294,7 +3370,7 @@ class Game {
             researchBtn.onclick = null;
 
             if (researchInfo) {
-                const efficiency = researchInfo.sciencePerTurn >= researchInfo.optimalScience ? '⚡' : '🐌';
+                const efficiency = researchInfo.sciencePerTurn >= researchInfo.optimalScience ? '[|' : '[|';
                 researchBtn.textContent = `${researchInfo.name} (${Math.floor(researchInfo.progress)}%, ~${researchInfo.turnsRemaining}t ${efficiency})`;
                 researchBtn.disabled = true;
             } else if (availableTechs.length > 0) {

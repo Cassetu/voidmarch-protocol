@@ -1214,7 +1214,9 @@ class TechTree {
 
         let progressThisTurn;
         if (effectiveScience >= optimalScience) {
-            progressThisTurn = 100 / baseTurnsNeeded;
+            const overage = effectiveScience / optimalScience;
+            const speedBonus = 2 * overage;
+            progressThisTurn = (100 / baseTurnsNeeded) * speedBonus;
         } else if (effectiveScience > 0) {
             const efficiency = effectiveScience / optimalScience;
             const adjustedTurns = baseTurnsNeeded / Math.pow(efficiency, 0.7);
@@ -1377,7 +1379,10 @@ class TechTree {
 
         let turnsRemaining;
         if (effectiveScience >= optimalScience) {
-            turnsRemaining = Math.ceil((100 - this.researchProgress) / (100 / baseTurnsNeeded));
+            const overage = effectiveScience / optimalScience;
+            const speedBonus = 2 * overage;
+            const progressPerTurn = (100 / baseTurnsNeeded) * speedBonus;
+            turnsRemaining = Math.ceil((100 - this.researchProgress) / progressPerTurn);
         } else if (effectiveScience > 0) {
             const efficiency = effectiveScience / optimalScience;
             const adjustedTurns = baseTurnsNeeded / Math.pow(efficiency, 0.7);

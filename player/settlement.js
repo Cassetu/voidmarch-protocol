@@ -116,7 +116,7 @@ class Settlement {
                         citizen.educationProgress = 0;
 
                         if (window.game) {
-                            window.game.log(`🎓 ${this.name}: ${citizen.name} became an Expert!`);
+                            window.game.log(`${this.name}: ${citizen.name} became an Expert!`);
                         }
                     }
                 }
