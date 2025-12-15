@@ -65,300 +65,138 @@ class Game {
 
         document.getElementById('game-container').style.display = 'none';
 
-        const terminalInput = document.getElementById('terminal-input');
-        const terminalSend = document.getElementById('terminal-send');
-        const terminalOutput = document.getElementById('terminal-output');
-        const terminalScreen = document.getElementById('terminal-screen');
-        const startMenu = document.getElementById('start-menu');
+        const blackScreen = document.createElement('div');
+        blackScreen.id = 'black-screen-intro';
+        blackScreen.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000000;
+            z-index: 30000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        `;
 
-        const addTerminalLine = (text, className = '') => {
-            const line = document.createElement('p');
-            line.className = `terminal-line ${className}`;
-            line.textContent = text;
-            terminalOutput.appendChild(line);
-            terminalOutput.scrollTop = terminalOutput.scrollHeight;
-        };
+        const clickText = document.createElement('div');
+        clickText.textContent = 'click to begin...';
+        clickText.style.cssText = `
+            color: rgba(200, 200, 220, 0.6);
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            animation: pulse 2s ease-in-out infinite;
+        `;
 
-        const processCommand = () => {
-            const command = terminalInput.value.trim().toLowerCase();
+        blackScreen.appendChild(clickText);
+        document.body.appendChild(blackScreen);
 
-            if (command === '') return;
+        blackScreen.addEventListener('click', () => {
+            blackScreen.style.display = 'none';
 
-            addTerminalLine(`> ${terminalInput.value}`);
+            const seismicScreen = document.createElement('div');
+            seismicScreen.id = 'seismic-intro';
+            seismicScreen.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #0a0a0a;
+                z-index: 30000;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            `;
 
-            if (command === 'initiate') {
-                addTerminalLine('> Command recognized...', 'terminal-success');
-                addTerminalLine('> Accessing deep archive...', 'terminal-success');
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 300;
+            canvas.style.cssText = 'border: 2px solid #00ff00; background: #000000;';
+            seismicScreen.appendChild(canvas);
 
-                terminalInput.disabled = true;
-                terminalSend.disabled = true;
+            const ctx = canvas.getContext('2d');
+            let time = 0;
+            let intensity = 0.5;
+            const maxIntensity = 8;
 
-                setTimeout(() => {
-                    terminalScreen.style.transition = 'opacity 2s ease';
-                    terminalScreen.style.opacity = '0';
-                }, 1000);
+            const drawSeismograph = () => {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                setTimeout(() => {
-                    terminalScreen.style.display = 'none';
+                ctx.strokeStyle = '#00ff00';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
 
-                    const cinematicContainer = document.createElement('div');
-                    cinematicContainer.id = 'cinematic-container';
-                    cinematicContainer.style.cssText = `
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        z-index: 20005;
-                        background: #000000;
-                        overflow: hidden;
-                    `;
-                    document.body.appendChild(cinematicContainer);
+                const centerY = canvas.height / 2;
+                const amplitude = 20 * intensity;
 
-                    const canvas = document.createElement('canvas');
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                    canvas.style.cssText = 'position: absolute; top: 0; left: 0;';
-                    cinematicContainer.appendChild(canvas);
+                for (let x = 0; x < canvas.width; x++) {
+                    const y = centerY + Math.sin((x + time) * 0.05) * amplitude * Math.random();
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
 
-                    const ctx = canvas.getContext('2d');
+                ctx.stroke();
+                time += 5;
+                intensity = Math.min(maxIntensity, intensity + 0.08);
 
-                    const ruins = [];
-                    for (let i = 0; i < 20; i++) {
-                        ruins.push({
-                            x: Math.random() * canvas.width,
-                            y: Math.random() * canvas.height,
-                            size: 20 + Math.random() * 60,
-                            speed: 0.2 + Math.random() * 0.5,
-                            opacity: 0.3 + Math.random() * 0.4,
-                            rotation: Math.random() * Math.PI * 2,
-                            rotSpeed: (Math.random() - 0.5) * 0.01
-                        });
-                    }
-
-                    const planet = {
-                        x: canvas.width / 2,
-                        y: canvas.height / 2,
-                        radius: 80,
-                        opacity: 0
-                    };
-
-                    let frame = 0;
-                    const animate = () => {
-                        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                        ruins.forEach(ruin => {
-                            ruin.x -= ruin.speed;
-                            ruin.rotation += ruin.rotSpeed;
-                            if (ruin.x < -100) ruin.x = canvas.width + 100;
-
-                            ctx.save();
-                            ctx.translate(ruin.x, ruin.y);
-                            ctx.rotate(ruin.rotation);
-                            ctx.strokeStyle = `rgba(100, 100, 120, ${ruin.opacity})`;
-                            ctx.lineWidth = 2;
-                            ctx.strokeRect(-ruin.size / 2, -ruin.size / 2, ruin.size, ruin.size);
-                            ctx.strokeRect(-ruin.size / 3, -ruin.size / 3, ruin.size / 1.5, ruin.size / 1.5);
-                            ctx.restore();
-                        });
-
-                        if (frame > 60) {
-                            planet.opacity = Math.min(0.8, planet.opacity + 0.01);
-                            ctx.beginPath();
-                            ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
-                            ctx.fillStyle = `rgba(80, 60, 50, ${planet.opacity})`;
-                            ctx.fill();
-                            ctx.strokeStyle = `rgba(150, 100, 80, ${planet.opacity})`;
-                            ctx.lineWidth = 2;
-                            ctx.stroke();
-                        }
-
-                        if (frame === 120) {
-                            ctx.beginPath();
-                            ctx.arc(planet.x, planet.y + planet.radius + 30, 8, 0, Math.PI * 2);
-                            ctx.fillStyle = 'rgba(100, 200, 255, 0.8)';
-                            ctx.fill();
-                        }
-
-                        if (frame > 120 && frame < 150) {
-                            const pulseRadius = (frame - 120) * 15;
-                            ctx.beginPath();
-                            ctx.arc(planet.x, planet.y + planet.radius + 30, pulseRadius, 0, Math.PI * 2);
-                            ctx.strokeStyle = `rgba(100, 200, 255, ${1 - (frame - 120) / 30})`;
-                            ctx.lineWidth = 3;
-                            ctx.stroke();
-                        }
-
-                        frame++;
-                        if (frame < 600) {
-                            requestAnimationFrame(animate);
-                        }
-                    };
-
-                    animate();
-
-                    const textOverlay = document.createElement('div');
-                    textOverlay.style.cssText = `
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        text-align: center;
-                        color: rgba(200, 200, 220, 0);
-                        font-family: 'Courier New', monospace;
-                        font-size: 24px;
-                        transition: color 1s ease;
-                        pointer-events: none;
-                        text-shadow: 0 0 10px rgba(100, 150, 200, 0.5);
-                    `;
-                    cinematicContainer.appendChild(textOverlay);
+                if (time < 500) {
+                    requestAnimationFrame(drawSeismograph);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.strokeStyle = '#00ff00';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(0, centerY);
+                    ctx.lineTo(canvas.width, centerY);
+                    ctx.stroke();
 
                     setTimeout(() => {
-                        textOverlay.textContent = 'The last march failed.';
-                        textOverlay.style.color = 'rgba(200, 200, 220, 1)';
-                    }, 3000);
-
-                    setTimeout(() => {
-                        textOverlay.style.color = 'rgba(200, 200, 220, 0)';
-                    }, 5500);
-
-                    setTimeout(() => {
-                        textOverlay.textContent = 'Yours begins now.';
-                        textOverlay.style.color = 'rgba(200, 200, 220, 1)';
-                    }, 6500);
-
-                    setTimeout(() => {
-                        textOverlay.style.color = 'rgba(200, 200, 220, 0)';
-                    }, 9000);
-
-                    setTimeout(() => {
-                        canvas.style.transition = 'opacity 1s ease';
-                        canvas.style.opacity = '0';
-                        textOverlay.style.display = 'none';
-
-                        const dataStream = document.createElement('div');
-                        dataStream.style.cssText = `
-                            position: absolute;
-                            top: 20%;
-                            left: 10%;
-                            right: 10%;
+                        const statusText = document.createElement('div');
+                        statusText.style.cssText = `
+                            color: #ff4444;
                             font-family: 'Courier New', monospace;
-                            font-size: 14px;
-                            color: #00ff00;
-                            line-height: 1.8;
-                        `;
-                        cinematicContainer.appendChild(dataStream);
-
-                        const lines = [
-                            'Reconstructing planetary biosphere...',
-                            'Simulating ecological variables...',
-                            'Uploading societal genetic memory...',
-                            'Analyzing historical collapse patterns...',
-                            'Error: No governing protocol detected.',
-                            '',
-                            'Initializing Voidmarch Protocol...'
-                        ];
-
-                        let lineIndex = 0;
-                        const typeLines = () => {
-                            if (lineIndex < lines.length) {
-                                const p = document.createElement('p');
-                                p.style.margin = '4px 0';
-                                p.textContent = '> ' + lines[lineIndex];
-                                dataStream.appendChild(p);
-                                lineIndex++;
-                                setTimeout(typeLines, 800);
-                            }
-                        };
-
-                        typeLines();
-                    }, 10000);
-
-                    setTimeout(() => {
-                        cinematicContainer.style.transition = 'opacity 0.5s ease';
-                        cinematicContainer.style.opacity = '0';
-                    }, 17000);
-
-                    setTimeout(() => {
-                        const hologramDiv = document.createElement('div');
-                        hologramDiv.style.cssText = `
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            z-index: 20006;
-                            background: #000000;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            opacity: 0;
-                            transition: opacity 1s ease;
-                        `;
-                        document.body.appendChild(hologramDiv);
-
-                        const hologramText = document.createElement('div');
-                        hologramText.style.cssText = `
-                            font-family: 'Courier New', monospace;
-                            font-size: 18px;
-                            color: rgba(100, 200, 255, 0.7);
+                            font-size: 20px;
+                            margin-top: 30px;
                             text-align: center;
-                            max-width: 800px;
                             line-height: 1.8;
-                            text-shadow: 0 0 15px rgba(100, 200, 255, 0.5);
-                            animation: flicker 0.15s infinite;
                         `;
-                        hologramText.innerHTML = `
-                            <p style="margin-bottom: 30px; font-size: 12px; color: rgba(255, 100, 100, 0.6);">[TRANSMISSION CORRUPTED]</p>
-                            <p>"If this message reaches you...</p>
-                            <p>the cycle has begun again.</p>
-                            <p style="margin-top: 20px;">The Voidmarch Protocol is your only hope.</p>
-                            <p style="margin-top: 30px; font-weight: bold;">Build. Survive. Ascend."</p>
-                            <p style="margin-top: 30px; font-size: 10px; color: rgba(150, 150, 170, 0.5);">— Species Archive 7741-Ω</p>
+                        statusText.innerHTML = `
+                            PREVIOUS CIVILIZATION: EXTINCT<br>
+                            <span style="color: #00ff00;">NEW ATTEMPT: AUTHORIZED</span>
                         `;
-                        hologramDiv.appendChild(hologramText);
+                        seismicScreen.appendChild(statusText);
 
                         setTimeout(() => {
-                            hologramDiv.style.opacity = '1';
-                        }, 100);
-
-                        setTimeout(() => {
-                            hologramDiv.style.opacity = '0';
-                        }, 6000);
-
-                        setTimeout(() => {
-                            document.body.removeChild(cinematicContainer);
-                            document.body.removeChild(hologramDiv);
-
-                            startMenu.style.display = 'flex';
-                            startMenu.style.opacity = '0';
-                            startMenu.style.transition = 'opacity 2s ease';
+                            seismicScreen.style.transition = 'opacity 1s ease';
+                            seismicScreen.style.opacity = '0';
 
                             setTimeout(() => {
-                                startMenu.style.opacity = '1';
-                                AudioManager.playBGM();
-                            }, 100);
-                        }, 7000);
-                    }, 17500);
-                }, 500);
-            } else {
-                addTerminalLine(`> ERROR: Unknown command '${command}'`, 'terminal-error');
-                addTerminalLine('> Type \'initiate\' to begin protocol', 'terminal-warning');
-            }
+                                document.body.removeChild(seismicScreen);
+                                document.body.removeChild(blackScreen);
 
-            terminalInput.value = '';
-        };
+                                const startMenu = document.getElementById('start-menu');
+                                startMenu.style.display = 'flex';
+                                startMenu.style.opacity = '0';
+                                startMenu.style.transition = 'opacity 2s ease';
 
-        terminalSend.addEventListener('click', processCommand);
+                                setTimeout(() => {
+                                    startMenu.style.opacity = '1';
+                                    AudioManager.playBGM();
+                                }, 100);
+                            }, 1000);
+                        }, 2000);
+                    }, 500);
+                }
+            };
 
-        terminalInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                processCommand();
-            }
+            document.body.appendChild(seismicScreen);
+            drawSeismograph();
         });
-
-        terminalInput.focus();
 
         document.getElementById('start-game-btn').addEventListener('click', () => {
             this.startGame();
@@ -678,7 +516,6 @@ class Game {
         this.player.processTurnForSettlements(this.currentPlanet);
         this.player.updateExpertCount();
         this.updateBuilders();
-
         this.player.processShipyardConstruction();
 
         this.player.settlements.forEach(settlement => {
@@ -711,6 +548,16 @@ class Game {
         let totalProduction = 0;
         let totalScience = 0;
 
+        const resourceYields = {
+            iron: 0,
+            copper: 0,
+            coal: 0,
+            oil: 0,
+            silicon: 0,
+            rareMinerals: 0,
+            gold: 0
+        };
+
         this.currentPlanet.structures.forEach(building => {
             if (building.isFrame || building.type === 'ruins' || building.type === 'defense_node') return;
 
@@ -724,24 +571,31 @@ class Game {
                     }
                 }
 
-                let totalYield = 0;
+                const resourceSymbols = {
+                    iron: 'Fe', copper: 'Cu', coal: 'C', oil: 'O',
+                    silicon: 'Si', rareMinerals: 'RM', gold: 'Au'
+                };
+
+                let yieldParts = [];
                 for (const resource in mineshaftYields) {
-                    totalYield += mineshaftYields[resource] || 0;
+                    if (mineshaftYields[resource] > 0) {
+                        yieldParts.push(`+${mineshaftYields[resource]} ${resourceSymbols[resource]}`);
+                    }
                 }
-                if (totalYield > 0) {
-                    this.createFloatingNumber(building.x, building.y, `+${totalYield}`, '#ffaa00');
+                if (yieldParts.length > 0) {
+                    this.createFloatingNumber(building.x, building.y, yieldParts.join(', '), '#ffaa00');
                 }
             }
 
             if (building.type === 'quarry') {
                 resourceYields.iron = (resourceYields.iron || 0) + 2;
                 resourceYields.gold = (resourceYields.gold || 0) + 1;
-                let quarryYield = 3;
-                if (Math.random() < 0.3) {
+                let quarryText = '+2 Fe, +1 Au';
+                if (Math.random() < 0.211) {
                     resourceYields.rareMinerals = (resourceYields.rareMinerals || 0) + 1;
-                    quarryYield = 4;
+                    quarryText = '+2 Fe, +1 Au, +1 RM';
                 }
-                this.createFloatingNumber(building.x, building.y, `+${quarryYield}`, '#ffaa00');
+                this.createFloatingNumber(building.x, building.y, quarryText, '#ffaa00');
             }
 
             const foodBuildings = ['farm', 'aqueduct', 'greenhouse', 'hydroponicfarm', 'verticalfarm', 'bioreactor', 'synthesizer'];
@@ -750,6 +604,7 @@ class Game {
                 const foodYield = tile.yields.food || 0;
 
                 let bonusFood = 0;
+                if (building.type === 'farm') bonusFood = 5;
                 if (building.type === 'greenhouse') bonusFood = 5;
                 if (building.type === 'hydroponicfarm') bonusFood = 8;
                 if (building.type === 'verticalfarm') bonusFood = 15;
@@ -757,9 +612,9 @@ class Game {
                 if (building.type === 'synthesizer') bonusFood = 50;
                 if (building.type === 'aqueduct') bonusFood = 2;
 
-                const totalFood = foodYield + bonusFood;
-                if (totalFood > 0) {
-                    this.createFloatingNumber(building.x, building.y, `+${totalFood}`, '#88ff88');
+                const totalFoodValue = foodYield + bonusFood;
+                if (totalFoodValue > 0) {
+                    this.createFloatingNumber(building.x, building.y, `+${totalFoodValue} Food`, '#88ff88');
                 }
             }
 
@@ -802,15 +657,6 @@ class Game {
         this.player.sciencePerTurn = totalScience;
 
         this.player.addProduction(totalProduction);
-
-        const resourceYields = {
-            iron: 0,
-            copper: 0,
-            coal: 0,
-            oil: 0,
-            silicon: 0,
-            rareMinerals: 0
-        };
 
         this.currentPlanet.structures.forEach(building => {
             if (building.isFrame || building.type === 'ruins' || building.type === 'defense_node') return;

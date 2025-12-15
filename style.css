@@ -1809,3 +1809,8 @@ body {
     background: linear-gradient(90deg, #4488ff 0%, #88aaff 100%);
     transition: width 0.3s ease;
 }
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
