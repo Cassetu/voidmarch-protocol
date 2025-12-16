@@ -30,6 +30,50 @@ class BuildingRenderer {
         return Math.min(glowIntensity, 0.3);
     }
 
+    drawVoxelSurface(x, y, width, height, baseColor, density = 'medium') {
+        const voxelSize = 2;
+        const spacing = density === 'high' ? 2 : density === 'medium' ? 3 : 4;
+
+        const cols = Math.floor(width / spacing);
+        const rows = Math.floor(height / spacing);
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                const px = x + col * spacing;
+                const py = y + row * spacing;
+
+                const seed = (px * 7 + py * 13) % 100;
+                const brightness = (seed % 40 - 20) / 255;
+
+                let voxelColor;
+                if (brightness > 0) {
+                    voxelColor = this.lightenColor(baseColor, brightness);
+                } else {
+                    voxelColor = this.darkenColor(baseColor, -brightness);
+                }
+
+                this.ctx.fillStyle = voxelColor;
+                this.ctx.fillRect(px, py, voxelSize, voxelSize);
+            }
+        }
+    }
+
+    lightenColor(color, amount) {
+        const hex = color.replace('#', '');
+        const r = Math.min(255, parseInt(hex.substr(0, 2), 16) + Math.floor(amount * 255));
+        const g = Math.min(255, parseInt(hex.substr(2, 2), 16) + Math.floor(amount * 255));
+        const b = Math.min(255, parseInt(hex.substr(4, 2), 16) + Math.floor(amount * 255));
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
+    darkenColor(color, amount) {
+        const hex = color.replace('#', '');
+        const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - Math.floor(amount * 255));
+        const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - Math.floor(amount * 255));
+        const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - Math.floor(amount * 255));
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
     drawLavaGlow(gridX, gridY, tile, cameraX, cameraY) {
         if (tile.type !== 'lava') return;
 
@@ -151,6 +195,13 @@ class BuildingRenderer {
                 this.ctx.lineTo(screenX + 8, screenY - 8);
                 this.ctx.closePath();
                 this.ctx.fill();
+
+                if (this.ctx.canvas && this.ctx.canvas.width) {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = 0.4;
+                    this.drawVoxelSurface(screenX - 7, screenY - 7, 14, 9, '#5a4a3a', 'low');
+                    this.ctx.restore();
+                }
                 break;
 
             case 'settlement':

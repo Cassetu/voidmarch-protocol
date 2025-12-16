@@ -66,6 +66,8 @@ class Player {
         this.eruptionChanceModifier = 0;
         this.builders = [];
         this.buildingQueue = [];
+        this.repairers = [];
+        this.repairQueue = [];
         this.shipyards = [];
         this.generationShips = [
             { id: 0, assignedYard: null, segment: 0, progress: 0, complete: false },
@@ -75,6 +77,50 @@ class Player {
             { id: 4, assignedYard: null, segment: 0, progress: 0, complete: false }
         ];
         this.shipConstructionActive = false;
+    }
+
+    canAffordRepair(buildingType, currentHealth, maxHealth) {
+        return BuildingInfo.canAffordRepair(buildingType, currentHealth, maxHealth, this.resources);
+    }
+
+    getRepairCost(buildingType, currentHealth, maxHealth) {
+        return BuildingInfo.getRepairCost(buildingType, currentHealth, maxHealth);
+    }
+
+    startRepair(building, settlement) {
+        const repairCost = this.getRepairCost(building.type, building.health, building.maxHealth);
+
+        if (this.resources < repairCost.resources) {
+            return false;
+        }
+
+        this.resources -= repairCost.resources;
+
+        const repairAmount = building.maxHealth - building.health;
+        const distance = Math.abs(settlement.x - building.x) + Math.abs(settlement.y - building.y);
+        const repairerId = this.repairers.length;
+
+        const repairer = new Repairer(
+            repairerId,
+            settlement.x,
+            settlement.y,
+            building.x,
+            building.y,
+            building.type,
+            distance,
+            repairAmount
+        );
+
+        this.repairers.push(repairer);
+        this.repairQueue.push({
+            x: building.x,
+            y: building.y,
+            type: building.type,
+            repairerId: repairerId,
+            repairAmount: repairAmount
+        });
+
+        return true;
     }
 
     updateExpertCount() {

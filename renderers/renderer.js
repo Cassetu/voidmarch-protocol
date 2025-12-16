@@ -10,6 +10,9 @@ class Renderer {
         this.snowParticles = [];
         this.hailstormActive = false;
         this.hailstormEndTime = 0;
+
+        this.voxelDebris = new VoxelDebrisSystem(ctx, this.tileWidth, this.tileHeight);
+
         this.colorMap = {
             grass: '#3d4f5c',
             rock: '#4a5a6a',
@@ -56,6 +59,35 @@ class Renderer {
             this.creatureRenderer = new CreatureRenderer(ctx, this.tileWidth, this.tileHeight);
             this.environmentalRenderer = new EnvironmentalRenderer(ctx, this.tileWidth, this.tileHeight);
             this.backgroundRenderer = new BackgroundRenderer(ctx, width, height);
+    }
+
+    drawRepairer(repairer, cameraX, cameraY) {
+        this.unitRenderer.drawRepairer(repairer, cameraX, cameraY);
+    }
+
+    drawRepairerCount(screenX, screenY, count) {
+        this.unitRenderer.drawBuilderCount(screenX, screenY, count);
+    }
+
+    updateVoxelDebris() {
+        this.voxelDebris.update();
+    }
+
+    drawVoxelDebris(cameraX, cameraY) {
+        this.voxelDebris.draw(cameraX, cameraY);
+    }
+
+    createBuildingDebris(x, y, buildingType) {
+        const colorMap = {
+            'hut': '#6a5a4a',
+            'settlement': '#7a6a5a',
+            'farm': '#8a6a4a',
+            'warehouse': '#5a5a4a',
+            'forge': '#4a3a3a'
+        };
+
+        const color = colorMap[buildingType] || '#6a6a6a';
+        this.voxelDebris.createDebris(x, y, color, 12);
     }
 
     drawEnvironmentalObjects(objects, cameraX, cameraY) {

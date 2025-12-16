@@ -1,4 +1,21 @@
 class BuildingInfo {
+    static getRepairCost(buildingType, currentHealth, maxHealth) {
+        const baseCost = this.getAllBuildingData()[buildingType]?.cost || { resources: 50 };
+        const healthPercent = currentHealth / maxHealth;
+        const damagePercent = 1 - healthPercent;
+
+        const repairCost = Math.ceil(baseCost.resources * damagePercent * 0.3);
+
+        return {
+            resources: Math.max(10, repairCost)
+        };
+    }
+
+    static canAffordRepair(buildingType, currentHealth, maxHealth, playerResources) {
+        const cost = this.getRepairCost(buildingType, currentHealth, maxHealth);
+        return playerResources >= cost.resources;
+    }
+
     static getAllBuildingData() {
         return {
             hut: {

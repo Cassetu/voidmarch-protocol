@@ -509,6 +509,108 @@ class UnitRenderer {
         this.ctx.restore();
     }
 
+    drawRepairer(repairer, cameraX, cameraY) {
+        const game = window.game;
+        const planet = game.currentPlanet;
+        const x = repairer.currentX;
+        const y = repairer.currentY;
+        const tile = planet.tiles[y][x];
+        const elevationHeight = 8;
+        const yOffset = -(tile.elevation || 0) * elevationHeight;
+
+        const screenX = (x - y) * (this.tileWidth / 2);
+        const screenY = (x + y) * (this.tileHeight / 2) + yOffset;
+
+        this.ctx.save();
+
+        const baseY = screenY;
+        const leftX = screenX - 6;
+        const rightX = screenX + 6;
+        const headY = baseY - 20;
+        const chestTop = baseY - 12;
+        const chestBot = baseY + 3;
+        const legBot = baseY + 12;
+
+        this.ctx.fillStyle = '#c97861';
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, headY);
+        this.ctx.lineTo(rightX + 2, headY + 4);
+        this.ctx.lineTo(screenX + 2, headY + 10);
+        this.ctx.lineTo(leftX - 2, headY + 4);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#8a5a3a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX, chestTop);
+        this.ctx.lineTo(rightX + 3, chestTop + 3);
+        this.ctx.lineTo(rightX + 1, chestBot);
+        this.ctx.lineTo(screenX, chestBot + 3);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#6a4a2a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX, chestTop + 3);
+        this.ctx.lineTo(screenX, chestTop);
+        this.ctx.lineTo(screenX, chestBot + 3);
+        this.ctx.lineTo(leftX - 3, chestBot);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#c97861';
+        this.ctx.beginPath();
+        this.ctx.moveTo(leftX - 3, chestBot);
+        this.ctx.lineTo(leftX - 1, chestBot + 2);
+        this.ctx.lineTo(leftX - 2, legBot);
+        this.ctx.lineTo(leftX - 4, legBot - 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(rightX + 1, chestBot);
+        this.ctx.lineTo(rightX + 3, chestBot + 2);
+        this.ctx.lineTo(rightX + 2, legBot);
+        this.ctx.lineTo(rightX, legBot - 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#5a4a3a';
+        this.ctx.beginPath();
+        this.ctx.moveTo(rightX + 3, chestTop + 4);
+        this.ctx.lineTo(rightX + 10, chestTop + 2);
+        this.ctx.lineTo(rightX + 11, chestTop + 6);
+        this.ctx.lineTo(rightX + 4, chestTop + 8);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#4a4a4a';
+        this.ctx.beginPath();
+        this.ctx.arc(rightX + 10, chestTop + 1, 3, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.strokeStyle = '#88cc88';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(rightX + 8, chestTop - 1);
+        this.ctx.lineTo(rightX + 12, chestTop + 3);
+        this.ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.moveTo(rightX + 12, chestTop - 1);
+        this.ctx.lineTo(rightX + 8, chestTop + 3);
+        this.ctx.stroke();
+
+        if (repairer.arrived) {
+            const sparkle = Math.sin(Date.now() / 200) * 0.5 + 0.5;
+            this.ctx.fillStyle = `rgba(136, 255, 136, ${sparkle})`;
+            this.ctx.beginPath();
+            this.ctx.arc(rightX + 10, chestTop + 1, 2, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+
+        this.ctx.restore();
+    }
+
     drawDefenseNode(node, cameraX, cameraY) {
         const game = window.game;
         const planet = game.currentPlanet;

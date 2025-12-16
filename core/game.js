@@ -516,6 +516,7 @@ class Game {
         this.player.processTurnForSettlements(this.currentPlanet);
         this.player.updateExpertCount();
         this.updateBuilders();
+        this.updateRepairers();
         this.player.processShipyardConstruction();
 
         this.player.settlements.forEach(settlement => {
@@ -1489,6 +1490,7 @@ class Game {
 
         this.renderer.updateSnowParticles();
         this.renderer.updateAcidRainParticles();
+        this.renderer.updateVoxelDebris();
     }
 
     handleInput() {
@@ -2218,6 +2220,50 @@ class Game {
         });
     }
 
+    updateRepairers() {
+        for (let i = this.player.repairers.length - 1; i >= 0; i--) {
+            const repairer = this.player.repairers[i];
+
+            if (!repairer.path && !repairer.arrived) {
+                repairer.path = repairer.findPath(this.currentPlanet);
+                if (!repairer.path) {
+                    this.log(`Cannot reach building at (${repairer.targetX}, ${repairer.targetY}) - blocked!`);
+                    this.player.repairers.splice(i, 1);
+                    this.player.repairQueue = this.player.repairQueue.filter(r => r.repairerId !== repairer.id);
+                    continue;
+                }
+            }
+
+            const repairerState = repairer.update();
+            const queuedRepair = this.player.repairQueue.find(r => r.repairerId === repairer.id);
+            if (queuedRepair) {
+                queuedRepair.repairerProgress = repairerState.progress;
+            }
+
+            if (repairer.arrived) {
+                const tile = this.currentPlanet.tiles[repairer.targetY][repairer.targetX];
+                if (tile && tile.building && tile.building.type === repairer.buildingType) {
+                    const repairPerTick = repairer.repairAmount / repairer.totalRepairTime;
+                    tile.building.health = Math.min(
+                        tile.building.maxHealth,
+                        tile.building.health + repairPerTick
+                    );
+                }
+            }
+
+            if (repairer.isComplete()) {
+                const tile = this.currentPlanet.tiles[repairer.targetY][repairer.targetX];
+                if (tile && tile.building) {
+                    tile.building.health = tile.building.maxHealth;
+                    this.log(`Repair complete: ${repairer.buildingType} at (${repairer.targetX}, ${repairer.targetY})`);
+                }
+
+                this.player.repairers.splice(i, 1);
+                this.player.repairQueue = this.player.repairQueue.filter(r => r.repairerId !== repairer.id);
+            }
+        }
+    }
+
     showBuildingInfo(building) {
         const infoPanel = document.getElementById('building-info');
         if (!infoPanel) return;
@@ -2252,10 +2298,77 @@ class Game {
         } else if (building.type === 'settlement') {
             this.showSettlementPanel(building.x, building.y);
         } else {
+            const healthPercent = Math.floor((building.health / building.maxHealth) * 100);
+            let healthColor = '#88ff88';
+            if (healthPercent < 30) healthColor = '#ff5555';
+            else if (healthPercent < 60) healthColor = '#ffaa55';
+
+            const isDamaged = building.health < building.maxHealth;
+            const isBeingRepaired = this.player.repairQueue.some(r => r.x === building.x && r.y === building.y);
+
+            let repairButtonHTML = '';
+            if (isDamaged && !isBeingRepaired && !building.isFrame) {
+                const repairCost = this.player.getRepairCost(building.type, building.health, building.maxHealth);
+                const canAfford = this.player.canAffordRepair(building.type, building.health, building.maxHealth);
+
+                repairButtonHTML = `
+                    <button id="repair-building-btn"
+                        style="width: 100%; padding: 4px; font-size: 9px; margin-top: 6px;
+                        background: ${canAfford ? '#3a5a4a' : '#5a3a3a'};
+                        border: 1px solid ${canAfford ? '#5a7a6a' : '#7a4a4a'};
+                        color: ${canAfford ? '#a8d888' : '#d88888'};
+                        cursor: ${canAfford ? 'pointer' : 'not-allowed'};
+                        border-radius: 3px;">
+                        Repair (${repairCost.resources} Resources)
+                    </button>
+                `;
+            } else if (isBeingRepaired) {
+                const repairJob = this.player.repairQueue.find(r => r.x === building.x && r.y === building.y);
+                const repairer = this.player.repairers.find(r => r.id === repairJob.repairerId);
+                const progress = repairer ? repairer.progress : 0;
+
+                repairButtonHTML = `
+                    <div style="margin-top: 6px; padding: 4px; background: rgba(58, 90, 74, 0.3); border-radius: 3px;">
+                        <p style="font-size: 9px; color: #88cc88; margin-bottom: 2px;">Repairing... ${Math.floor(progress)}%</p>
+                        <div style="width: 100%; height: 4px; background: #2a3a4a; border-radius: 2px; overflow: hidden;">
+                            <div style="width: ${progress}%; height: 100%; background: #88cc88; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
             infoPanel.innerHTML = `
-                <p style="font-size: 10px; color: #a8b8d8;"><strong>${building.type}</strong></p>
-                <p style="font-size: 9px; color: #8fa3c8;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
+                <p style="font-size: 10px; color: #a8b8d8;"><strong>${building.type.charAt(0).toUpperCase() + building.type.slice(1)}</strong></p>
+                <p style="font-size: 9px; color: ${healthColor};">HP: ${Math.floor(building.health)}/${building.maxHealth} (${healthPercent}%)</p>
+                ${repairButtonHTML}
             `;
+
+            const repairBtn = document.getElementById('repair-building-btn');
+            if (repairBtn) {
+                repairBtn.onclick = (e) => {
+                    e.stopPropagation();
+
+                    const canAfford = this.player.canAffordRepair(building.type, building.health, building.maxHealth);
+                    if (!canAfford) {
+                        const cost = this.player.getRepairCost(building.type, building.health, building.maxHealth);
+                        this.log(`Cannot afford repair - Need: ${cost.resources} Resources`);
+                        return;
+                    }
+
+                    const nearest = this.player.findNearestSettlement(building.x, building.y);
+                    if (!nearest) {
+                        this.log('No settlement nearby to send repairer from!');
+                        return;
+                    }
+
+                    if (this.player.startRepair(building, nearest)) {
+                        this.log(`Sending repairer to fix ${building.type} at (${building.x}, ${building.y})`);
+                        this.showBuildingInfo(building);
+                    } else {
+                        this.log('Failed to start repair!');
+                    }
+                };
+            }
         }
     }
 
@@ -2934,6 +3047,7 @@ class Game {
         }
 
         this.renderer.drawLavaSparks(this.cameraX, this.cameraY);
+        this.renderer.drawVoxelDebris(this.cameraX, this.cameraY);
 
         const builderGroups = {};
         this.player.builders.forEach(builder => {
@@ -2950,6 +3064,24 @@ class Game {
                 const screenX = (group[0].currentX - group[0].currentY) * (this.renderer.tileWidth / 2);
                 const screenY = (group[0].currentX + group[0].currentY) * (this.renderer.tileHeight / 2);
                 this.renderer.drawBuilderCount(screenX, screenY, group.length);
+            }
+        });
+
+        const repairerGroups = {};
+        this.player.repairers.forEach(repairer => {
+            const key = `${repairer.currentX},${repairer.currentY}`;
+            if (!repairerGroups[key]) {
+                repairerGroups[key] = [];
+            }
+            repairerGroups[key].push(repairer);
+        });
+
+        Object.values(repairerGroups).forEach(group => {
+            this.renderer.drawRepairer(group[0], this.cameraX, this.cameraY);
+            if (group.length > 1) {
+                const screenX = (group[0].currentX - group[0].currentY) * (this.renderer.tileWidth / 2);
+                const screenY = (group[0].currentX + group[0].currentY) * (this.renderer.tileHeight / 2);
+                this.renderer.drawRepairerCount(screenX, screenY, group.length);
             }
         });
 

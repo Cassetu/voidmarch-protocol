@@ -38,7 +38,7 @@ class EventSystem {
 
     onTurnEnd() {
         this.turn++;
-        this.coreStability -= (0.05 * (this.player.coreStabilityMultiplier || 1));
+        this.coreStability -= (0.08 * (this.player.coreStabilityMultiplier || 1));
 
         if (this.player.coreStable) {
             this.coreStability = Math.min(100, this.coreStability + 1);
@@ -99,6 +99,8 @@ class EventSystem {
                 buildingsDamaged++;
 
                 if (building.health <= 0) {
+                    game.renderer.createBuildingDebris(building.x, building.y, building.type);
+
                     const oldType = building.type;
                     this.player.removeBuilding(building);
 
