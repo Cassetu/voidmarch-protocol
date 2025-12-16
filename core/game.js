@@ -1495,7 +1495,8 @@ class Game {
 
     handleInput() {
         const baseSpeed = 8;
-        const moveSpeed = Math.min(baseSpeed * 3, baseSpeed / this.renderer.zoom);
+        const shiftMultiplier = this.input.keys['Shift'] ? 1.9 : 1.0;
+        const moveSpeed = Math.min(baseSpeed * 3, baseSpeed / this.renderer.zoom) * shiftMultiplier;
         const canvasTop = 75;
         const canvasBottom = window.innerHeight - 220;
         const unitX = this.renderer.tileWidth / 2;
