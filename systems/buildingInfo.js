@@ -338,6 +338,12 @@ class BuildingInfo {
                 desc: 'Underground transit',
                 age: 'Modernization'
             },
+            weatherarray: {
+                name: 'Weather Array',
+                cost: { iron: 300, copper: 180, silicon: 150, aluminum: 80 },
+                desc: 'Collects materials from weather events',
+                age: 'Modernization'
+            },
             verticalfarm: {
                 name: 'Vertical Farm',
                 cost: { iron: 200, copper: 120, silicon: 90, aluminum: 60, titanium: 30 },
@@ -409,7 +415,13 @@ class BuildingInfo {
             fusionreactor: {
                 name: 'Fusion Reactor',
                 cost: { iron: 1600, copper: 960, silicon: 750, uranium: 250, platinum: 120 },
-                desc: 'Clean infinite energy',
+                desc: 'Clean infinite energy (Click to convert materials)',
+                age: 'Space'
+            },
+            coredriller: {
+                name: 'Core Driller',
+                cost: { iron: 800, copper: 480, silicon: 350, titanium: 200, uranium: 80 },
+                desc: 'Drill near lava for rare minerals (Destabilizes core!)',
                 age: 'Space'
             },
             orbitalring: {

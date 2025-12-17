@@ -421,6 +421,7 @@ class Planet {
             skyscraper: { iron: 450, copper: 270, silicon: 180, aluminum: 90 },
             subwaystation: { iron: 380, copper: 230, silicon: 150, aluminum: 70 },
             verticalfarm: { iron: 200, copper: 120, silicon: 90, aluminum: 60, titanium: 30 },
+            weatherarray: { iron: 300, copper: 180, silicon: 150, aluminum: 80 },
 
             technopolis: { iron: 1100, copper: 660, silicon: 500, uranium: 80, platinum: 60 },
             datacenter: { iron: 750, copper: 450, silicon: 380, gold: 80, platinum: 40 },
@@ -433,6 +434,7 @@ class Planet {
             spaceport: { iron: 1200, copper: 720, silicon: 550, titanium: 250, uranium: 150 },
             laboratory: { iron: 800, copper: 480, silicon: 380, platinum: 65, uranium: 80 },
             megafactory: { iron: 1400, copper: 840, silicon: 600, aluminum: 350, titanium: 180 },
+            coredriller: { iron: 800, copper: 480, silicon: 350, titanium: 200, uranium: 80 },
             fusionreactor: { iron: 1600, copper: 960, silicon: 750, uranium: 250, platinum: 120 },
             orbitalring: { iron: 2400, copper: 1440, silicon: 1000, titanium: 450, platinum: 180 },
             quantumlab: { iron: 2000, copper: 1200, silicon: 950, uranium: 350, neodymium: 130 },
@@ -463,6 +465,13 @@ class Planet {
             return false;
         }
 
+        if (buildingType === 'coredriller') {
+            if (!this.isNearLava(gridX, gridY, 2)) {
+                console.log('Core driller must be placed near lava!');
+                return false;
+            }
+        }
+
         if (!player.spendResourceTypes(cost)) {
             return false;
         }
@@ -480,6 +489,22 @@ class Planet {
         return true;
     }
 
+    isNearLava(gridX, gridY, radius = 3) {
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const checkX = gridX + dx;
+                const checkY = gridY + dy;
+
+                if (checkX >= 0 && checkX < this.width && checkY >= 0 && checkY < this.height) {
+                    if (this.tiles[checkY][checkX].type === 'lava') {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     checkTileRequirement(gridX, gridY, buildingType) {
         const tile = this.tiles[gridY][gridX];
 
@@ -493,7 +518,8 @@ class Planet {
             aqueduct: ['darksoil', 'grass', 'ash'],
             fishery: ['water'],
             dockyard: ['water'],
-            harbor: ['water']
+            harbor: ['water'],
+            coredriller: ['rock', 'ash']
         };
 
         const required = tileRequirements[buildingType];

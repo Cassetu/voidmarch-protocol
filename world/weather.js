@@ -19,11 +19,41 @@ class WeatherSystem {
         this.nextWeatherChangeTurn = this.getRandomWeatherChangeTurn();
 
         this.weatherTypes = {
-            clear: { name: 'Clear', color: '#88aaff', icon: '' },
-            ashcloud: { name: 'Ash Cloud', color: '#665555', icon: '' },
-            acidrain: { name: 'Acid Rain', color: '#66aa66', icon: '' },
-            heatwave: { name: 'Heat Wave', color: '#ff8844', icon: '' },
-            volcanicwinter: { name: 'Volcanic Winter', color: '#4455aa', icon: '' }
+            clear: {
+                name: 'Clear',
+                color: '#88aaff',
+                icon: '',
+                collectible: null,
+                collectAmount: 0
+            },
+            ashcloud: {
+                name: 'Ash Cloud',
+                color: '#665555',
+                icon: '',
+                collectible: 'silicon',
+                collectAmount: 15
+            },
+            acidrain: {
+                name: 'Acid Rain',
+                color: '#66aa66',
+                icon: '',
+                collectible: 'coal',
+                collectAmount: 12
+            },
+            heatwave: {
+                name: 'Heat Wave',
+                color: '#ff8844',
+                icon: '',
+                collectible: 'copper',
+                collectAmount: 10
+            },
+            volcanicwinter: {
+                name: 'Volcanic Winter',
+                color: '#4455aa',
+                icon: '',
+                collectible: 'iron',
+                collectAmount: 8
+            }
         };
 
         this.initializeGeothermalVents();
@@ -215,13 +245,16 @@ class WeatherSystem {
     }
 
     getCurrentWeather() {
+        const weatherData = this.weatherTypes[this.currentWeather];
         return {
             type: this.currentWeather,
-            name: this.weatherTypes[this.currentWeather].name,
-            icon: this.weatherTypes[this.currentWeather].icon,
+            name: weatherData.name,
+            icon: weatherData.icon,
             duration: this.weatherDuration,
             intensity: this.weatherIntensity,
-            forecast: this.forecastedWeather.slice(0, 3)
+            forecast: this.forecastedWeather.slice(0, 3),
+            collectible: weatherData.collectible,
+            collectAmount: weatherData.collectAmount
         };
     }
 }

@@ -26,6 +26,8 @@ class Ecosystem {
         this.lastMigrationTurn = 0;
         this.turnsSinceLastBalance = 0;
         this.spawnInitialCreatures();
+        this.activeContracts = [];
+        this.nextContractId = 0;
     }
 
     spawnInitialCreatures() {
@@ -93,6 +95,22 @@ class Ecosystem {
         this.applyEcosystemEffects();
         this.checkForEvents();
         this.turnsSinceLastBalance++;
+        for (let i = this.activeContracts.length - 1; i >= 0; i--) {
+            const contract = this.activeContracts[i];
+            contract.progress++;
+
+            if (contract.progress >= contract.duration) {
+                const player = this.game.player;
+                player.resources[contract.produces] = (player.resources[contract.produces] || 0) + contract.amount;
+
+                this.game.log(`Contract complete! +${contract.amount} ${contract.produces}`);
+                if (typeof AudioManager !== 'undefined') {
+                    AudioManager.playSFX('sounds/sfx/complete.mp3', 0.5);
+                }
+
+                this.activeContracts.splice(i, 1);
+            }
+        }
     }
 
     autoBalance() {
@@ -240,6 +258,63 @@ class Ecosystem {
                 beetle.energy -= 20;
             }
         }
+    }
+
+    startContract(x, y, creatureType) {
+        const contractOptions = {
+            ashworms: {
+                requires: { coal: 20 },
+                produces: 'silicon',
+                amount: 40,
+                turns: 8
+            },
+            magmabeetles: {
+                requires: { coal: 30 },
+                produces: 'rareMinerals',
+                amount: 15,
+                turns: 10
+            },
+            emberbirds: {
+                requires: { silicon: 15 },
+                produces: 'gold',
+                amount: 8,
+                turns: 6
+            }
+        };
+
+        const option = contractOptions[creatureType];
+        if (!option) return false;
+
+        if (!this.game.player.hasResources(option.requires)) {
+            this.game.log('Not enough resources for contract!');
+            return false;
+        }
+
+        const existingContract = this.activeContracts.find(c => c.x === x && c.y === y);
+        if (existingContract) {
+            this.game.log('Contract already active at this location!');
+            return false;
+        }
+
+        this.game.player.spendResourceTypes(option.requires);
+
+        this.activeContracts.push({
+            id: this.nextContractId++,
+            x: x,
+            y: y,
+            type: creatureType,
+            produces: option.produces,
+            amount: option.amount,
+            duration: option.turns,
+            progress: 0
+        });
+
+        this.game.log(`Contract started with ${creatureType}!`);
+        return true;
+    }
+
+    getContractAt(x, y) {
+        return this.activeContracts.find(c => c.x === x && c.y === y);
     }
 
     updateEmberbirds() {

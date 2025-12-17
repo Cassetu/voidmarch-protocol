@@ -527,6 +527,20 @@ class Game {
             this.ecosystem.update();
             this.environmentalObjectSystem.update();
             this.weatherSystem.onTurnEnd();
+            if (this.weatherSystem && this.galaxy.currentPlanetIndex === 0) {
+                const currentWeather = this.weatherSystem.getCurrentWeather();
+
+                if (currentWeather.collectible) {
+                    this.currentPlanet.structures.forEach(building => {
+                        if (building.type === 'weatherarray' && !building.isFrame) {
+                            const collected = currentWeather.collectAmount || 10;
+                            resourceYields[currentWeather.collectible] = (resourceYields[currentWeather.collectible] || 0) + collected;
+
+                            this.createFloatingNumber(building.x, building.y, `+${collected} ${currentWeather.collectible}`, '#88ccff');
+                        }
+                    });
+                }
+            }
         }
 
         const totalPopulation = this.player.settlements.reduce((sum, s) => sum + s.getPopulation(), 0);
@@ -597,6 +611,20 @@ class Game {
                     quarryText = '+2 Fe, +1 Au, +1 RM';
                 }
                 this.createFloatingNumber(building.x, building.y, quarryText, '#ffaa00');
+            }
+
+            if (building.type === 'coredriller') {
+                const lavaProximity = this.getLavaProximity(building.x, building.y);
+                const baseYield = 5;
+                const bonusYield = Math.floor(lavaProximity * 3);
+
+                resourceYields.rareMinerals = (resourceYields.rareMinerals || 0) + baseYield + bonusYield;
+                resourceYields.silicon = (resourceYields.silicon || 0) + 3;
+                resourceYields.uranium = (resourceYields.uranium || 0) + 1;
+
+                this.eventSystem.coreStability -= 0.15;
+
+                this.createFloatingNumber(building.x, building.y, `+${baseYield + bonusYield} RM, -Core`, '#ff4400');
             }
 
             const foodBuildings = ['farm', 'aqueduct', 'greenhouse', 'hydroponicfarm', 'verticalfarm', 'bioreactor', 'synthesizer'];
@@ -770,6 +798,27 @@ class Game {
                 this.conquestSystem = null;
             }
         }
+    }
+
+    getLavaProximity(x, y) {
+        let lavaCount = 0;
+        const radius = 3;
+
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                const nx = x + dx;
+                const ny = y + dy;
+
+                if (nx >= 0 && nx < this.currentPlanet.width && ny >= 0 && ny < this.currentPlanet.height) {
+                    if (this.currentPlanet.tiles[ny][nx].type === 'lava') {
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        lavaCount += Math.max(0, 1 - (dist / radius));
+                    }
+                }
+            }
+        }
+
+        return Math.min(5, lavaCount);
     }
 
     openBuildingsMenu() {
@@ -2123,6 +2172,67 @@ class Game {
         }
 
         infoPanel.innerHTML = html;
+
+        if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
+            const creatures = [];
+            if (this.ecosystem.creatures.ashworms.some(w => w.x === x && w.y === y)) {
+                creatures.push({ type: 'ashworms', name: 'Ashworm' });
+            }
+            if (this.ecosystem.creatures.magmabeetles.some(b => b.x === x && b.y === y)) {
+                creatures.push({ type: 'magmabeetles', name: 'Magma Beetle' });
+            }
+            if (this.ecosystem.creatures.emberbirds.some(b => b.x === x && b.y === y)) {
+                creatures.push({ type: 'emberbirds', name: 'Emberbird' });
+            }
+
+            if (creatures.length > 0) {
+                const contract = this.ecosystem.getContractAt(x, y);
+
+                let contractHtml = `<hr style="border: 0; border-top: 1px solid #3a4a5a; margin: 6px 0;">`;
+
+                if (contract) {
+                    contractHtml += `<p style="font-size: 10px; color: #ffaa00; font-weight: 600;">Active Contract</p>`;
+                    contractHtml += `<p style="font-size: 9px; color: #88ff88;">Progress: ${contract.progress}/${contract.duration} turns</p>`;
+                    contractHtml += `<p style="font-size: 9px; color: #88ccff;">Producing: ${contract.produces}</p>`;
+                } else {
+                    contractHtml += `<p style="font-size: 10px; color: #88cc88; font-weight: 600;">${creatures[0].name} present</p>`;
+                    contractHtml += `<button id="contract-creature-btn" style="width: 100%; padding: 4px; font-size: 9px; margin-top: 4px; background: #3a4a3a; border: 1px solid #5a6a5a; color: #a8d888; cursor: pointer; border-radius: 3px;">
+                        Start Contract
+                    </button>`;
+                }
+
+                infoPanel.innerHTML += contractHtml;
+            }
+        }
+
+        const contractBtn = document.getElementById('contract-creature-btn');
+        if (contractBtn) {
+            contractBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.startCreatureContract(x, y);
+            };
+        }
+    }
+
+    startCreatureContract(x, y) {
+        if (!this.ecosystem) return;
+
+        let creatureType = null;
+        if (this.ecosystem.creatures.ashworms.some(w => w.x === x && w.y === y)) {
+            creatureType = 'ashworms';
+        } else if (this.ecosystem.creatures.magmabeetles.some(b => b.x === x && b.y === y)) {
+            creatureType = 'magmabeetles';
+        } else if (this.ecosystem.creatures.emberbirds.some(b => b.x === x && b.y === y)) {
+            creatureType = 'emberbirds';
+        }
+
+        if (!creatureType) {
+            this.log('No creature at this location!');
+            return;
+        }
+
+        this.ecosystem.startContract(x, y, creatureType);
+        this.showTileInfo(this.currentPlanet.tiles[y][x], x, y);
     }
 
     selectNearestSettlement(targetX, targetY) {
@@ -2296,6 +2406,32 @@ class Game {
                 <p style="font-size: 9px; color: #ff6666;">Status: ${building.hacked ? 'HACKED' : 'ACTIVE'}</p>
                 <p style="font-size: 9px; color: #ff6666;">Spawns: ${building.armyType}</p>
             `;
+        } else if (building.type === 'fusionreactor') {
+            const turnsSinceUse = this.player.turn - this.player.lastReactorUse;
+            const canUse = turnsSinceUse >= 25;
+            const hasResources = this.player.resources.iron >= 50 && this.player.resources.rareMinerals >= 20;
+
+            infoPanel.innerHTML = `
+                <p style="font-size: 10px; color: #a8b8d8;"><strong>Fusion Reactor</strong></p>
+                <p style="font-size: 9px; color: #8fa3c8;">HP: ${Math.floor(building.health)}/${building.maxHealth}</p>
+                <p style="font-size: 9px; color: #8fa3c8; margin-top: 6px;">Convert: 50 Fe + 20 RM → Uranium</p>
+                <p style="font-size: 9px; color: ${canUse ? '#88cc88' : '#cc8888'};">
+                    ${canUse ? 'Ready!' : `Cooldown: ${25 - turnsSinceUse} turns`}
+                </p>
+                ${canUse && hasResources ? `
+                    <button id="reactor-convert-btn" style="width: 100%; padding: 6px; font-size: 9px; margin-top: 6px; background: #3a5a4a; border: 1px solid #5a7a6a; color: #a8d888; cursor: pointer; border-radius: 3px;">
+                        Activate Reactor
+                    </button>
+                ` : ''}
+            `;
+
+            const reactorBtn = document.getElementById('reactor-convert-btn');
+            if (reactorBtn) {
+                reactorBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.startReactorMinigame(building);
+                };
+            }
         } else if (building.type === 'settlement') {
             this.showSettlementPanel(building.x, building.y);
         } else {
@@ -2371,6 +2507,107 @@ class Game {
                 };
             }
         }
+    }
+
+    startReactorMinigame(building) {
+        if (this.player.resources.iron < 50 || this.player.resources.rareMinerals < 20) {
+            this.log('Insufficient resources for reactor!');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'reactor-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        `;
+
+        modal.innerHTML = `
+            <div style="background: #1a2a3a; border: 3px solid #4a6a8a; border-radius: 8px; padding: 30px; text-align: center;">
+                <h2 style="color: #88ccff; margin-bottom: 15px;">REACTOR TIMING</h2>
+                <p style="color: #aabbcc; font-size: 12px; margin-bottom: 20px;">Press SPACE when the bar reaches the center!</p>
+                <div style="width: 400px; height: 60px; background: #0a1a2a; border: 2px solid #3a5a7a; border-radius: 4px; position: relative; overflow: hidden;">
+                    <div id="reactor-target" style="position: absolute; left: 45%; width: 10%; height: 100%; background: linear-gradient(90deg, transparent, #00ff00, transparent);"></div>
+                    <div id="reactor-bar" style="position: absolute; left: 0%; width: 4%; height: 100%; background: #ff8800; transition: left 0.05s linear;"></div>
+                </div>
+                <button id="reactor-cancel" style="margin-top: 20px; padding: 8px 20px; background: #3a4a5a; border: 1px solid #5a6a7a; color: #c0d0e8; cursor: pointer; border-radius: 4px;">Cancel</button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const bar = document.getElementById('reactor-bar');
+        let position = 0;
+        let direction = 1;
+        let active = true;
+
+        const updateBar = () => {
+            if (!active) return;
+
+            position += direction * 2;
+
+            if (position >= 96) direction = -1;
+            if (position <= 0) direction = 1;
+
+            bar.style.left = position + '%';
+            requestAnimationFrame(updateBar);
+        };
+
+        updateBar();
+
+        const attemptReaction = () => {
+            if (!active) return;
+            active = false;
+
+            const distance = Math.abs(position - 50);
+
+            this.player.resources.iron -= 50;
+            this.player.resources.rareMinerals -= 20;
+            this.player.lastReactorUse = this.player.turn;
+
+            document.body.removeChild(modal);
+
+            if (distance <= 5) {
+                this.player.resources.uranium += 100;
+                this.log('PERFECT! +100 Uranium generated!');
+                if (typeof AudioManager !== 'undefined') {
+                    AudioManager.playSFX('sounds/sfx/complete.mp3', 0.8);
+                }
+            } else if (distance <= 10) {
+                this.player.resources.uranium += 50;
+                this.log('Success! +50 Uranium generated.');
+            } else {
+                this.player.resources.uranium += 15;
+                this.log('Timing off... only +15 Uranium produced.');
+            }
+
+            this.showBuildingInfo(building);
+        };
+
+        const keyHandler = (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                attemptReaction();
+                document.removeEventListener('keydown', keyHandler);
+            }
+        };
+
+        document.addEventListener('keydown', keyHandler);
+
+        document.getElementById('reactor-cancel').onclick = () => {
+            active = false;
+            document.body.removeChild(modal);
+            document.removeEventListener('keydown', keyHandler);
+        };
     }
 
     showSettlementPanel(x, y) {
