@@ -5459,6 +5459,70 @@ class BuildingRenderer {
         ctx.restore();
     }
 
+    drawRailwayTrack(track, cameraX, cameraY) {
+        if (!track || !track.from || !track.to) return;
+
+        const ctx = this.ctx;
+        const unitX = this.tileWidth / 2;
+        const unitY = this.tileHeight / 2;
+
+        const fromScreenX = (track.from.x - track.from.y) * unitX;
+        const fromScreenY = (track.from.x + track.from.y) * unitY;
+        const toScreenX = (track.to.x - track.to.y) * unitX;
+        const toScreenY = (track.to.x + track.to.y) * unitY;
+
+        ctx.save();
+
+        const healthPercent = track.durability / track.maxDurability;
+        let trackColor = '#5a5a5a';
+        if (healthPercent < 0.3) {
+            trackColor = '#8a6a5a';
+        } else if (healthPercent < 0.6) {
+            trackColor = '#7a6a5a';
+        }
+
+        ctx.strokeStyle = '#2a2a2a';
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(fromScreenX, fromScreenY);
+        ctx.lineTo(toScreenX, toScreenY);
+        ctx.stroke();
+
+        ctx.strokeStyle = trackColor;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        const midX = (fromScreenX + toScreenX) / 2;
+        const midY = (fromScreenY + toScreenY) / 2;
+        const ties = 8;
+
+        for (let i = 0; i <= ties; i++) {
+            const t = i / ties;
+            const tieX = fromScreenX + (toScreenX - fromScreenX) * t;
+            const tieY = fromScreenY + (toScreenY - fromScreenY) * t;
+
+            const angle = Math.atan2(toScreenY - fromScreenY, toScreenX - fromScreenX);
+            const perpAngle = angle + Math.PI / 2;
+            const tieLength = 4;
+
+            ctx.strokeStyle = '#3a2a1a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(
+                tieX + Math.cos(perpAngle) * tieLength,
+                tieY + Math.sin(perpAngle) * tieLength
+            );
+            ctx.lineTo(
+                tieX - Math.cos(perpAngle) * tieLength,
+                tieY - Math.sin(perpAngle) * tieLength
+            );
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
+
     drawHealthBar(x, y, health, maxHealth, width) {
         const barHeight = 4;
         const percent = health / maxHealth;

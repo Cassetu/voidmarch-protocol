@@ -69,6 +69,10 @@ class Renderer {
         this.unitRenderer.drawBuilderCount(screenX, screenY, count);
     }
 
+    drawRailwayTrack(track, cameraX, cameraY) {
+        this.buildingRenderer.drawRailwayTrack(track, cameraX, cameraY);
+    }
+
     updateVoxelDebris() {
         this.voxelDebris.update();
     }

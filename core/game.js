@@ -42,6 +42,7 @@ class Game {
         window.game = this;
         this.galaxy = new Galaxy(this);
         this.currentPlanet = this.galaxy.planetInstances.get(0);
+        this.railwaySystem = new RailwaySystem(this, this.currentPlanet);
         this.eventSystem = new EventSystem(this.currentPlanet, this.player, this);
         this.ecosystem = new Ecosystem(this.currentPlanet, this);
         this.environmentalObjectSystem = new EnvironmentalObjectSystem(this.currentPlanet, this.player, this);
@@ -805,6 +806,11 @@ class Game {
                 this.gameMode = 'building';
                 this.conquestSystem = null;
             }
+        }
+
+        if (this.railwaySystem) {
+            this.railwaySystem.degradeTracks();
+            this.railwaySystem.updateTrains();
         }
     }
 
@@ -1844,6 +1850,11 @@ class Game {
                     if (clickedBuilding) {
                         this.showBuildingInfo(clickedBuilding);
 
+                        if (clickedBuilding.type === 'trainstation' && !clickedBuilding.isFrame) {
+                            this.showTrainStationMenu(clickedBuilding);
+                            return;
+                        }
+
                         if (clickedBuilding.type === 'defense_node' && !clickedBuilding.hacked) {
                             const nearbyHacker = this.conquestSystem.armies.find(a => {
                                 if (a.type !== 'hacker' || a.attacked) return false;
@@ -1883,6 +1894,174 @@ class Game {
                 }
             }
         }
+    }
+
+    showTrainStationMenu(station) {
+        if (!this.railwaySystem.hasRailwayTech()) {
+            this.log('Railway Engineering technology required!');
+            return;
+        }
+
+        this.railwaySystem.registerStation(station);
+
+        const stationData = this.railwaySystem.stations.find(s =>
+            s.x === station.x && s.y === station.y
+        );
+
+        if (!stationData) {
+            this.log('Could not register station');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'trainstation-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        `;
+
+        const otherStations = this.railwaySystem.stations.filter(s =>
+            s.x !== station.x || s.y !== station.y
+        );
+
+        const settlementName = stationData.settlement ? stationData.settlement.name : 'Unknown';
+
+        const stationList = otherStations.map(targetStation => {
+            const isConnected = stationData.connectedStations.includes(targetStation);
+            const targetName = targetStation.settlement ? targetStation.settlement.name : 'Station';
+
+            const distance = Math.abs(station.x - targetStation.x) +
+                            Math.abs(station.y - targetStation.y);
+            const baseCost = Math.ceil(distance * 3);
+            const ironCost = baseCost;
+            const coalCost = Math.ceil(baseCost * 0.5);
+
+            const canAfford = this.player.resources.iron >= ironCost &&
+                             this.player.resources.coal >= coalCost;
+
+            return `
+                <div class="trainstation-item" style="
+                    background: ${isConnected ? 'rgba(58, 90, 58, 0.4)' : 'rgba(58, 74, 90, 0.3)'};
+                    padding: 12px;
+                    margin: 8px 0;
+                    border-radius: 4px;
+                    border: 2px solid ${isConnected ? '#5a7a5a' : '#4a6a8a'};
+                ">
+                    <div style="color: #a8b8d8; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
+                        ${targetName}
+                    </div>
+                    <div style="color: #8fa3c8; font-size: 10px; margin-bottom: 8px;">
+                        Location: (${targetStation.x}, ${targetStation.y}) | Distance: ${distance} tiles
+                    </div>
+                    <div style="color: #7a9ab8; font-size: 10px; margin-bottom: 8px;">
+                        Cost: ${ironCost} Iron, ${coalCost} Coal
+                    </div>
+                    ${isConnected ?
+                        `<div style="color: #88cc88; font-size: 11px; text-align: center; padding: 6px;">
+                            ✓ Connected
+                        </div>` :
+                        `<button class="build-track-btn"
+                            data-target-x="${targetStation.x}"
+                            data-target-y="${targetStation.y}"
+                            data-iron="${ironCost}"
+                            data-coal="${coalCost}"
+                            ${!canAfford ? 'disabled' : ''}
+                            style="width: 100%; padding: 8px;
+                            background: ${canAfford ? '#3a5a4a' : '#3a3a3a'};
+                            border: 1px solid ${canAfford ? '#5a7a6a' : '#4a4a4a'};
+                            color: ${canAfford ? '#a8d888' : '#7a7a7a'};
+                            cursor: ${canAfford ? 'pointer' : 'not-allowed'};
+                            border-radius: 4px; font-size: 11px; font-weight: 600;">
+                            ${canAfford ? 'Build Railway' : 'Insufficient Resources'}
+                        </button>`
+                    }
+                </div>
+            `;
+        }).join('');
+
+        const networkBonus = stationData.settlement ?
+            (stationData.settlement.railNetworkBonus || 1.0) : 1.0;
+        const connections = stationData.connectedStations.length;
+
+        modal.innerHTML = `
+            <div style="background: #1a1f2e; border: 2px solid #5a6478; border-radius: 8px;
+                padding: 25px; max-width: 550px; max-height: 75vh; overflow-y: auto;">
+                <h2 style="color: #8fa3c8; margin-bottom: 10px; text-align: center; font-size: 20px;">
+                    🚂 Railway Station
+                </h2>
+                <div style="background: rgba(74, 90, 106, 0.3); padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                    <div style="color: #c0d0e8; font-size: 12px; margin-bottom: 5px;">
+                        <strong>Station:</strong> ${settlementName}
+                    </div>
+                    <div style="color: #a8b8d8; font-size: 11px; margin-bottom: 5px;">
+                        <strong>Location:</strong> (${station.x}, ${station.y})
+                    </div>
+                    <div style="color: #88cc88; font-size: 11px;">
+                        <strong>Connections:</strong> ${connections} | <strong>Network Bonus:</strong> ${((networkBonus - 1) * 100).toFixed(0)}%
+                    </div>
+                </div>
+                <div style="color: #8fa3c8; font-size: 12px; margin-bottom: 10px; font-weight: 600;">
+                    Available Connections:
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${otherStations.length > 0 ? stationList :
+                        '<p style="color: #7a8a9a; text-align: center; padding: 20px; font-style: italic;">No other stations available. Build more train stations to expand your network!</p>'}
+                </div>
+                <button id="close-trainstation-modal" style="width: 100%; padding: 12px; margin-top: 15px;
+                    background: #3a4a5a; border: 1px solid #5a6a7a; color: #c0d0e8; cursor: pointer;
+                    border-radius: 4px; font-size: 13px; font-weight: 600;">
+                    Close
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelectorAll('.build-track-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const targetX = parseInt(btn.dataset.targetX);
+                const targetY = parseInt(btn.dataset.targetY);
+                const ironCost = parseInt(btn.dataset.iron);
+                const coalCost = parseInt(btn.dataset.coal);
+
+                if (this.player.resources.iron >= ironCost &&
+                    this.player.resources.coal >= coalCost) {
+
+                    this.player.resources.iron -= ironCost;
+                    this.player.resources.coal -= coalCost;
+
+                    const targetStationData = this.railwaySystem.stations.find(s =>
+                        s.x === targetX && s.y === targetY
+                    );
+
+                    if (targetStationData) {
+                        const success = this.railwaySystem.connectStations(stationData, targetStationData);
+
+                        if (success) {
+                            if (typeof AudioManager !== 'undefined') {
+                                AudioManager.playSFX('sounds/sfx/complete.mp3', 0.3);
+                            }
+                            document.body.removeChild(modal);
+                            this.showTrainStationMenu(station);
+                        }
+                    }
+                }
+            };
+        });
+
+        document.getElementById('close-trainstation-modal').onclick = () => {
+            document.body.removeChild(modal);
+        };
     }
 
     createFloatingNumber(x, y, text, color) {
@@ -3213,6 +3392,12 @@ class Game {
                 this.renderer.drawBuilding(building, this.cameraX, this.cameraY);
             }
         });
+
+        if (this.railwaySystem && this.railwaySystem.tracks.size > 0) {
+            this.railwaySystem.tracks.forEach((track, key) => {
+                this.renderer.drawRailwayTrack(track, this.cameraX, this.cameraY);
+            });
+        }
 
         if (this.ecosystem && this.galaxy.currentPlanetIndex === 0) {
             for (let y = visibleTiles.minY; y <= visibleTiles.maxY; y++) {
