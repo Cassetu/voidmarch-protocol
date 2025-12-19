@@ -206,6 +206,14 @@ class Game {
             e.stopPropagation();
             this.cycleViewMode();
         });
+
+        document.getElementById('clear-building-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.player.selectedBuilding = null;
+            document.getElementById('clear-building-container').style.display = 'none';
+            this.log('Building selection cleared');
+        });
+
         const iconPath = document.getElementById('view-icon-path');
         iconPath.setAttribute('d', 'M12 2L2 7v10l10 5 10-5V7L12 2z M12 4.5l7 3.5v7l-7 3.5-7-3.5v-7l7-3.5z');
 
@@ -3641,6 +3649,13 @@ class Game {
 
             this._builtBuildingsUI = true;
             this._lastAvailableBuildingsKey = key;
+        }
+
+        const clearBuildingContainer = document.getElementById('clear-building-container');
+        if (this.player.selectedBuilding) {
+            clearBuildingContainer.style.display = 'block';
+        } else {
+            clearBuildingContainer.style.display = 'none';
         }
 
         this._updateBuildingButtonsActive(buildingsList);

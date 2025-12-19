@@ -678,6 +678,113 @@ class TechTree {
                 }
             },
 
+            railwayEngineering: {
+                name: 'Railway Engineering',
+                cost: 1000,
+                type: 'infrastructure',
+                researched: false,
+                prerequisites: ['industrialAge'],
+                unlocks: ['dieselLocomotives'],
+                bonus: { production: 15 },
+                description: 'Connect settlements with rail networks',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const settlements = player.settlements.length;
+                    const trainStations = player.buildings.filter(b => b.type === 'trainstation').length;
+                    return {
+                        description: `Your ${settlements} settlements are isolated. Railways enable transport of ${trainStations > 0 ? 'resources, citizens, and builders' : 'massive quantities of goods'}. Steam locomotives travel 4 tiles per turn - 8x faster than walking.`,
+                        impact: `Production +15. Unlocks railway construction between train stations. Builders use trains automatically when faster than walking. Resources transfer between connected settlements. Network bonuses increase production in connected settlements.`,
+                        connection: `After research, click train stations to see railway menu. Build tracks between settlements to create trade networks. Each connection adds +10% production to both settlements.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Railway Age',
+                    year: '~1825 CE',
+                    inventor: 'George Stephenson',
+                    staticDescription: 'Railways revolutionized transport - moving goods in hours that took weeks by cart.'
+                }
+            },
+
+            dieselLocomotives: {
+                name: 'Diesel Locomotives',
+                cost: 1500,
+                type: 'infrastructure',
+                researched: false,
+                prerequisites: ['railwayEngineering'],
+                unlocks: ['electrifiedRail'],
+                bonus: { production: 20 },
+                description: 'Faster, more efficient trains',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const railNetwork = game.currentPlanet.railNetwork;
+                    const trackCount = railNetwork ? railNetwork.tracks.size : 0;
+                    return {
+                        description: `Your rail network spans ${trackCount} track segments. Diesel engines increase speed to 6 tiles/turn and reduce fuel costs by 60%. More cargo capacity means larger resource transfers.`,
+                        impact: `Production +20. Train speed increases to 6 tiles/turn. Resource transfer capacity doubles. Less maintenance required - tracks degrade 40% slower.`,
+                        connection: `Existing trains automatically upgrade to diesel. Watch your resource transfers double in settlement panels.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Diesel Revolution',
+                    year: '~1930 CE',
+                    inventor: 'Rudolf Diesel',
+                    staticDescription: 'Diesel engines offered 40% efficiency vs steam\'s 10%.'
+                }
+            },
+
+            electrifiedRail: {
+                name: 'Electrified Rail Networks',
+                cost: 2500,
+                type: 'infrastructure',
+                researched: false,
+                prerequisites: ['dieselLocomotives', 'electricity'],
+                unlocks: ['maglevTransit'],
+                bonus: { production: 30 },
+                description: 'Electric trains with overhead power',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const railNetwork = game.currentPlanet.railNetwork;
+                    const routes = railNetwork ? railNetwork.routes.length : 0;
+                    return {
+                        description: `${routes} active rail routes. Electrification increases speed to 8 tiles/turn using geothermal power. Zero emissions, instant acceleration, regenerative braking.`,
+                        impact: `Production +30. Train speed 8 tiles/turn. Power grid integration means trains use geothermal energy. Maintenance costs drop to near-zero. Track durability increases 50%.`,
+                        connection: `Electric trains share your power grid. Protect geothermal plants to keep trains running. Grid failure stops trains.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Electrification Age',
+                    year: '~1890 CE',
+                    inventor: 'Werner von Siemens',
+                    staticDescription: 'Electric trains eliminated steam\'s smoke and coal costs.'
+                }
+            },
+
+            maglevTransit: {
+                name: 'Maglev Transit Systems',
+                cost: 4000,
+                type: 'infrastructure',
+                researched: false,
+                prerequisites: ['electrifiedRail'],
+                unlocks: [],
+                bonus: { production: 50, science: 20 },
+                description: 'Magnetic levitation trains',
+                planets: ['volcanic'],
+                getDynamicContext: (player, game) => {
+                    const coreStability = game.eventSystem ? Math.floor(game.eventSystem.coreStability) : 100;
+                    return {
+                        description: `Core stability ${coreStability}%. Maglev trains levitate magnetically - no friction, no wear. Speed: 12 tiles/turn. Immune to eruption damage - they hover above destruction.`,
+                        impact: `Production +50, Science +20. Train speed 12 tiles/turn. Tracks never degrade. Eruptions cannot damage maglev infrastructure. Perfect reliability for evacuation scenarios.`,
+                        connection: `Ultimate rail technology. Maglev trains maintain service even during catastrophic eruptions. Ideal for exodus preparation.`
+                    };
+                },
+                historicalContext: {
+                    era: 'Advanced Transit',
+                    year: '~1984 CE',
+                    inventor: 'Japanese engineers',
+                    staticDescription: 'Maglev trains reach 600+ km/h using electromagnetic suspension.'
+                }
+            },
+
             urbanPlanning: {
                 name: 'Modern Urban Planning',
                 cost: 1400,

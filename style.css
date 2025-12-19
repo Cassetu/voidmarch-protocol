@@ -1814,3 +1814,34 @@ body {
     0%, 100% { opacity: 0.3; }
     50% { opacity: 1; }
 }
+
+#clear-building-container {
+    position: absolute;
+    top: 85px;
+    right: 20px;
+    z-index: 1000;
+    pointer-events: auto;
+}
+
+#clear-building-btn {
+    padding: 12px;
+    background: rgba(138, 31, 31, 0.95);
+    border: 2px solid #ff4444;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#clear-building-btn:hover {
+    background: rgba(168, 51, 51, 0.95);
+    border-color: #ff6666;
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+}
