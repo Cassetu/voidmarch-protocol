@@ -38,6 +38,9 @@ class TerrainRenderer {
     }
 
     drawTile(gridX, gridY, tile, cameraX, cameraY) {
+        if (gridX === 0 && gridY === 0) {
+            console.log('Drawing tile 0,0 at screen:', (gridX - gridY) * (this.tileWidth / 2), (gridX + gridY) * (this.tileHeight / 2));
+        }
         const game = window.game;
         const zoom = game.renderer.zoom;
 

@@ -1303,37 +1303,15 @@ class Game {
     }
 
     getVisibleTiles() {
-        const topBarHeight = 75;
-        const unitX = this.renderer.tileWidth / 2;
-        const unitY = this.renderer.tileHeight / 2;
-
-        const viewWidth = this.width / this.renderer.zoom;
-        const viewHeight = (this.height - topBarHeight - 220) / this.renderer.zoom;
-
-        const centerGridX = this.currentPlanet.width / 2;
-        const centerGridY = this.currentPlanet.height / 2;
-        const centerWorldX = (centerGridX - centerGridY) * unitX;
-        const centerWorldY = (centerGridX + centerGridY) * unitY;
-
-        const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
-        const targetY = ((this.height - topBarHeight - 220) / 2) / this.renderer.zoom + this.cameraY;
-
-        const translateX = targetX - centerWorldX;
-        const translateY = targetY - centerWorldY;
-
-        const screenLeft = -translateX;
-        const screenRight = screenLeft + viewWidth;
-        const screenTop = -translateY;
-        const screenBottom = screenTop + viewHeight;
-
-        const padding = 10;
-
-        const minX = Math.max(0, Math.floor((screenLeft / unitX + screenTop / unitY) / 2) - padding);
-        const maxX = Math.min(this.currentPlanet.width - 1, Math.ceil((screenRight / unitX + screenBottom / unitY) / 2) + padding);
-        const minY = Math.max(0, Math.floor((screenTop / unitY - screenRight / unitX) / 2) - padding);
-        const maxY = Math.min(this.currentPlanet.height - 1, Math.ceil((screenBottom / unitY - screenLeft / unitX) / 2) + padding);
-
-        return { minX, maxX, minY, maxY };
+        const result = {
+            minX: 0,
+            maxX: this.currentPlanet.width - 1,
+            minY: 0,
+            maxY: this.currentPlanet.height - 1
+        };
+        console.log('Visible tiles:', result);
+        console.log('Planet size:', this.currentPlanet.width, this.currentPlanet.height);
+        return result;
     }
 
     handleZoom(e) {
@@ -3325,6 +3303,9 @@ class Game {
             return;
         }
 
+        this.ctx.fillStyle = '#ff0000';
+        this.ctx.fillRect(0, 0, this.width, this.height);
+
         this.renderer.backgroundRenderer.draw(this.cameraX, this.cameraY, this.renderer.zoom);
 
         this.ctx.save();
@@ -3351,13 +3332,14 @@ class Game {
         const centerScreenX = (centerGridX - centerGridY) * (this.renderer.tileWidth / 2);
         const centerScreenY = (centerGridX + centerGridY) * (this.renderer.tileHeight / 2);
 
-        const targetX = (this.width / 2) / this.renderer.zoom + this.cameraX;
-        const targetY = ((this.height - topBarHeight - 220) / 2) / this.renderer.zoom + this.cameraY;
+        const viewWidth = this.width / this.renderer.zoom;
+        const viewHeight = (this.height - topBarHeight - 220) / this.renderer.zoom;
 
+        console.log('Camera:', this.cameraX, this.cameraY, 'Zoom:', this.renderer.zoom);
 
         this.ctx.translate(
-            targetX - centerScreenX,
-            targetY - centerScreenY
+            viewWidth / 2 - centerScreenX + this.cameraX,
+            viewHeight / 2 - centerScreenY + this.cameraY
         );
 
         const visibleTiles = this.getVisibleTiles();
