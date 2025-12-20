@@ -81,6 +81,12 @@ class Renderer {
         this.voxelDebris.draw(cameraX, cameraY);
     }
 
+    drawTrains(trains, cameraX, cameraY) {
+        trains.forEach(train => {
+            this.buildingRenderer.drawTrain(train, cameraX, cameraY);
+        });
+    }
+
     createBuildingDebris(x, y, buildingType) {
         const colorMap = {
             'hut': '#6a5a4a',

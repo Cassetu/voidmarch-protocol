@@ -58,14 +58,13 @@ class RailwaySystem {
         });
     }
 
-    connectStations(stationA, stationB) {
+    connectStations(stationA, stationB, trainType = null) {
         if (stationA.connectedStations.includes(stationB)) {
             this.game.log('Stations already connected!');
             return false;
         }
 
         const path = this.findTrackPath(stationA.x, stationA.y, stationB.x, stationB.y);
-
         if (!path) {
             this.game.log('Cannot build track - no valid path!');
             return false;
@@ -90,15 +89,62 @@ class RailwaySystem {
         stationA.connectedStations.push(stationB);
         stationB.connectedStations.push(stationA);
 
-        const settlementA = stationA.settlement;
-        const settlementB = stationB.settlement;
-        if (settlementA && settlementB) {
-            this.updateNetworkBonus(settlementA);
-            this.updateNetworkBonus(settlementB);
+        this.updateNetworkBonuses();
+
+        if (trainType) {
+            this.createTrain({
+                path: path,
+                origin: stationA,
+                destination: stationB
+            }, trainType);
         }
 
-        this.game.log(`Railway constructed: ${settlementA.name} ↔ ${settlementB.name}`);
+        const settlementA = stationA.settlement;
+        const settlementB = stationB.settlement;
+        this.game.log(`Railway constructed: ${settlementA ? settlementA.name : 'Station'} ↔ ${settlementB ? settlementB.name : 'Station'}`);
         return true;
+    }
+
+    updateNetworkBonuses() {
+        const visited = new Set();
+        const networks = [];
+
+        this.stations.forEach(station => {
+            const key = `${station.x},${station.y}`;
+            if (visited.has(key)) return;
+
+            const network = [];
+            const queue = [station];
+
+            while (queue.length > 0) {
+                const current = queue.shift();
+                const currentKey = `${current.x},${current.y}`;
+
+                if (visited.has(currentKey)) continue;
+                visited.add(currentKey);
+                network.push(current);
+
+                current.connectedStations.forEach(connected => {
+                    const connectedKey = `${connected.x},${connected.y}`;
+                    if (!visited.has(connectedKey)) {
+                        queue.push(connected);
+                    }
+                });
+            }
+
+            if (network.length > 0) {
+                networks.push(network);
+            }
+        });
+
+        networks.forEach(network => {
+            const bonus = 1 + (network.length - 1) * 0.1;
+            network.forEach(station => {
+                if (station.settlement) {
+                    station.settlement.railNetworkBonus = bonus;
+                }
+            });
+        });
     }
 
     findTrackPath(startX, startY, endX, endY) {
@@ -183,32 +229,49 @@ class RailwaySystem {
         settlement.railNetworkBonus = bonus;
     }
 
-    createTrain(route) {
+    createTrain(route, trainType) {
+        const type = trainType || this.getTrainType();
         const train = {
             id: this.nextTrainId++,
-            type: this.getTrainType(),
-            speed: this.getTrainSpeed(),
+            type: type,
+            speed: this.getTrainSpeedForType(type),
             route: route,
             position: 0,
             currentSegment: 0,
             cargo: {},
-            status: 'idle'
+            status: 'moving',
+            progressOnSegment: 0
         };
 
         this.trains.push(train);
         return train;
     }
 
+    getTrainSpeedForType(type) {
+        const speeds = {
+            steam: 4,
+            diesel: 6,
+            electric: 8,
+            maglev: 12
+        };
+        return speeds[type] || 4;
+    }
+
     updateTrains() {
         this.trains.forEach(train => {
             if (train.status !== 'moving') return;
 
-            train.position += train.speed;
+            const segmentLength = 1;
+            train.progressOnSegment += train.speed / 10;
 
-            const routeLength = train.route.path.length;
-            if (train.position >= routeLength) {
-                train.position = 0;
-                this.transferCargo(train);
+            if (train.progressOnSegment >= segmentLength) {
+                train.progressOnSegment = 0;
+                train.currentSegment++;
+
+                if (train.currentSegment >= train.route.path.length - 1) {
+                    train.currentSegment = 0;
+                    this.transferCargo(train);
+                }
             }
         });
     }

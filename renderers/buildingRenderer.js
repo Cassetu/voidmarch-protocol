@@ -5537,4 +5537,119 @@ class BuildingRenderer {
         this.ctx.fillStyle = color;
         this.ctx.fillRect(x - width / 2, y - 25, width * percent, barHeight);
     }
+
+    drawTrain(train, cameraX, cameraY) {
+        if (!train.route || !train.route.path || train.currentSegment >= train.route.path.length - 1) return;
+
+        const from = train.route.path[train.currentSegment];
+        const to = train.route.path[train.currentSegment + 1];
+
+        const unitX = this.tileWidth / 2;
+        const unitY = this.tileHeight / 2;
+
+        const fromX = (from.x - from.y) * unitX;
+        const fromY = (from.x + from.y) * unitY;
+        const toX = (to.x - to.y) * unitX;
+        const toY = (to.x + to.y) * unitY;
+
+        const progress = train.progressOnSegment;
+        const x = fromX + (toX - fromX) * progress;
+        const y = fromY + (toY - fromY) * progress;
+
+        this.ctx.save();
+        this.ctx.translate(x, y);
+
+        switch (train.type) {
+            case 'steam':
+                this.drawSteamTrain();
+                break;
+            case 'diesel':
+                this.drawDieselTrain();
+                break;
+            case 'electric':
+                this.drawElectricTrain();
+                break;
+            case 'maglev':
+                this.drawMaglevTrain();
+                break;
+            default:
+                this.drawSteamTrain();
+        }
+
+        this.ctx.restore();
+    }
+
+    drawSteamTrain() {
+        const ctx = this.ctx;
+
+        ctx.fillStyle = '#5b3a1e';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 7, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#3a2415';
+        ctx.fillRect(-8, -4, 4, 8);
+
+        ctx.fillStyle = '#2a2a2a';
+        ctx.fillRect(2, -7, 2, 4);
+
+        ctx.fillStyle = '#1a1a1a';
+        ctx.beginPath();
+        ctx.arc(-4, 4, 2, 0, Math.PI * 2);
+        ctx.arc(4, 4, 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    drawDieselTrain() {
+        const ctx = this.ctx;
+
+        ctx.fillStyle = '#c97a1c';
+        ctx.fillRect(-8, -4, 16, 8);
+
+        ctx.fillStyle = '#a86414';
+        ctx.fillRect(8, -3, 3, 6);
+
+        ctx.fillStyle = '#3a3a3a';
+        for (let i = -5; i <= 1; i += 3) {
+            ctx.fillRect(i, -2, 1, 4);
+        }
+
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(-6, 4, 3, 2);
+        ctx.fillRect(2, 4, 3, 2);
+    }
+
+    drawElectricTrain() {
+        const ctx = this.ctx;
+
+        ctx.fillStyle = '#00bfbf';
+        ctx.fillRect(-8, -3, 16, 6);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-8, -1, 16, 1);
+
+        ctx.strokeStyle = '#2a2a2a';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-2, -4);
+        ctx.lineTo(0, -7);
+        ctx.lineTo(2, -4);
+        ctx.stroke();
+    }
+
+    drawMaglevTrain() {
+        const ctx = this.ctx;
+
+        ctx.shadowColor = '#ff00ff';
+        ctx.shadowBlur = 8;
+
+        ctx.fillStyle = '#b000b0';
+        ctx.beginPath();
+        ctx.moveTo(-8, 0);
+        ctx.quadraticCurveTo(0, -6, 8, 0);
+        ctx.quadraticCurveTo(0, 6, -8, 0);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+    }
 }
