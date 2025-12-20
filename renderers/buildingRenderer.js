@@ -169,12 +169,18 @@ class BuildingRenderer {
         } else {
             const drawingFunction = BuildingDrawings[building.type];
             if (drawingFunction) {
-                drawingFunction.call(this, this.ctx, screenX, screenY);
+                drawingFunction(this.ctx, screenX, screenY);
             } else {
                 this.ctx.fillStyle = '#6a7a8a';
                 this.ctx.fillRect(screenX - 12, screenY - 8, 24, 16);
             }
+
+            if (building.health < building.maxHealth && building.type !== 'ruins') {
+                this.drawHealthBar(screenX, screenY + 15, building.health, building.maxHealth, 30);
+            }
         }
+
+        this.ctx.restore();
     }
 
     drawBuildingToCanvas(buildingType, canvas) {
